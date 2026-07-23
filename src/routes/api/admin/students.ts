@@ -14,7 +14,7 @@ export const Route = createFileRoute('/api/admin/students')({
         const studentList = await db
           .select()
           .from(students)
-          .orderBy(students.lastName)
+          .orderBy(students.fullName)
 
         return Response.json(studentList)
       },
