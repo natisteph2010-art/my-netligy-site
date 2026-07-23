@@ -354,7 +354,7 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 bg-slate-900/40 z-30 lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
       <aside
-        className={`fixed top-0 left-0 z-40 h-full bg-[#0f172a] text-slate-300 flex flex-col transition-all duration-300 ease-in-out
+        className={`fixed top-0 left-0 z-40 h-full bg-white text-slate-700 border-r border-slate-200 flex flex-col transition-all duration-300 ease-in-out
           ${collapsed ? 'lg:w-20' : 'lg:w-64'} w-64
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
       >
@@ -373,8 +373,8 @@ export default function AdminDashboard() {
                 title={collapsed ? item.label : undefined}
                 className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200
                   ${active
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'}
+                    ? 'bg-sky-400 text-white shadow-lg shadow-sky-400/25'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-sky-50'}
                   ${collapsed ? 'lg:justify-center' : ''}`}
               >
                 <Icon path={item.icon} className="w-5 h-5 flex-shrink-0" />

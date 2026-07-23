@@ -1,13 +1,25 @@
 @import "tailwindcss" source("../");
 
+:root {
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-primary: #38BDF8;
+  --color-primary-hover: #0EA5E9;
+  --color-secondary: #34D399;
+  --color-text: #1E293B;
+  --color-muted: #64748B;
+  --color-border: #E2E8F0;
+  --shadow-soft: 0 12px 32px rgba(30, 41, 59, 0.08);
+}
+
 @layer base {
   body {
     margin: 0;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #020617;
-    color: #f1f5f9;
+    background-color: var(--color-background);
+    color: var(--color-text);
   }
 }
 
@@ -16,10 +28,10 @@
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: var(--color-background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e40af;
+  background: var(--color-primary);
   border-radius: 3px;
 }
 
@@ -35,8 +47,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+  0%, 100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
 }
 
 @keyframes fadeInUp {
@@ -67,9 +79,10 @@
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  border-radius: 18px;
 }
 
 .glass-hover {
@@ -77,26 +90,26 @@
 }
 
 .glass-hover:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+  background: var(--color-surface);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 16px 36px rgba(14, 165, 233, 0.14);
   transform: translateY(-2px);
 }
 
 .glow-blue {
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
 }
 
 .glow-blue-hover:hover {
-  box-shadow: 0 0 40px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 40px rgba(14, 165, 233, 0.3);
 }
 
 .glow-teal {
-  box-shadow: 0 0 30px rgba(20, 184, 166, 0.2);
+  box-shadow: 0 0 30px rgba(52, 211, 153, 0.2);
 }
 
 .card-glow:hover {
-  box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 20px 60px rgba(14, 165, 233, 0.14);
 }
 
 /* Star particles background */
@@ -110,30 +123,29 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background-image:
-    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(20, 184, 166, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 60%);
+    radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.12) 0%, transparent 42%),
+    radial-gradient(circle at 80% 70%, rgba(52, 211, 153, 0.09) 0%, transparent 42%);
   pointer-events: none;
 }
 
 /* Grid pattern */
 .grid-pattern {
   background-image:
-    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.08) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #60a5fa, #34d399);
+  background: linear-gradient(135deg, #0EA5E9, #34D399);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-gold {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #38BDF8, #0EA5E9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -183,4 +195,61 @@
 
 .admin-shell {
   color-scheme: light;
+}
+
+/* Translate legacy dark utility classes into the light theme. */
+[class~="bg-slate-950"], [class~="bg-slate-950/95"], [class~="bg-slate-900"], [class~="bg-slate-900/30"], [class~="bg-slate-900/98"], [class~="bg-[#0f172a]"], [class~="bg-gray-50"] {
+  background-color: var(--color-background) !important;
+}
+
+[class~="text-slate-950"], [class~="text-slate-900"], [class~="text-white"]:not([class*="bg-"]) {
+  color: var(--color-text) !important;
+}
+
+input[class~="text-white"], textarea[class~="text-white"], select[class~="text-white"] {
+  color: var(--color-text) !important;
+}
+
+[class~="text-slate-300"], [class~="text-slate-400"], [class~="text-slate-500"] {
+  color: var(--color-muted) !important;
+}
+
+[class~="border-white/5"], [class~="border-white/10"], [class~="border-slate-200"], [class~="border-slate-300"] {
+  border-color: var(--color-border) !important;
+}
+
+[class~="bg-white/5"], [class~="bg-white/10"], [class~="bg-slate-100"], [class~="bg-slate-50/50"] {
+  background-color: var(--color-surface) !important;
+}
+
+[class~="hover:bg-white/5"]:hover, [class~="hover:bg-slate-50"]:hover, [class~="hover:bg-slate-100"]:hover {
+  background-color: #F0F9FF !important;
+}
+
+[class~="bg-blue-600"], [class~="bg-blue-500"] {
+  background-color: var(--color-primary) !important;
+}
+
+[class~="hover:bg-blue-700"]:hover, [class~="hover:bg-blue-600"]:hover, [class~="hover:bg-blue-500"]:hover {
+  background-color: var(--color-primary-hover) !important;
+}
+
+[class~="text-blue-400"], [class~="text-blue-500"], [class~="text-blue-600"], [class~="text-blue-700"] {
+  color: var(--color-primary-hover) !important;
+}
+
+[class~="text-teal-300"], [class~="text-teal-400"] {
+  color: #059669 !important;
+}
+
+[class~="bg-teal-500"], [class~="bg-green-500"] {
+  background-color: var(--color-secondary) !important;
+}
+
+[class*="from-blue-"], [class*="from-indigo-"], [class*="from-teal-"], [class*="from-cyan-"], [class*="from-purple-"], [class*="from-pink-"] {
+  background-image: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover)) !important;
+}
+
+[class*="to-teal-"], [class*="to-cyan-"], [class*="to-green-"] {
+  --tw-gradient-to: var(--color-secondary) !important;
 }
