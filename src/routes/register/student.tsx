@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { signup, AuthError } from '@netlify/identity'
 import { useIdentity } from '../../lib/identity-context'
+import { GradeBridgeLogo } from '../../components/GradeBridgeLogo'
 
 export const Route = createFileRoute('/register/student')({
   component: StudentRegisterPage,
@@ -94,10 +95,7 @@ export default function StudentRegisterPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
-              <span className="text-white font-bold">G</span>
-            </div>
-            <span className="text-white font-bold text-lg">GradeBridge</span>
+            <GradeBridgeLogo />
           </Link>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-teal-500/20 text-teal-300 text-sm font-medium mb-6">
             📖 Student Registration

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import '../styles.css'
 import { IdentityProvider } from '../lib/identity-context'
 import { CallbackHandler } from '../components/CallbackHandler'
+import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
 import { useIdentity } from '../lib/identity-context'
 
 export const Route = createRootRoute({
@@ -71,10 +72,7 @@ function NavBar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-shadow">
-              <span className="text-white font-bold text-sm">G</span>
-            </div>
-            <span className="font-bold text-white text-lg hidden sm:block">GradeBridge</span>
+            <GradeBridgeLogo compact className="group-hover:opacity-90 transition-opacity" />
           </Link>
 
           {/* Desktop nav */}

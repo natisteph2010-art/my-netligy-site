@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { AnnouncementBanner } from '../components/AnnouncementBanner'
+import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
 
 export const Route = createFileRoute('/')({
   component: LandingPage,
@@ -148,14 +149,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-teal-500 flex items-center justify-center shadow-2xl shadow-blue-500/30 animate-pulse-glow">
-                <span className="text-white font-black text-4xl font-serif">G</span>
-              </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 bg-teal-400 rounded-full flex items-center justify-center shadow-lg shadow-teal-400/50">
-                <span className="text-xs text-white font-bold">✓</span>
-              </div>
-            </div>
+            <GradeBridgeLogo className="h-40 w-80 animate-pulse-glow" />
           </div>
 
           <p className="text-blue-300 font-medium tracking-widest uppercase text-sm mb-4">
@@ -527,9 +521,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-10 mb-12">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">G</span>
-                </div>
+                <GradeBridgeLogo compact />
                 <span className="font-bold text-white text-lg">GradeBridge</span>
               </div>
               <p className="text-slate-400 text-sm leading-relaxed max-w-xs">

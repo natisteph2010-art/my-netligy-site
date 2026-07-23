@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { AuthError, handleAuthCallback, getUser } from '@netlify/identity'
+import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
 
 export const Route = createFileRoute('/reset-password')({
   component: ResetPasswordPage,
@@ -96,10 +97,7 @@ function ResetPasswordPage() {
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 group">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <span className="text-white font-bold text-xl">G</span>
-            </div>
-            <span className="font-bold text-white text-xl">GradeBridge</span>
+            <GradeBridgeLogo />
           </Link>
           <p className="text-slate-400 mt-2 text-sm">Reset your mentor password after approval.</p>
         </div>

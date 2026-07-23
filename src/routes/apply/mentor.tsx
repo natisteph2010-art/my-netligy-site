@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
+import { GradeBridgeLogo } from '../../components/GradeBridgeLogo'
 
 export const Route = createFileRoute('/apply/mentor')({
   component: MentorApplyPage,
@@ -92,10 +93,7 @@ export default function MentorApplyPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
-              <span className="text-white font-bold">G</span>
-            </div>
-            <span className="text-white font-bold text-lg">GradeBridge</span>
+            <GradeBridgeLogo />
           </Link>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-blue-500/20 text-blue-300 text-sm font-medium mb-6">
             🎓 Mentor Application

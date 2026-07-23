@@ -2,6 +2,7 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useIdentity } from '../../lib/identity-context'
 import { getServerUser } from '../../lib/auth'
+import { GradeBridgeLogo } from '../../components/GradeBridgeLogo'
 
 export const Route = createFileRoute('/dashboard/admin')({
   beforeLoad: async () => {
@@ -358,10 +359,8 @@ export default function AdminDashboard() {
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
       >
         <div className="h-16 flex items-center gap-3 px-5 border-b border-white/5 flex-shrink-0">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 flex-shrink-0">
-            <span className="text-white font-black">G</span>
-          </div>
-          {!collapsed && <span className="font-bold text-white text-lg tracking-tight">GradeBridge</span>}
+          <GradeBridgeLogo compact className="flex-shrink-0" />
+          {!collapsed && <span className="sr-only">GradeBridge</span>}
         </div>
 
         <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
