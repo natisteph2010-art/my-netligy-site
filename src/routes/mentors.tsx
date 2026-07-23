@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useIdentity } from '../lib/identity-context'
+import { ParticleNetwork } from '../components/ParticleNetwork'
 
 export const Route = createFileRoute('/mentors')({
   component: MentorDirectoryPage,
@@ -37,6 +38,7 @@ export default function MentorDirectoryPage() {
   const [search, setSearch] = useState('')
   const [subjectFilter, setSubjectFilter] = useState('All')
   const [error, setError] = useState('')
+  const [selectedMentor, setSelectedMentor] = useState<number | null>(null)
 
   useEffect(() => {
     if (!ready) return
@@ -84,12 +86,12 @@ export default function MentorDirectoryPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <span className="text-teal-400 font-semibold tracking-wider uppercase text-sm">Mentor Directory</span>
+          <span className="text-teal-400 font-semibold tracking-wider uppercase text-sm">Knowledge Constellation</span>
           <h1 className="text-4xl sm:text-5xl font-black mt-3 mb-4 text-white">
-            Find Your <span className="gradient-text">Perfect Mentor</span>
+            Find your <span className="gradient-text">next connection</span>
           </h1>
           <p className="text-slate-400 max-w-2xl mx-auto">
-            Browse our community of approved IGCSE mentors. Each mentor has been vetted and approved by our admin team.
+            Each node is an approved IGCSE mentor. Choose a subject cluster, then open a profile to explore the person behind the expertise.
           </p>
         </div>
 
@@ -136,107 +138,39 @@ export default function MentorDirectoryPage() {
             <p className="text-slate-400">Try adjusting your search or filters.</p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="constellation">
+            <ParticleNetwork density={38} />
+            <div className="constellation-lines" />
             {mentors.map((mentor) => {
               const subjects = parseSubjects(mentor.subjects)
-              const grades: Record<string, string> = (() => { try { return JSON.parse(mentor.igcseGrades) } catch { return {} } })()
+              const isSelected = selectedMentor === mentor.id
 
               return (
-                <div key={mentor.id} className="glass rounded-3xl p-6 card-glow glass-hover flex flex-col">
-                  {/* Profile header */}
-                  <div className="flex items-start gap-4 mb-4">
-                    {mentor.profilePicUrl ? (
-                      <img
-                        src={mentor.profilePicUrl}
-                        alt={mentor.fullName}
-                        className="w-14 h-14 rounded-2xl object-cover shadow-lg"
-                      />
-                    ) : (
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/20">
-                        {getInitials(mentor.fullName)}
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-bold text-lg leading-tight truncate">{mentor.fullName}</h3>
-                      <p className="text-slate-400 text-sm mt-0.5">{mentor.availability || 'Flexible availability'}</p>
-                    </div>
-                  </div>
-
-                  {/* Subjects */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {subjects.slice(0, 4).map((s) => (
-                      <span key={s} className="px-2 py-0.5 rounded-lg bg-blue-500/15 text-blue-300 text-xs font-medium">
-                        {s}
-                      </span>
-                    ))}
-                    {subjects.length > 4 && (
-                      <span className="px-2 py-0.5 rounded-lg bg-white/5 text-slate-400 text-xs">
-                        +{subjects.length - 4} more
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Bio */}
-                  {mentor.bio && (
-                    <p className="text-slate-300 text-sm leading-relaxed mb-4 line-clamp-3">{mentor.bio}</p>
-                  )}
-
-                  {/* Grades */}
-                  {Object.keys(grades).length > 0 && (
-                    <div className="mb-4 p-3 rounded-xl bg-white/5">
-                      <p className="text-slate-400 text-xs uppercase tracking-wider mb-2">IGCSE Grades</p>
-                      <div className="flex flex-wrap gap-2">
-                        {Object.entries(grades).slice(0, 4).map(([sub, grade]) => (
-                          <span key={sub} className="text-xs">
-                            <span className="text-slate-400">{sub}:</span>{' '}
-                            <span className="text-teal-400 font-bold">{grade}</span>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Reason */}
-                  {mentor.reason && (
-                    <div className="mb-4 p-3 rounded-xl bg-white/5">
-                      <p className="text-slate-400 text-xs uppercase tracking-wider mb-1">Why I Mentor</p>
-                      <p className="text-slate-300 text-xs line-clamp-2">{mentor.reason}</p>
-                    </div>
-                  )}
-
-                  <div className="flex-1" />
-
-                  {/* Contact buttons */}
-                  <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                    {mentor.contactEmail && (
-                      <a href={`mailto:${mentor.contactEmail}`} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-white/10 text-slate-300 hover:text-white text-xs transition-all hover:border-blue-500/30">
-                        📧 Email
-                      </a>
-                    )}
-                    {mentor.telegram && (
-                      <a href={`https://t.me/${mentor.telegram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-white/10 text-slate-300 hover:text-white text-xs transition-all hover:border-blue-500/30">
-                        ✈ Telegram
-                      </a>
-                    )}
-                    {mentor.whatsapp && (
-                      <a href={`https://wa.me/${mentor.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-white/10 text-slate-300 hover:text-white text-xs transition-all hover:border-green-500/30">
-                        💬 WhatsApp
-                      </a>
-                    )}
-                    {mentor.instagram && (
-                      <a href={`https://instagram.com/${mentor.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-white/10 text-slate-300 hover:text-white text-xs transition-all hover:border-pink-500/30">
-                        📸 Instagram
-                      </a>
-                    )}
-                    {mentor.linkedin && (
-                      <a href={mentor.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass border border-white/10 text-slate-300 hover:text-white text-xs transition-all hover:border-blue-500/30">
-                        💼 LinkedIn
-                      </a>
-                    )}
-                  </div>
-                </div>
+                <button type="button" key={mentor.id} onClick={() => setSelectedMentor(isSelected ? null : mentor.id)} className={`constellation-node ${isSelected ? 'active' : ''}`} aria-pressed={isSelected}>
+                  {mentor.profilePicUrl ? <img src={mentor.profilePicUrl} alt="" /> : <span className="constellation-avatar">{getInitials(mentor.fullName)}</span>}
+                  <strong className="text-sm truncate max-w-full">{mentor.fullName}</strong>
+                  <small>{subjects.slice(0, 2).join(' · ') || 'IGCSE Mentor'}</small>
+                  <span className="text-[10px] text-sky-300">{isSelected ? 'Close profile' : 'Open profile'}</span>
+                </button>
               )
             })}
+            {selectedMentor !== null && (() => {
+              const mentor = mentors.find((item) => item.id === selectedMentor)
+              if (!mentor) return null
+              const subjects = parseSubjects(mentor.subjects)
+              return (
+                <div className="absolute z-10 bottom-5 right-5 left-5 sm:left-auto sm:w-[360px] rounded-2xl border border-sky-300/30 bg-slate-950/90 p-5 shadow-2xl backdrop-blur-xl">
+                  <div className="flex items-start justify-between gap-4 mb-3">
+                    <div><p className="text-xs uppercase tracking-[0.16em] text-sky-300">Selected node</p><h2 className="text-xl font-bold text-white mt-1">{mentor.fullName}</h2></div>
+                    <button type="button" onClick={() => setSelectedMentor(null)} className="text-slate-400 hover:text-white" aria-label="Close mentor profile">×</button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mb-4">{subjects.map((subject) => <span key={subject} className="px-2 py-1 rounded-md bg-sky-400/10 text-sky-200 text-xs">{subject}</span>)}</div>
+                  <p className="text-sm text-slate-300 leading-relaxed mb-4">{mentor.bio || mentor.reason || 'An approved mentor ready to share their experience.'}</p>
+                  <p className="text-xs text-slate-400 mb-4">{mentor.availability || 'Flexible availability'}</p>
+                  {mentor.contactEmail && <a href={`mailto:${mentor.contactEmail}`} className="inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors">Connect with {mentor.fullName.split(' ')[0]} →</a>}
+                </div>
+              )
+            })()}
           </div>
         )}
       </div>

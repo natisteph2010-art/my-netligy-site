@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { AnnouncementBanner } from '../components/AnnouncementBanner'
 import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
+import { EntranceOverlay } from '../components/EntranceOverlay'
+import { KnowledgeHub } from '../components/KnowledgeHub'
+import { ParticleNetwork } from '../components/ParticleNetwork'
 
 export const Route = createFileRoute('/')({
   component: LandingPage,
@@ -24,7 +27,7 @@ const TESTIMONIALS = [
     text: 'GradeBridge completely changed how I approached my exams. My mentor helped me see the bigger picture and go from a D to an A* in Mathematics.',
     subjects: 'Mathematics, Physics',
     avatar: 'SM',
-    color: 'from-blue-500 to-indigo-600',
+    color: 'from-sky-400 to-blue-600',
   },
   {
     name: 'Daniel K.',
@@ -40,7 +43,7 @@ const TESTIMONIALS = [
     text: 'My mentor was patient and knowledgeable. The monthly Q&As gave me a platform to ask anything without judgment. Highly recommend!',
     subjects: 'Economics, Business',
     avatar: 'AT',
-    color: 'from-purple-500 to-pink-600',
+    color: 'from-cyan-400 to-sky-600',
   },
 ]
 
@@ -131,74 +134,49 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen">
+      <EntranceOverlay />
       <div className="fixed top-16 left-1/2 -translate-x-1/2 z-40 w-full max-w-3xl px-4">
         <AnnouncementBanner />
       </div>
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden stars-bg grid-pattern">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-indigo-500/8 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
-        </div>
-
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-blue-500/20 text-blue-300 text-sm font-medium mb-8 animate-fade-in-up">
-            <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
-            Student-Led Academic Excellence Initiative
-          </div>
-
-          <div className="flex justify-center mb-8">
-            <GradeBridgeLogo className="h-40 w-80 animate-pulse-glow" />
-          </div>
-
-          <p className="text-blue-300 font-medium tracking-widest uppercase text-sm mb-4">
-            GradeBridge
-          </p>
-
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight mb-6">
-            <span className="text-white">Empowering the</span>
-            <br />
-            <span className="gradient-text">Next Generation</span>
-            <br />
-            <span className="text-white">of IGCSE Excellence</span>
-          </h1>
-
-          <p className="text-slate-300 text-xl max-w-3xl mx-auto mb-10 leading-relaxed">
-            A student-led community connecting passionate IGCSE graduates with upcoming students through free weekly tutoring, monthly Q&amp;A sessions, and genuine mentorship.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link
-              to="/apply/mentor"
-              className="btn-shimmer px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 glow-blue-hover"
-            >
-              Become a Mentor →
-            </Link>
-            <Link
-              to="/register/student"
-              className="btn-shimmer px-8 py-4 rounded-xl glass border border-teal-500/30 text-teal-300 font-semibold text-lg hover:bg-teal-500/10 hover:border-teal-400/50 hover:scale-105 transition-all duration-300"
-            >
-              Register as Student
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="glass rounded-2xl p-5 glass-hover card-glow text-center">
-                <div className="text-3xl mb-2">{stat.icon}</div>
-                <div className="text-3xl font-black text-white mb-1">
-                  <AnimatedCounter target={stat.value} />
-                </div>
-                <div className="text-slate-400 text-sm">{stat.label}</div>
+      <section className="relative min-h-screen flex items-center overflow-hidden cinematic-surface grid-pattern pt-20">
+        <div className="aurora-layer" />
+        <ParticleNetwork density={52} />
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20">
+          <div className="grid lg:grid-cols-[1.02fr_0.98fr] gap-10 lg:gap-2 items-center">
+            <div className="hero-content">
+              <div className="hero-kicker inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold tracking-[0.16em] uppercase mb-8 animate-fade-in-up">
+                <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" />
+                The Knowledge Network
               </div>
-            ))}
+              <p className="text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5">GradeBridge / AISI</p>
+              <h1 className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
+                A clearer path to <strong className="gradient-text">understanding.</strong>
+              </h1>
+              <p className="text-slate-300 text-lg sm:text-xl max-w-xl mb-9 leading-relaxed">
+                Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 mb-12">
+                <Link to="/register/student" className="btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300">Find a Mentor <span aria-hidden="true">→</span></Link>
+                <Link to="/apply/mentor" className="btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300">Join the network</Link>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl">
+                {STATS.map((stat) => (
+                  <div key={stat.label} className="network-card rounded-xl p-3.5">
+                    <div className="text-sky-200 text-2xl font-semibold mb-1"><AnimatedCounter target={stat.value} /></div>
+                    <div className="text-slate-400 text-[11px] uppercase tracking-[0.12em]">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative flex justify-center lg:justify-end">
+              <KnowledgeHub />
+            </div>
           </div>
         </div>
-
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-xs">
-          <span>Scroll to explore</span>
-          <div className="w-px h-10 bg-gradient-to-b from-slate-500 to-transparent animate-pulse" />
+        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-[10px] uppercase tracking-[0.2em]">
+          <span>Explore the network</span>
+          <div className="w-px h-9 bg-gradient-to-b from-sky-300 to-transparent animate-pulse" />
         </div>
       </section>
 
@@ -263,7 +241,7 @@ export default function LandingPage() {
             <div className="glass rounded-3xl p-8 card-glow glass-hover relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/15 transition-colors" />
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl mb-6 shadow-lg shadow-blue-500/30">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-2xl mb-6 shadow-lg shadow-blue-500/30">
                   📚
                 </div>
                 <span className="px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs font-semibold uppercase tracking-wider">Weekly</span>
@@ -309,7 +287,7 @@ export default function LandingPage() {
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="section-fade text-center mb-16">
-            <span className="text-purple-400 font-semibold tracking-wider uppercase text-sm">Why Join GradeBridge</span>
+            <span className="text-cyan-300 font-semibold tracking-wider uppercase text-sm">Why Join GradeBridge</span>
             <h2 className="text-4xl sm:text-5xl font-black mt-3 text-white">
               Everything You Need to <span className="gradient-text">Succeed</span>
             </h2>
@@ -327,10 +305,11 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/30" id="mentors">
+      <section className="network-section py-24 px-4 sm:px-6 lg:px-8" id="mentors">
+        <ParticleNetwork density={44} />
         <div className="max-w-6xl mx-auto">
           <div className="section-fade text-center mb-16">
-            <span className="text-yellow-400 font-semibold tracking-wider uppercase text-sm">Success Stories</span>
+            <span className="text-sky-200 font-semibold tracking-wider uppercase text-sm">Success Stories</span>
             <h2 className="text-4xl sm:text-5xl font-black mt-3 text-white">
               Hear from Our <span className="gradient-text-gold">Students</span>
             </h2>
@@ -347,7 +326,7 @@ export default function LandingPage() {
                     <p className="text-slate-400 text-xs">{t.grade}</p>
                   </div>
                 </div>
-                <div className="text-yellow-400 text-lg mb-3">★★★★★</div>
+                <div className="text-sky-300 text-lg mb-3">★★★★★</div>
                 <p className="text-slate-300 text-sm leading-relaxed flex-1 italic">"{t.text}"</p>
                 <div className="mt-4 pt-4 border-t border-white/5">
                   <p className="text-slate-500 text-xs">Subjects: {t.subjects}</p>
@@ -372,7 +351,7 @@ export default function LandingPage() {
               to="/apply/mentor"
               className="group relative block rounded-3xl overflow-hidden cursor-pointer"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 opacity-90 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-br from-sky-600 to-blue-800 opacity-90 group-hover:opacity-100 transition-opacity" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" />
               <div className="relative p-10">
