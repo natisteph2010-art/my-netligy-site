@@ -174,6 +174,7 @@ export default function AdminDashboard() {
   const [appsLoading, setAppsLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState<number | null>(null)
   const [expanded, setExpanded] = useState<number | null>(null)
+  const [passwordSetupWarning, setPasswordSetupWarning] = useState<{ applicationId: number; email: string } | null>(null)
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [annLoading, setAnnLoading] = useState(false)
