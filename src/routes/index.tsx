@@ -150,8 +150,8 @@ export default function LandingPage() {
                 The Knowledge Network
               </div>
               <p className="text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5">GradeBridge / AISI</p>
-              <div data-sb-object-id="1">
-                <h1 data-sb-field-path="title" className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
+              <div data-sb-object-id="pages/index.md" data-sb-field-path="heroHeadline">
+                <h1 data-sb-field-path="heroHeadline" className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
                   A clearer path to <strong className="gradient-text">understanding.</strong>
                 </h1>
               </div>
