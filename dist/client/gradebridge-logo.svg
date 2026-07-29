@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="120 180 530 370" role="img" aria-labelledby="title desc">
+  <title id="title">GradeBridge</title>
+  <desc id="desc">GradeBridge logo with a bridge mark, graduation cap, and wordmark</desc>
+  <defs>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0b2039"/>
+      <stop offset="0.52" stop-color="#173b63"/>
+      <stop offset="1" stop-color="#2e8bc8"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#blue)">
+    <path d="M388 183 441 210 388 237 335 210Z"/>
+    <path d="M358 226h60v14l-30 16-30-16Z"/>
+    <path d="M418 235h4v30h-4z"/>
+    <circle cx="420" cy="269" r="3"/>
+    <path d="M165 255c0-30 24-54 54-54h84l-7 25h-77c-17 0-31 14-31 31v45c0 17 14 31 31 31h54l-21 23h-33c-30 0-54-24-54-54Z"/>
+    <path d="M437 201h62c30 0 54 24 54 54v8c0 12-4 23-11 32 9 9 14 22 14 35v7c0 30-24 54-54 54h-65l-22-24h87c17 0 30-13 30-30v-7c0-17-13-30-30-30h-90l-18-23h108c15 0 27-12 27-27v-8c0-17-13-31-31-31h-79Z"/>
+    <path d="M380 236h17l9 20v101h-17v-91l-9-12Z"/>
+    <path d="m326 273 58-1-18 23h-61Z"/>
+    <path d="M258 383c38-31 77-46 124-46 48 0 89 15 132 46l-27-1c-11-22-37-35-66-35-30 0-54 13-66 35Z"/>
+    <path d="M364 293h6v64h-6zM402 293h6v64h-6zM346 315h5v42h-5zM421 315h5v42h-5z"/>
+  </g>
+  <text x="125" y="430" fill="#102846" font-family="Arial, sans-serif" font-size="41" font-weight="700" letter-spacing="7">GRADEBRIDGE</text>
+  <g fill="#173b63">
+    <rect x="146" y="449" width="35" height="2"/>
+    <rect x="594" y="449" width="35" height="2"/>
+  </g>
+  <text x="195" y="455" fill="#173b63" font-family="Arial, sans-serif" font-size="12" letter-spacing="6">CONNECT. LEARN. EXCEL.</text>
+</svg>

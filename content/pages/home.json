@@ -1,3 +1,44 @@
 {
-  "title": "Home"
+  "title": "Home",
+  "heroKicker": "The Knowledge Network",
+  "heroEyebrow": "GradeBridge / AISI",
+  "heroHeadline": "A clearer path to",
+  "heroHighlight": "understanding.",
+  "heroSubtitle": "Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.",
+  "heroPrimaryCta": "Find a Mentor",
+  "heroSecondaryCta": "Join the network",
+  "stats": [
+    { "value": "25+", "label": "Expert Mentors", "icon": "🎓" },
+    { "value": "200+", "label": "Students Helped", "icon": "👩‍🎓" },
+    { "value": "52", "label": "Sessions/Year", "icon": "📚" },
+    { "value": "12", "label": "Monthly Q&As", "icon": "💬" }
+  ],
+  "aboutEyebrow": "About GradeBridge",
+  "aboutTitle": "Built by students, for students",
+  "aboutBody1": "GradeBridge was founded by IGCSE graduates who understood the unique challenges of navigating the Pearson Edexcel curriculum. We know how overwhelming it can feel — and we built this community to change that.",
+  "aboutBody2": "Our mentors don't just teach content — they share lived experience, exam strategies, and the mindset needed to excel. Every student deserves access to quality guidance regardless of background.",
+  "aboutCards": [
+    { "icon": "📌", "title": "Founded", "value": "2023", "desc": "By IGCSE graduates" },
+    { "icon": "🌍", "title": "Mission", "value": "Free Access", "desc": "Quality mentorship for all" },
+    { "icon": "🏆", "title": "Focus", "value": "A* Results", "desc": "Proven exam strategies" },
+    { "icon": "🤗", "title": "Community", "value": "200+ Members", "desc": "Growing student network" }
+  ],
+  "programsEyebrow": "Our Programs",
+  "programsTitle": "Structured Support at Every Step",
+  "programCards": [
+    {
+      "icon": "📚",
+      "eyebrow": "Weekly",
+      "title": "Free Tutoring Sessions",
+      "description": "Every week, experienced mentors lead focused tutoring sessions covering IGCSE subjects. From exam technique to concept mastery — we've got it covered.",
+      "benefits": ["Live interactive sessions", "All major IGCSE subjects", "Q&A time included", "Recorded for later review"]
+    },
+    {
+      "icon": "💬",
+      "eyebrow": "Monthly",
+      "title": "In-Person Q&A Sessions",
+      "description": "Once a month, we gather in person for open Q&A sessions where students can ask anything — from study strategies to career advice and everything in between.",
+      "benefits": ["Face-to-face interaction", "No question too small", "Multiple mentors present", "Networking opportunities"]
+    }
+  ]
 }

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as MentorsRouteImport } from './routes/mentors'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
@@ -22,10 +23,16 @@ import { Route as ApiRegisterStudentRouteImport } from './routes/api/register/st
 import { Route as ApiMentorsDirectoryRouteImport } from './routes/api/mentors/directory'
 import { Route as ApiApplicationsMentorRouteImport } from './routes/api/applications/mentor'
 import { Route as ApiAnnouncementsIdRouteImport } from './routes/api/announcements.$id'
+import { Route as ApiAdminStudentsRouteImport } from './routes/api/admin/students'
 import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
+import { Route as ApiAdminMentorsRouteImport } from './routes/api/admin/mentors'
 import { Route as ApiMentorsProfileUserIdRouteImport } from './routes/api/mentors/profile.$userId'
-import { Route as ApiApplicationsMentorIdReviewRouteImport } from './routes/api/applications/mentor.$id.review'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MentorsRoute = MentorsRouteImport.update({
   id: '/mentors',
   path: '/mentors',
@@ -91,9 +98,19 @@ const ApiAnnouncementsIdRoute = ApiAnnouncementsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiAnnouncementsRoute,
 } as any)
+const ApiAdminStudentsRoute = ApiAdminStudentsRouteImport.update({
+  id: '/api/admin/students',
+  path: '/api/admin/students',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminStatsRoute = ApiAdminStatsRouteImport.update({
   id: '/api/admin/stats',
   path: '/api/admin/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminMentorsRoute = ApiAdminMentorsRouteImport.update({
+  id: '/api/admin/mentors',
+  path: '/api/admin/mentors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiMentorsProfileUserIdRoute = ApiMentorsProfileUserIdRouteImport.update({
@@ -101,67 +118,67 @@ const ApiMentorsProfileUserIdRoute = ApiMentorsProfileUserIdRouteImport.update({
   path: '/api/mentors/profile/$userId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiApplicationsMentorIdReviewRoute =
-  ApiApplicationsMentorIdReviewRouteImport.update({
-    id: '/$id/review',
-    path: '/$id/review',
-    getParentRoute: () => ApiApplicationsMentorRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/mentors': typeof MentorsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/register/student': typeof RegisterStudentRoute
+  '/api/admin/mentors': typeof ApiAdminMentorsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
+  '/api/admin/students': typeof ApiAdminStudentsRoute
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
-  '/api/applications/mentor': typeof ApiApplicationsMentorRouteWithChildren
+  '/api/applications/mentor': typeof ApiApplicationsMentorRoute
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
   '/api/register/student': typeof ApiRegisterStudentRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
-  '/api/applications/mentor/$id/review': typeof ApiApplicationsMentorIdReviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/mentors': typeof MentorsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/register/student': typeof RegisterStudentRoute
+  '/api/admin/mentors': typeof ApiAdminMentorsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
+  '/api/admin/students': typeof ApiAdminStudentsRoute
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
-  '/api/applications/mentor': typeof ApiApplicationsMentorRouteWithChildren
+  '/api/applications/mentor': typeof ApiApplicationsMentorRoute
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
   '/api/register/student': typeof ApiRegisterStudentRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
-  '/api/applications/mentor/$id/review': typeof ApiApplicationsMentorIdReviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/mentors': typeof MentorsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/register/student': typeof RegisterStudentRoute
+  '/api/admin/mentors': typeof ApiAdminMentorsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
+  '/api/admin/students': typeof ApiAdminStudentsRoute
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
-  '/api/applications/mentor': typeof ApiApplicationsMentorRouteWithChildren
+  '/api/applications/mentor': typeof ApiApplicationsMentorRoute
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
   '/api/register/student': typeof ApiRegisterStudentRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
-  '/api/applications/mentor/$id/review': typeof ApiApplicationsMentorIdReviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -169,69 +186,78 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/mentors'
+    | '/reset-password'
     | '/api/announcements'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
     | '/dashboard/student'
     | '/register/student'
+    | '/api/admin/mentors'
     | '/api/admin/stats'
+    | '/api/admin/students'
     | '/api/announcements/$id'
     | '/api/applications/mentor'
     | '/api/mentors/directory'
     | '/api/register/student'
     | '/api/mentors/profile/$userId'
-    | '/api/applications/mentor/$id/review'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/mentors'
+    | '/reset-password'
     | '/api/announcements'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
     | '/dashboard/student'
     | '/register/student'
+    | '/api/admin/mentors'
     | '/api/admin/stats'
+    | '/api/admin/students'
     | '/api/announcements/$id'
     | '/api/applications/mentor'
     | '/api/mentors/directory'
     | '/api/register/student'
     | '/api/mentors/profile/$userId'
-    | '/api/applications/mentor/$id/review'
   id:
     | '__root__'
     | '/'
     | '/login'
     | '/mentors'
+    | '/reset-password'
     | '/api/announcements'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
     | '/dashboard/student'
     | '/register/student'
+    | '/api/admin/mentors'
     | '/api/admin/stats'
+    | '/api/admin/students'
     | '/api/announcements/$id'
     | '/api/applications/mentor'
     | '/api/mentors/directory'
     | '/api/register/student'
     | '/api/mentors/profile/$userId'
-    | '/api/applications/mentor/$id/review'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   MentorsRoute: typeof MentorsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ApiAnnouncementsRoute: typeof ApiAnnouncementsRouteWithChildren
   ApplyMentorRoute: typeof ApplyMentorRoute
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardMentorRoute: typeof DashboardMentorRoute
   DashboardStudentRoute: typeof DashboardStudentRoute
   RegisterStudentRoute: typeof RegisterStudentRoute
+  ApiAdminMentorsRoute: typeof ApiAdminMentorsRoute
   ApiAdminStatsRoute: typeof ApiAdminStatsRoute
-  ApiApplicationsMentorRoute: typeof ApiApplicationsMentorRouteWithChildren
+  ApiAdminStudentsRoute: typeof ApiAdminStudentsRoute
+  ApiApplicationsMentorRoute: typeof ApiApplicationsMentorRoute
   ApiMentorsDirectoryRoute: typeof ApiMentorsDirectoryRoute
   ApiRegisterStudentRoute: typeof ApiRegisterStudentRoute
   ApiMentorsProfileUserIdRoute: typeof ApiMentorsProfileUserIdRoute
@@ -239,6 +265,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mentors': {
       id: '/mentors'
       path: '/mentors'
@@ -330,11 +363,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnnouncementsIdRouteImport
       parentRoute: typeof ApiAnnouncementsRoute
     }
+    '/api/admin/students': {
+      id: '/api/admin/students'
+      path: '/api/admin/students'
+      fullPath: '/api/admin/students'
+      preLoaderRoute: typeof ApiAdminStudentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/stats': {
       id: '/api/admin/stats'
       path: '/api/admin/stats'
       fullPath: '/api/admin/stats'
       preLoaderRoute: typeof ApiAdminStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/mentors': {
+      id: '/api/admin/mentors'
+      path: '/api/admin/mentors'
+      fullPath: '/api/admin/mentors'
+      preLoaderRoute: typeof ApiAdminMentorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/mentors/profile/$userId': {
@@ -343,13 +390,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/mentors/profile/$userId'
       preLoaderRoute: typeof ApiMentorsProfileUserIdRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/api/applications/mentor/$id/review': {
-      id: '/api/applications/mentor/$id/review'
-      path: '/$id/review'
-      fullPath: '/api/applications/mentor/$id/review'
-      preLoaderRoute: typeof ApiApplicationsMentorIdReviewRouteImport
-      parentRoute: typeof ApiApplicationsMentorRoute
     }
   }
 }
@@ -365,31 +405,21 @@ const ApiAnnouncementsRouteChildren: ApiAnnouncementsRouteChildren = {
 const ApiAnnouncementsRouteWithChildren =
   ApiAnnouncementsRoute._addFileChildren(ApiAnnouncementsRouteChildren)
 
-interface ApiApplicationsMentorRouteChildren {
-  ApiApplicationsMentorIdReviewRoute: typeof ApiApplicationsMentorIdReviewRoute
-}
-
-const ApiApplicationsMentorRouteChildren: ApiApplicationsMentorRouteChildren = {
-  ApiApplicationsMentorIdReviewRoute: ApiApplicationsMentorIdReviewRoute,
-}
-
-const ApiApplicationsMentorRouteWithChildren =
-  ApiApplicationsMentorRoute._addFileChildren(
-    ApiApplicationsMentorRouteChildren,
-  )
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   MentorsRoute: MentorsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ApiAnnouncementsRoute: ApiAnnouncementsRouteWithChildren,
   ApplyMentorRoute: ApplyMentorRoute,
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardMentorRoute: DashboardMentorRoute,
   DashboardStudentRoute: DashboardStudentRoute,
   RegisterStudentRoute: RegisterStudentRoute,
+  ApiAdminMentorsRoute: ApiAdminMentorsRoute,
   ApiAdminStatsRoute: ApiAdminStatsRoute,
-  ApiApplicationsMentorRoute: ApiApplicationsMentorRouteWithChildren,
+  ApiAdminStudentsRoute: ApiAdminStudentsRoute,
+  ApiApplicationsMentorRoute: ApiApplicationsMentorRoute,
   ApiMentorsDirectoryRoute: ApiMentorsDirectoryRoute,
   ApiRegisterStudentRoute: ApiRegisterStudentRoute,
   ApiMentorsProfileUserIdRoute: ApiMentorsProfileUserIdRoute,

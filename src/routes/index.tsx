@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import homePageContent from '../../content/pages/home.json'
 import { AnnouncementBanner } from '../components/AnnouncementBanner'
 import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
 import { EntranceOverlay } from '../components/EntranceOverlay'
@@ -11,11 +12,35 @@ export const Route = createFileRoute('/')({
   component: LandingPage,
 })
 
-const STATS = [
+const DEFAULT_STATS = [
   { value: '25+', label: 'Expert Mentors', icon: '🎓' },
   { value: '200+', label: 'Students Helped', icon: '👩‍🎓' },
   { value: '52', label: 'Sessions/Year', icon: '📚' },
   { value: '12', label: 'Monthly Q&As', icon: '💬' },
+]
+
+const DEFAULT_ABOUT_CARDS = [
+  { icon: '📌', title: 'Founded', value: '2023', desc: 'By IGCSE graduates' },
+  { icon: '🌍', title: 'Mission', value: 'Free Access', desc: 'Quality mentorship for all' },
+  { icon: '🏆', title: 'Focus', value: 'A* Results', desc: 'Proven exam strategies' },
+  { icon: '🤗', title: 'Community', value: '200+ Members', desc: 'Growing student network' },
+]
+
+const DEFAULT_PROGRAM_CARDS = [
+  {
+    icon: '📚',
+    eyebrow: 'Weekly',
+    title: 'Free Tutoring Sessions',
+    description: 'Every week, experienced mentors lead focused tutoring sessions covering IGCSE subjects. From exam technique to concept mastery — we\'ve got it covered.',
+    benefits: ['Live interactive sessions', 'All major IGCSE subjects', 'Q&A time included', 'Recorded for later review'],
+  },
+  {
+    icon: '💬',
+    eyebrow: 'Monthly',
+    title: 'In-Person Q&A Sessions',
+    description: 'Once a month, we gather in person for open Q&A sessions where students can ask anything — from study strategies to career advice and everything in between.',
+    benefits: ['Face-to-face interaction', 'No question too small', 'Multiple mentors present', 'Networking opportunities'],
+  },
 ]
 
 const SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Economics', 'Business', 'English', 'History', 'Computer Science', 'Accounting']
@@ -55,6 +80,31 @@ const BENEFITS = [
   { icon: '📖', title: 'Curated Resources', desc: 'Access study materials, past papers, and strategies proven to work.' },
   { icon: '💡', title: 'Live Q&A Sessions', desc: 'Get your burning questions answered in real-time by experienced mentors.' },
 ]
+
+type HomePageContent = {
+  title?: string
+  heroKicker?: string
+  heroEyebrow?: string
+  heroHeadline?: string
+  heroHighlight?: string
+  heroSubtitle?: string
+  heroPrimaryCta?: string
+  heroSecondaryCta?: string
+  stats?: Array<{ value: string; label: string; icon: string }>
+  aboutEyebrow?: string
+  aboutTitle?: string
+  aboutBody1?: string
+  aboutBody2?: string
+  aboutCards?: Array<{ icon: string; title: string; value: string; desc: string }>
+  programsEyebrow?: string
+  programsTitle?: string
+  programCards?: Array<{ icon: string; eyebrow: string; title: string; description: string; benefits: string[] }>
+}
+
+const pageContent = homePageContent as HomePageContent
+const stats = pageContent.stats?.length ? pageContent.stats : DEFAULT_STATS
+const aboutCards = pageContent.aboutCards?.length ? pageContent.aboutCards : DEFAULT_ABOUT_CARDS
+const programCards = pageContent.programCards?.length ? pageContent.programCards : DEFAULT_PROGRAM_CARDS
 
 function useScrollReveal() {
   useEffect(() => {
@@ -139,34 +189,34 @@ export default function LandingPage() {
         <AnnouncementBanner />
       </div>
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center overflow-hidden cinematic-surface grid-pattern pt-20">
+      <section className="relative min-h-screen flex items-center overflow-hidden cinematic-surface grid-pattern pt-20" data-sb-object-id="content/pages/home.json">
         <div className="aurora-layer" />
         <ParticleNetwork density={52} />
         <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-[1.02fr_0.98fr] gap-10 lg:gap-2 items-center">
             <div className="hero-content">
-              <div className="hero-kicker inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold tracking-[0.16em] uppercase mb-8 animate-fade-in-up">
+              <div className="hero-kicker inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold tracking-[0.16em] uppercase mb-8 animate-fade-in-up" data-sb-field-path="heroKicker">
                 <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" />
-                The Knowledge Network
+                {pageContent.heroKicker || 'The Knowledge Network'}
               </div>
-              <p className="text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5">GradeBridge / AISI</p>
-              <div data-sb-object-id="pages/index.md" data-sb-field-path="heroHeadline">
-                <h1 data-sb-field-path="heroHeadline" className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
-                  A clearer path to <strong className="gradient-text">understanding.</strong>
+              <p className="text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5" data-sb-field-path="heroEyebrow">{pageContent.heroEyebrow || 'GradeBridge / AISI'}</p>
+              <div data-sb-object-id="content/pages/home.json" data-sb-field-path="heroHeadline">
+                <h1 className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
+                  {pageContent.heroHeadline || 'A clearer path to'} <strong className="gradient-text">{pageContent.heroHighlight || 'understanding.'}</strong>
                 </h1>
               </div>
-              <p className="text-slate-300 text-lg sm:text-xl max-w-xl mb-9 leading-relaxed">
-                Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.
+              <p className="text-slate-300 text-lg sm:text-xl max-w-xl mb-9 leading-relaxed" data-sb-field-path="heroSubtitle">
+                {pageContent.heroSubtitle || 'Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-12">
-                <Link to="/register/student" className="btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300">Find a Mentor <span aria-hidden="true">→</span></Link>
-                <Link to="/apply/mentor" className="btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300">Join the network</Link>
+                <Link to="/register/student" className="btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300" data-sb-field-path="heroPrimaryCta">{pageContent.heroPrimaryCta || 'Find a Mentor'} <span aria-hidden="true">→</span></Link>
+                <Link to="/apply/mentor" className="btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300" data-sb-field-path="heroSecondaryCta">{pageContent.heroSecondaryCta || 'Join the network'}</Link>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl">
-                {STATS.map((stat) => (
-                  <div key={stat.label} className="network-card rounded-xl p-3.5">
-                    <div className="text-sky-200 text-2xl font-semibold mb-1"><AnimatedCounter target={stat.value} /></div>
-                    <div className="text-slate-400 text-[11px] uppercase tracking-[0.12em]">{stat.label}</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl" data-sb-object-id="content/pages/home.json" data-sb-field-path="stats">
+                {stats.map((stat, index) => (
+                  <div key={stat.label} className="network-card rounded-xl p-3.5" data-sb-field-path={`stats.${index}`}>
+                    <div className="text-sky-200 text-2xl font-semibold mb-1" data-sb-field-path={`stats.${index}.value`}><AnimatedCounter target={stat.value} /></div>
+                    <div className="text-slate-400 text-[11px] uppercase tracking-[0.12em]" data-sb-field-path={`stats.${index}.label`}>{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -183,20 +233,20 @@ export default function LandingPage() {
       </section>
 
       {/* About */}
-      <section id="about" className="py-24 px-4 sm:px-6 lg:px-8">
+      <section id="about" className="py-24 px-4 sm:px-6 lg:px-8" data-sb-object-id="content/pages/home.json">
         <div className="max-w-6xl mx-auto">
           <div className="section-fade grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="text-teal-400 font-semibold tracking-wider uppercase text-sm">About GradeBridge</span>
-              <h2 className="text-4xl sm:text-5xl font-black mt-3 mb-6 text-white">
-                Built by students,<br />
+              <span className="text-teal-400 font-semibold tracking-wider uppercase text-sm" data-sb-field-path="aboutEyebrow">{pageContent.aboutEyebrow || 'About GradeBridge'}</span>
+              <h2 className="text-4xl sm:text-5xl font-black mt-3 mb-6 text-white" data-sb-field-path="aboutTitle">
+                {pageContent.aboutTitle || 'Built by students,'}<br />
                 <span className="gradient-text">for students</span>
               </h2>
-              <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-                GradeBridge was founded by IGCSE graduates who understood the unique challenges of navigating the Pearson Edexcel curriculum. We know how overwhelming it can feel — and we built this community to change that.
+              <p className="text-slate-300 text-lg mb-6 leading-relaxed" data-sb-field-path="aboutBody1">
+                {pageContent.aboutBody1 || 'GradeBridge was founded by IGCSE graduates who understood the unique challenges of navigating the Pearson Edexcel curriculum. We know how overwhelming it can feel — and we built this community to change that.'}
               </p>
-              <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                Our mentors don't just teach content — they share lived experience, exam strategies, and the mindset needed to excel. Every student deserves access to quality guidance regardless of background.
+              <p className="text-slate-300 text-lg mb-8 leading-relaxed" data-sb-field-path="aboutBody2">
+                {pageContent.aboutBody2 || 'Our mentors don\'t just teach content — they share lived experience, exam strategies, and the mindset needed to excel. Every student deserves access to quality guidance regardless of background.'}
               </p>
               <div className="flex flex-wrap gap-2">
                 {SUBJECTS.map((s) => (
@@ -208,20 +258,15 @@ export default function LandingPage() {
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-teal-500/20 rounded-3xl blur-2xl" />
-              <div className="relative glass rounded-3xl p-8 space-y-4">
-                {[
-                  { icon: '📌', title: 'Founded', value: '2023', desc: 'By IGCSE graduates' },
-                  { icon: '🌍', title: 'Mission', value: 'Free Access', desc: 'Quality mentorship for all' },
-                  { icon: '🏆', title: 'Focus', value: 'A* Results', desc: 'Proven exam strategies' },
-                  { icon: '🤗', title: 'Community', value: '200+ Members', desc: 'Growing student network' },
-                ].map((item) => (
-                  <div key={item.title} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/8 transition-colors">
-                    <span className="text-2xl">{item.icon}</span>
+              <div className="relative glass rounded-3xl p-8 space-y-4" data-sb-object-id="content/pages/home.json" data-sb-field-path="aboutCards">
+                {aboutCards.map((item, index) => (
+                  <div key={item.title} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/8 transition-colors" data-sb-field-path={`aboutCards.${index}`}>
+                    <span className="text-2xl" data-sb-field-path={`aboutCards.${index}.icon`}>{item.icon}</span>
                     <div className="flex-1">
-                      <p className="text-slate-400 text-xs uppercase tracking-wider">{item.title}</p>
-                      <p className="text-white font-bold">{item.value}</p>
+                      <p className="text-slate-400 text-xs uppercase tracking-wider" data-sb-field-path={`aboutCards.${index}.title`}>{item.title}</p>
+                      <p className="text-white font-bold" data-sb-field-path={`aboutCards.${index}.value`}>{item.value}</p>
                     </div>
-                    <p className="text-slate-400 text-sm">{item.desc}</p>
+                    <p className="text-slate-400 text-sm" data-sb-field-path={`aboutCards.${index}.desc`}>{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -231,56 +276,37 @@ export default function LandingPage() {
       </section>
 
       {/* Programs */}
-      <section id="programs" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section id="programs" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/30" data-sb-object-id="content/pages/home.json">
         <div className="max-w-6xl mx-auto">
           <div className="section-fade text-center mb-16">
-            <span className="text-blue-400 font-semibold tracking-wider uppercase text-sm">Our Programs</span>
-            <h2 className="text-4xl sm:text-5xl font-black mt-3 text-white">
-              Structured <span className="gradient-text">Support</span> at Every Step
+            <span className="text-blue-400 font-semibold tracking-wider uppercase text-sm" data-sb-field-path="programsEyebrow">{pageContent.programsEyebrow || 'Our Programs'}</span>
+            <h2 className="text-4xl sm:text-5xl font-black mt-3 text-white" data-sb-field-path="programsTitle">
+              {pageContent.programsTitle ? pageContent.programsTitle.replace('Support', 'Support') : 'Structured'} <span className="gradient-text">Support</span> at Every Step
             </h2>
           </div>
-          <div className="section-fade grid md:grid-cols-2 gap-8">
-            <div className="glass rounded-3xl p-8 card-glow glass-hover relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/15 transition-colors" />
-              <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-2xl mb-6 shadow-lg shadow-blue-500/30">
-                  📚
+          <div className="section-fade grid md:grid-cols-2 gap-8" data-sb-object-id="content/pages/home.json" data-sb-field-path="programCards">
+            {programCards.map((card, index) => (
+              <div key={card.title} className="glass rounded-3xl p-8 card-glow glass-hover relative overflow-hidden group" data-sb-field-path={`programCards.${index}`}>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/15 transition-colors" />
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-2xl mb-6 shadow-lg shadow-blue-500/30" data-sb-field-path={`programCards.${index}.icon`}>
+                    {card.icon}
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs font-semibold uppercase tracking-wider" data-sb-field-path={`programCards.${index}.eyebrow`}>{card.eyebrow}</span>
+                  <h3 className="text-2xl font-black text-white mt-4 mb-3" data-sb-field-path={`programCards.${index}.title`}>{card.title}</h3>
+                  <p className="text-slate-300 leading-relaxed mb-6" data-sb-field-path={`programCards.${index}.description`}>
+                    {card.description}
+                  </p>
+                  <ul className="space-y-2 text-slate-300 text-sm">
+                    {card.benefits.map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <span className="text-teal-400">✓</span> {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs font-semibold uppercase tracking-wider">Weekly</span>
-                <h3 className="text-2xl font-black text-white mt-4 mb-3">Free Tutoring Sessions</h3>
-                <p className="text-slate-300 leading-relaxed mb-6">
-                  Every week, experienced mentors lead focused tutoring sessions covering IGCSE subjects. From exam technique to concept mastery — we've got it covered.
-                </p>
-                <ul className="space-y-2 text-slate-300 text-sm">
-                  {['Live interactive sessions', 'All major IGCSE subjects', 'Q&A time included', 'Recorded for later review'].map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <span className="text-teal-400">✓</span> {item}
-                    </li>
-                  ))}
-                </ul>
               </div>
-            </div>
-
-            <div className="glass rounded-3xl p-8 card-glow glass-hover relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/15 transition-colors" />
-              <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center text-2xl mb-6 shadow-lg shadow-teal-500/30">
-                  💬
-                </div>
-                <span className="px-3 py-1 rounded-full bg-teal-500/15 text-teal-300 text-xs font-semibold uppercase tracking-wider">Monthly</span>
-                <h3 className="text-2xl font-black text-white mt-4 mb-3">In-Person Q&amp;A Sessions</h3>
-                <p className="text-slate-300 leading-relaxed mb-6">
-                  Once a month, we gather in person for open Q&amp;A sessions where students can ask anything — from study strategies to career advice and everything in between.
-                </p>
-                <ul className="space-y-2 text-slate-300 text-sm">
-                  {['Face-to-face interaction', 'No question too small', 'Multiple mentors present', 'Networking opportunities'].map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <span className="text-teal-400">✓</span> {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

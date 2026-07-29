@@ -1,0 +1,113 @@
+import { getUser } from "@netlify/identity";
+import { drizzle } from "drizzle-orm/netlify-db";
+import { pgTable, timestamp, boolean, text, integer, serial } from "drizzle-orm/pg-core";
+const mentorApplications = pgTable("mentor_applications", {
+  id: serial().primaryKey(),
+  fullName: text("full_name").notNull(),
+  email: text().notNull(),
+  phone: text().notNull(),
+  school: text().notNull(),
+  subjects: text().notNull(),
+  // JSON array stored as text
+  statement: text().notNull(),
+  availability: text().notNull(),
+  status: text().notNull().default("pending"),
+  // "pending" | "approved" | "rejected"
+  identityUserId: text("identity_user_id"),
+  // set after Identity user is created
+  createdAt: timestamp("created_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at")
+});
+const mentorProfiles = pgTable("mentor_profiles", {
+  id: serial().primaryKey(),
+  applicationId: integer("application_id").notNull().references(() => mentorApplications.id),
+  identityUserId: text("identity_user_id").notNull().unique(),
+  fullName: text("full_name").notNull(),
+  email: text().notNull(),
+  bio: text().notNull().default(""),
+  igcseGrades: text("igcse_grades").notNull().default(""),
+  // JSON stored as text
+  subjects: text().notNull().default(""),
+  // JSON array stored as text
+  reason: text().notNull().default(""),
+  availability: text().notNull().default(""),
+  profilePicUrl: text("profile_pic_url"),
+  instagram: text(),
+  telegram: text(),
+  whatsapp: text(),
+  contactEmail: text("contact_email"),
+  linkedin: text(),
+  isPublic: boolean("is_public").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+const announcements = pgTable("announcements", {
+  id: serial().primaryKey(),
+  title: text().notNull(),
+  body: text().notNull(),
+  publishDate: timestamp("publish_date").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  // optional
+  pinned: boolean().notNull().default(false),
+  archived: boolean().notNull().default(false),
+  authorEmail: text("author_email"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+const userAccounts = pgTable("user_accounts", {
+  identityUserId: text("identity_user_id").primaryKey(),
+  email: text().notNull(),
+  role: text().notNull().default("student"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+const students = pgTable("students", {
+  id: serial().primaryKey(),
+  identityUserId: text("identity_user_id").notNull().unique(),
+  fullName: text("full_name").notNull(),
+  age: integer().notNull(),
+  gradeLevel: text("grade_level").notNull(),
+  email: text().notNull(),
+  createdAt: timestamp("created_at").defaultNow()
+});
+const schema = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  announcements,
+  mentorApplications,
+  mentorProfiles,
+  students,
+  userAccounts
+}, Symbol.toStringTag, { value: "Module" }));
+const db = drizzle({ schema });
+const rolePriority = ["admin", "mentor", "student"];
+function getIdentityRole(user) {
+  const assigned = /* @__PURE__ */ new Set([user.role, ...user.roles ?? []]);
+  return rolePriority.find((role) => assigned.has(role)) ?? "student";
+}
+async function syncUserAccount(user, role) {
+  if (!user.email) return;
+  await db.insert(userAccounts).values({ identityUserId: user.id, email: user.email, role }).onConflictDoUpdate({
+    target: userAccounts.identityUserId,
+    set: { email: user.email, role, updatedAt: /* @__PURE__ */ new Date() }
+  });
+}
+async function getCurrentUserWithRole() {
+  const user = await getUser();
+  if (!user) return null;
+  const role = getIdentityRole(user);
+  await syncUserAccount(user, role);
+  return { user, role };
+}
+async function getAdminUser() {
+  const account = await getCurrentUserWithRole();
+  return account?.role === "admin" ? account.user : null;
+}
+export {
+  announcements as a,
+  mentorApplications as b,
+  getCurrentUserWithRole as c,
+  db as d,
+  getAdminUser as g,
+  mentorProfiles as m,
+  students as s
+};
