@@ -12,12 +12,12 @@ export function EntranceOverlay() {
   if (!visible) return null
 
   return (
-    <div className="entrance-overlay" aria-hidden="true">
+    <div className="entrance-overlay" aria-hidden="true" data-sb-object-id="content/site.json">
       <div className="entrance-grid" />
       <div className="entrance-energy-line" />
       <div className="entrance-mark">
         <GradeBridgeLogo compact className="entrance-logo" />
-        <span>Knowledge Network</span>
+        <span data-sb-field-path="overlayTitle">Knowledge Network</span>
       </div>
     </div>
   )

@@ -32,7 +32,7 @@ export function KnowledgeHub() {
   }, [])
 
   return (
-    <div ref={sceneRef} className="knowledge-hub" aria-label="Interactive knowledge network visualization">
+    <div ref={sceneRef} className="knowledge-hub" aria-label="Interactive knowledge network visualization" data-sb-object-id="content/site.json">
       <div className="hub-aura" />
       <div className="hub-plane hub-plane-one" />
       <div className="hub-plane hub-plane-two" />
@@ -48,8 +48,8 @@ export function KnowledgeHub() {
           className={`hub-node ${node.className}`}
           style={{ transform: `translateZ(${index * 8}px) rotateX(${tilt.x * 0.35}deg) rotateY(${tilt.y * 0.35}deg)` }}
         >
-          <span className="hub-node-symbol">{node.symbol}</span>
-          <span className="hub-node-label">{node.label}</span>
+          <span className="hub-node-symbol" data-sb-field-path={`hubNodes.${index}.symbol`}>{node.symbol}</span>
+          <span className="hub-node-label" data-sb-field-path={`hubNodes.${index}.label`}>{node.label}</span>
         </div>
       ))}
       <div className="hub-orbit hub-orbit-one" />

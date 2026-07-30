@@ -1,0 +1,14 @@
+{
+  "logo": { "src": "/gradebridge-logo.svg", "alt": "GradeBridge" },
+  "overlayTitle": "Knowledge Network",
+  "hubNodes": [
+    { "label": "Mathematics", "symbol": "∑" },
+    { "label": "Physics", "symbol": "F = ma" },
+    { "label": "Chemistry", "symbol": "⚗" },
+    { "label": "Mentors", "symbol": "◎" },
+    { "label": "Students", "symbol": "◌" },
+    { "label": "Books", "symbol": "▤" }
+  ]
+  ,
+  "pinnedLabel": "Pinned"
+}

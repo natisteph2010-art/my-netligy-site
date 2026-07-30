@@ -201,8 +201,8 @@ export default function LandingPage() {
               </div>
               <p className="text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5" data-sb-field-path="heroEyebrow">{pageContent.heroEyebrow || 'GradeBridge / AISI'}</p>
               <div data-sb-object-id="content/pages/home.json" data-sb-field-path="heroHeadline">
-                <h1 className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
-                  {pageContent.heroHeadline || 'A clearer path to'} <strong className="gradient-text">{pageContent.heroHighlight || 'understanding.'}</strong>
+                <h1 data-sb-field-path="heroHeadline" className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
+                  {pageContent.heroHeadline || 'A clearer path to'} <strong data-sb-field-path="heroHighlight" className="gradient-text">{pageContent.heroHighlight || 'understanding.'}</strong>
                 </h1>
               </div>
               <p className="text-slate-300 text-lg sm:text-xl max-w-xl mb-9 leading-relaxed" data-sb-field-path="heroSubtitle">
@@ -298,8 +298,8 @@ export default function LandingPage() {
                     {card.description}
                   </p>
                   <ul className="space-y-2 text-slate-300 text-sm">
-                    {card.benefits.map((item) => (
-                      <li key={item} className="flex items-center gap-2">
+                    {card.benefits.map((item, bindex) => (
+                      <li key={`${index}-${bindex}`} data-sb-field-path={`programCards.${index}.benefits.${bindex}`} className="flex items-center gap-2">
                         <span className="text-teal-400">✓</span> {item}
                       </li>
                     ))}

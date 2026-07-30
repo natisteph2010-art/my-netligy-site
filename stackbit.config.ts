@@ -3,6 +3,8 @@ import { GitContentSource } from "@stackbit/cms-git";
 
 export default defineStackbitConfig({
     stackbitVersion: "0.6.0",
+                // small shared strings
+                { name: "pinnedLabel", type: "string" }
     ssgName: "custom",
     contentSources: [
         new GitContentSource({
@@ -23,18 +25,86 @@ export default defineStackbitConfig({
                         { name: "heroSubtitle", type: "string" },
                         { name: "heroPrimaryCta", type: "string" },
                         { name: "heroSecondaryCta", type: "string" },
-                        { name: "stats", type: "list" },
+                        {
+                            name: "stats",
+                            type: "list",
+                            items: {
+                                type: "object",
+                                fields: [
+                                    { name: "value", type: "string" },
+                                    { name: "label", type: "string" },
+                                    { name: "icon", type: "string" }
+                                ]
+                            }
+                        },
                         { name: "aboutEyebrow", type: "string" },
                         { name: "aboutTitle", type: "string" },
                         { name: "aboutBody1", type: "string" },
                         { name: "aboutBody2", type: "string" },
-                        { name: "aboutCards", type: "list" },
+                        {
+                            name: "aboutCards",
+                            type: "list",
+                            items: {
+                                type: "object",
+                                fields: [
+                                    { name: "icon", type: "string" },
+                                    { name: "title", type: "string" },
+                                    { name: "value", type: "string" },
+                                    { name: "desc", type: "string" }
+                                ]
+                            }
+                        },
                         { name: "programsEyebrow", type: "string" },
                         { name: "programsTitle", type: "string" },
-                        { name: "programCards", type: "list" }
+                        {
+                            name: "programCards",
+                            type: "list",
+                            items: {
+                                type: "object",
+                                fields: [
+                                    { name: "icon", type: "string" },
+                                    { name: "eyebrow", type: "string" },
+                                    { name: "title", type: "string" },
+                                    { name: "description", type: "string" },
+                                    {
+                                        name: "benefits",
+                                        type: "list",
+                                        items: { type: "string" }
+                                    }
+                                ]
+                            }
+                        }
                     ]
                 }
-            ]
+            ],
+            // Add a site-level data model for shared UI text and assets
+            {
+                name: "Site",
+                type: "data",
+                filePath: "content/site.json",
+                fields: [
+                    {
+                        name: "logo",
+                        type: "object",
+                        fields: [
+                            { name: "src", type: "string" },
+                            { name: "alt", type: "string" }
+                        ]
+                    },
+                    { name: "overlayTitle", type: "string" },
+                    {
+                        name: "hubNodes",
+                        type: "list",
+                        items: {
+                            type: "object",
+                            fields: [
+                                { name: "label", type: "string" },
+                                { name: "symbol", type: "string" }
+                            ]
+                        }
+                    }
+                ]
+            }
         })
     ],
     sitemap: ({ documents, models }) => {
