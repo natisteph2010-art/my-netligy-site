@@ -1,15 +1,13 @@
 {
   "title": "Home",
   "heroKicker": "The Knowledge Network",
-  "heroEyebrow": "GradeBridge / AISI",
+  "heroEyebrow": "GradeBridge",
   "heroHeadline": "A clearer path to",
   "heroHighlight": "understanding.",
   "heroSubtitle": "Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.",
-  "heroPrimaryCta": "Find a Mentor",
-  "heroSecondaryCta": "Join the network",
+  "heroPrimaryCta": "Become a mentor",
+  "heroSecondaryCta": "Enroll as a student",
   "stats": [
-    { "value": "25+", "label": "Expert Mentors", "icon": "🎓" },
-    { "value": "200+", "label": "Students Helped", "icon": "👩‍🎓" },
     { "value": "52", "label": "Sessions/Year", "icon": "📚" },
     { "value": "12", "label": "Monthly Q&As", "icon": "💬" }
   ],

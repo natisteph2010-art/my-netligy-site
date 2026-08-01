@@ -23,7 +23,7 @@ type Profile = {
 
 const AVAILABLE_SUBJECTS = [
   'Mathematics', 'Additional Mathematics', 'Physics', 'Chemistry', 'Biology',
-  'Economics', 'Business Studies', 'Accounting', 'English Language', 'English Literature',
+  'Economics', 'Business Studies', 'English Language', 'English Literature',
   'History', 'Geography', 'Computer Science', 'ICT',
 ]
 

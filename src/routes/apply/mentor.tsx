@@ -8,7 +8,7 @@ export const Route = createFileRoute('/apply/mentor')({
 
 const AVAILABLE_SUBJECTS = [
   'Mathematics', 'Additional Mathematics', 'Physics', 'Chemistry', 'Biology',
-  'Combined Science', 'Economics', 'Business Studies', 'Accounting',
+  'Combined Science', 'Economics', 'Business Studies',
   'English Language', 'English Literature', 'History', 'Geography',
   'Computer Science', 'ICT', 'Art & Design', 'Music',
 ]

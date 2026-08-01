@@ -180,16 +180,8 @@ export default function LandingPage() {
                 {pageContent.heroSubtitle || 'Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-12">
-                <Link to="/register/student" className="btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300" data-sb-field-path="heroPrimaryCta">{pageContent.heroPrimaryCta || 'Become a mentor'} <span aria-hidden="true">→</span></Link>
-                <Link to="/apply/mentor" className="btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300" data-sb-field-path="heroSecondaryCta">{pageContent.heroSecondaryCta || 'Enroll as a student'}</Link>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl" data-sb-object-id="content/pages/home.json" data-sb-field-path="stats">
-                {stats.map((stat, index) => (
-                  <div key={stat.label} className="network-card rounded-xl p-3.5" data-sb-field-path={`stats.${index}`}>
-                    <div className="text-sky-200 text-2xl font-semibold mb-1" data-sb-field-path={`stats.${index}.value`}><AnimatedCounter target={stat.value} /></div>
-                    <div className="text-slate-400 text-[11px] uppercase tracking-[0.12em]" data-sb-field-path={`stats.${index}.label`}>{stat.label}</div>
-                  </div>
-                ))}
+                <Link to="/apply/mentor" className="btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300" data-sb-field-path="heroPrimaryCta">{pageContent.heroPrimaryCta || 'Become a mentor'} <span aria-hidden="true">→</span></Link>
+                <Link to="/register/student" className="btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300" data-sb-field-path="heroSecondaryCta">{pageContent.heroSecondaryCta || 'Enroll as a student'}</Link>
               </div>
             </div>
             <div className="relative flex justify-center lg:justify-end">

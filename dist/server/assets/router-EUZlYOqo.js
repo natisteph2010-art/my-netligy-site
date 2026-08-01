@@ -158,7 +158,7 @@ function NavBar() {
     ] })
   ] });
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-C_2BEJim.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-BKjVEOAR.js");
 const Route$h = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
@@ -280,18 +280,17 @@ function MentorDirectoryPage() {
     }) })
   ] }) });
 }
-const $$splitComponentImporter = () => import("./login-CO43UeET.js");
+const $$splitComponentImporter = () => import("./login-DyoLIFKN.js");
 const Route$f = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
 const heroKicker = "The Knowledge Network";
-const heroEyebrow = "GradeBridge / AISI";
+const heroEyebrow = "GradeBridge";
 const heroHeadline = "A clearer path to";
 const heroHighlight = "understanding.";
 const heroSubtitle = "Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.";
-const heroPrimaryCta = "Find a Mentor";
-const heroSecondaryCta = "Join the network";
-const stats$1 = [{ "value": "25+", "label": "Expert Mentors", "icon": "🎓" }, { "value": "200+", "label": "Students Helped", "icon": "👩‍🎓" }, { "value": "52", "label": "Sessions/Year", "icon": "📚" }, { "value": "12", "label": "Monthly Q&As", "icon": "💬" }];
+const heroPrimaryCta = "Become a mentor";
+const heroSecondaryCta = "Enroll as a student";
 const aboutEyebrow = "About GradeBridge";
 const aboutTitle = "Built by students, for students";
 const aboutBody1 = "GradeBridge was founded by IGCSE graduates who understood the unique challenges of navigating the Pearson Edexcel curriculum. We know how overwhelming it can feel — and we built this community to change that.";
@@ -308,7 +307,6 @@ const homePageContent = {
   heroSubtitle,
   heroPrimaryCta,
   heroSecondaryCta,
-  stats: stats$1,
   aboutEyebrow,
   aboutTitle,
   aboutBody1,
@@ -512,10 +510,6 @@ function ParticleNetwork({ className = "", density = 42 }) {
 const Route$e = createFileRoute("/")({
   component: LandingPage
 });
-const DEFAULT_STATS = [
-  { value: "52", label: "Sessions/Year", icon: "📚" },
-  { value: "12", label: "Monthly Q&As", icon: "💬" }
-];
 const DEFAULT_ABOUT_CARDS = [
   { icon: "📌", title: "Founded", value: "2023", desc: "By IGCSE graduates" },
   { icon: "🌍", title: "Mission", value: "Free Access", desc: "Quality mentorship for all" },
@@ -548,7 +542,6 @@ const BENEFITS = [
   { icon: "💡", title: "Live Q&A Sessions", desc: "Get your burning questions answered in real-time by experienced mentors." }
 ];
 const pageContent = homePageContent;
-const stats = pageContent.stats?.length ? pageContent.stats : DEFAULT_STATS;
 const aboutCards = pageContent.aboutCards?.length ? pageContent.aboutCards : DEFAULT_ABOUT_CARDS;
 const programCards = pageContent.programCards?.length ? pageContent.programCards : DEFAULT_PROGRAM_CARDS;
 function useScrollReveal() {
@@ -566,32 +559,6 @@ function useScrollReveal() {
     document.querySelectorAll(".section-fade").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
-}
-function AnimatedCounter({ target }) {
-  const [displayed, setDisplayed] = useState("0");
-  const ref = useRef(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const numericPart = parseInt(target.replace(/\D/g, ""), 10);
-          const suffix = target.replace(/[0-9]/g, "");
-          let current = 0;
-          const step = Math.ceil(numericPart / 40);
-          const timer = setInterval(() => {
-            current = Math.min(current + step, numericPart);
-            setDisplayed(current + suffix);
-            if (current >= numericPart) clearInterval(timer);
-          }, 30);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target]);
-  return /* @__PURE__ */ jsx("span", { ref, children: displayed });
 }
 function LandingPage() {
   useScrollReveal();
@@ -637,17 +604,13 @@ function LandingPage() {
           ] }) }),
           /* @__PURE__ */ jsx("p", { className: "text-slate-300 text-lg sm:text-xl max-w-xl mb-9 leading-relaxed", "data-sb-field-path": "heroSubtitle", children: pageContent.heroSubtitle }),
           /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3 mb-12", children: [
-            /* @__PURE__ */ jsxs(Link, { to: "/register/student", className: "btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300", "data-sb-field-path": "heroPrimaryCta", children: [
+            /* @__PURE__ */ jsxs(Link, { to: "/apply/mentor", className: "btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300", "data-sb-field-path": "heroPrimaryCta", children: [
               pageContent.heroPrimaryCta,
               " ",
               /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "→" })
             ] }),
-            /* @__PURE__ */ jsx(Link, { to: "/apply/mentor", className: "btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300", "data-sb-field-path": "heroSecondaryCta", children: pageContent.heroSecondaryCta })
-          ] }),
-          /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl", "data-sb-object-id": "content/pages/home.json", "data-sb-field-path": "stats", children: stats.map((stat, index) => /* @__PURE__ */ jsxs("div", { className: "network-card rounded-xl p-3.5", "data-sb-field-path": `stats.${index}`, children: [
-            /* @__PURE__ */ jsx("div", { className: "text-sky-200 text-2xl font-semibold mb-1", "data-sb-field-path": `stats.${index}.value`, children: /* @__PURE__ */ jsx(AnimatedCounter, { target: stat.value }) }),
-            /* @__PURE__ */ jsx("div", { className: "text-slate-400 text-[11px] uppercase tracking-[0.12em]", "data-sb-field-path": `stats.${index}.label`, children: stat.label })
-          ] }, stat.label)) })
+            /* @__PURE__ */ jsx(Link, { to: "/register/student", className: "btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300", "data-sb-field-path": "heroSecondaryCta", children: pageContent.heroSecondaryCta })
+          ] })
         ] }),
         /* @__PURE__ */ jsx("div", { className: "relative flex justify-center lg:justify-end", children: /* @__PURE__ */ jsx(KnowledgeHub, {}) })
       ] }) }),
@@ -1208,7 +1171,6 @@ const AVAILABLE_SUBJECTS$1 = [
   "Biology",
   "Economics",
   "Business Studies",
-  "Accounting",
   "English Language",
   "English Literature",
   "History",
@@ -1577,7 +1539,7 @@ function AdminDashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [toast, setToast] = useState("");
-  const [stats2, setStats] = useState(null);
+  const [stats, setStats] = useState(null);
   const [applications, setApplications] = useState([]);
   const [statusFilter, setStatusFilter] = useState("pending");
   const [appsLoading, setAppsLoading] = useState(false);
@@ -1820,7 +1782,7 @@ function AdminDashboard() {
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 ml-auto md:ml-0", children: [
           /* @__PURE__ */ jsxs("button", { className: "relative w-9 h-9 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors", "aria-label": "Notifications", children: [
             /* @__PURE__ */ jsx(Icon, { path: I.bell }),
-            !!stats2?.pendingApplications && /* @__PURE__ */ jsx("span", { className: "absolute top-1.5 right-1.5 w-2 h-2 bg-blue-600 rounded-full ring-2 ring-white" })
+            !!stats?.pendingApplications && /* @__PURE__ */ jsx("span", { className: "absolute top-1.5 right-1.5 w-2 h-2 bg-blue-600 rounded-full ring-2 ring-white" })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 pl-2 sm:border-l sm:border-slate-200", children: [
             /* @__PURE__ */ jsx("div", { className: "w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold", children: initials(adminName) }),
@@ -1836,7 +1798,7 @@ function AdminDashboard() {
         toast
       ] }),
       /* @__PURE__ */ jsxs("main", { className: "p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto", children: [
-        view === "dashboard" && /* @__PURE__ */ jsx(DashboardHome, { name: adminName, stats: stats2, onGo: setView }),
+        view === "dashboard" && /* @__PURE__ */ jsx(DashboardHome, { name: adminName, stats, onGo: setView }),
         view === "applications" && /* @__PURE__ */ jsx(
           Applications,
           {
@@ -1913,7 +1875,7 @@ function StatCard({ label, value, icon, accent }) {
     /* @__PURE__ */ jsx("p", { className: "text-sm text-slate-500 mt-1", children: label })
   ] });
 }
-function DashboardHome({ name, stats: stats2, onGo }) {
+function DashboardHome({ name, stats, onGo }) {
   return /* @__PURE__ */ jsxs("div", { className: "space-y-8 admin-fade-in", children: [
     /* @__PURE__ */ jsxs("div", { children: [
       /* @__PURE__ */ jsx("h2", { className: "text-2xl sm:text-3xl font-black text-slate-900", children: "Welcome back, Administrator." }),
@@ -1924,10 +1886,10 @@ function DashboardHome({ name, stats: stats2, onGo }) {
       ] })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4", children: [
-      /* @__PURE__ */ jsx(StatCard, { label: "Pending Mentor Applications", value: stats2?.pendingApplications ?? 0, icon: I.applications, accent: "bg-amber-50 text-amber-600" }),
-      /* @__PURE__ */ jsx(StatCard, { label: "Active Mentors", value: stats2?.activeMentors ?? 0, icon: I.mentors, accent: "bg-blue-50 text-blue-600" }),
-      /* @__PURE__ */ jsx(StatCard, { label: "Registered Students", value: stats2?.registeredStudents ?? 0, icon: I.students, accent: "bg-emerald-50 text-emerald-600" }),
-      /* @__PURE__ */ jsx(StatCard, { label: "Upcoming Tutoring Sessions", value: stats2?.upcomingSessions ?? 0, icon: I.sessions, accent: "bg-indigo-50 text-indigo-600" })
+      /* @__PURE__ */ jsx(StatCard, { label: "Pending Mentor Applications", value: stats?.pendingApplications ?? 0, icon: I.applications, accent: "bg-amber-50 text-amber-600" }),
+      /* @__PURE__ */ jsx(StatCard, { label: "Active Mentors", value: stats?.activeMentors ?? 0, icon: I.mentors, accent: "bg-blue-50 text-blue-600" }),
+      /* @__PURE__ */ jsx(StatCard, { label: "Registered Students", value: stats?.registeredStudents ?? 0, icon: I.students, accent: "bg-emerald-50 text-emerald-600" }),
+      /* @__PURE__ */ jsx(StatCard, { label: "Upcoming Tutoring Sessions", value: stats?.upcomingSessions ?? 0, icon: I.sessions, accent: "bg-indigo-50 text-indigo-600" })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
       /* @__PURE__ */ jsxs("button", { onClick: () => onGo("applications"), className: "text-left bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group", children: [
@@ -2354,7 +2316,6 @@ const AVAILABLE_SUBJECTS = [
   "Combined Science",
   "Economics",
   "Business Studies",
-  "Accounting",
   "English Language",
   "English Literature",
   "History",
