@@ -13,8 +13,6 @@ export const Route = createFileRoute('/')({
 })
 
 const DEFAULT_STATS = [
-  { value: '25+', label: 'Expert Mentors', icon: '🎓' },
-  { value: '200+', label: 'Students Helped', icon: '👩‍🎓' },
   { value: '52', label: 'Sessions/Year', icon: '📚' },
   { value: '12', label: 'Monthly Q&As', icon: '💬' },
 ]
@@ -43,34 +41,7 @@ const DEFAULT_PROGRAM_CARDS = [
   },
 ]
 
-const SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Economics', 'Business', 'English', 'History', 'Computer Science', 'Accounting']
-
-const TESTIMONIALS = [
-  {
-    name: 'Sarah M.',
-    grade: 'IGCSE 2024 Graduate',
-    text: 'GradeBridge completely changed how I approached my exams. My mentor helped me see the bigger picture and go from a D to an A* in Mathematics.',
-    subjects: 'Mathematics, Physics',
-    avatar: 'SM',
-    color: 'from-sky-400 to-blue-600',
-  },
-  {
-    name: 'Daniel K.',
-    grade: 'IGCSE 2023 Graduate',
-    text: 'The weekly sessions were incredibly structured. I learned exam techniques that no textbook teaches. Best community for IGCSE students.',
-    subjects: 'Chemistry, Biology',
-    avatar: 'DK',
-    color: 'from-teal-500 to-cyan-600',
-  },
-  {
-    name: 'Amira T.',
-    grade: 'IGCSE 2024 Graduate',
-    text: 'My mentor was patient and knowledgeable. The monthly Q&As gave me a platform to ask anything without judgment. Highly recommend!',
-    subjects: 'Economics, Business',
-    avatar: 'AT',
-    color: 'from-cyan-400 to-sky-600',
-  },
-]
+const SUBJECTS = ['Math', 'Physics', 'Chem', 'Bio', 'English', 'Geo', 'Computer Science', 'Business', 'ICT', 'Global Citizenship']
 
 const BENEFITS = [
   { icon: '🆓', title: 'Completely Free', desc: 'All tutoring and Q&A sessions are free of charge for registered students.' },
@@ -199,7 +170,7 @@ export default function LandingPage() {
                 <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" />
                 {pageContent.heroKicker || 'The Knowledge Network'}
               </div>
-              <p className="text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5" data-sb-field-path="heroEyebrow">{pageContent.heroEyebrow || 'GradeBridge / AISI'}</p>
+              <p className="text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5" data-sb-field-path="heroEyebrow">{pageContent.heroEyebrow || 'GradeBridge'}</p>
               <div data-sb-object-id="content/pages/home.json" data-sb-field-path="heroHeadline">
                 <h1 data-sb-field-path="heroHeadline" className="hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7">
                   {pageContent.heroHeadline || 'A clearer path to'} <strong data-sb-field-path="heroHighlight" className="gradient-text">{pageContent.heroHighlight || 'understanding.'}</strong>
@@ -209,8 +180,8 @@ export default function LandingPage() {
                 {pageContent.heroSubtitle || 'Students and mentors connected through knowledge, experience, and the quiet confidence that comes from learning together.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-12">
-                <Link to="/register/student" className="btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300" data-sb-field-path="heroPrimaryCta">{pageContent.heroPrimaryCta || 'Find a Mentor'} <span aria-hidden="true">→</span></Link>
-                <Link to="/apply/mentor" className="btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300" data-sb-field-path="heroSecondaryCta">{pageContent.heroSecondaryCta || 'Join the network'}</Link>
+                <Link to="/register/student" className="btn-shimmer px-7 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold shadow-xl shadow-sky-900/30 hover:shadow-sky-500/30 hover:-translate-y-0.5 transition-all duration-300" data-sb-field-path="heroPrimaryCta">{pageContent.heroPrimaryCta || 'Become a mentor'} <span aria-hidden="true">→</span></Link>
+                <Link to="/apply/mentor" className="btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300" data-sb-field-path="heroSecondaryCta">{pageContent.heroSecondaryCta || 'Enroll as a student'}</Link>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl" data-sb-object-id="content/pages/home.json" data-sb-field-path="stats">
                 {stats.map((stat, index) => (
@@ -326,39 +297,6 @@ export default function LandingPage() {
                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">{benefit.icon}</div>
                 <h3 className="text-white font-bold text-lg mb-2">{benefit.title}</h3>
                 <p className="text-slate-400 text-sm leading-relaxed">{benefit.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="network-section py-24 px-4 sm:px-6 lg:px-8" id="mentors">
-        <ParticleNetwork density={44} />
-        <div className="max-w-6xl mx-auto">
-          <div className="section-fade text-center mb-16">
-            <span className="text-sky-200 font-semibold tracking-wider uppercase text-sm">Success Stories</span>
-            <h2 className="text-4xl sm:text-5xl font-black mt-3 text-white">
-              Hear from Our <span className="gradient-text-gold">Students</span>
-            </h2>
-          </div>
-          <div className="section-fade grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="glass rounded-3xl p-6 card-glow glass-hover flex flex-col">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold">{t.name}</p>
-                    <p className="text-slate-400 text-xs">{t.grade}</p>
-                  </div>
-                </div>
-                <div className="text-sky-300 text-lg mb-3">★★★★★</div>
-                <p className="text-slate-300 text-sm leading-relaxed flex-1 italic">"{t.text}"</p>
-                <div className="mt-4 pt-4 border-t border-white/5">
-                  <p className="text-slate-500 text-xs">Subjects: {t.subjects}</p>
-                </div>
               </div>
             ))}
           </div>
@@ -496,10 +434,10 @@ export default function LandingPage() {
                 disabled={contactStatus === 'sending'}
                 className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-teal-500 text-white font-semibold shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all btn-shimmer disabled:opacity-60 disabled:hover:scale-100"
               >
-                {contactStatus === 'sending' ? 'Sending...' : 'Send Message'}
+                {contactStatus === 'sending' ? 'Sending...' : contactStatus === 'sent' ? 'Sent!' : 'Send Message'}
               </button>
               {contactStatus === 'sent' && (
-                <p className="text-teal-300 text-sm font-medium">Thanks. Your message has been sent.</p>
+                <p className="text-teal-300 text-sm font-medium">Sent!</p>
               )}
               {contactStatus === 'error' && (
                 <p className="text-red-300 text-sm font-medium">Something went wrong. Please try again.</p>

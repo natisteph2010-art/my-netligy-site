@@ -103,7 +103,7 @@ function NavBar() {
       /* @__PURE__ */ jsxs("div", { className: "hidden md:flex items-center gap-6 text-sm font-medium", children: [
         /* @__PURE__ */ jsx("a", { href: "/#about", className: "text-slate-300 hover:text-white transition-colors", children: "About" }),
         /* @__PURE__ */ jsx("a", { href: "/#programs", className: "text-slate-300 hover:text-white transition-colors", children: "Programs" }),
-        /* @__PURE__ */ jsx("a", { href: "/#mentors", className: "text-slate-300 hover:text-white transition-colors", children: "Mentors" }),
+        /* @__PURE__ */ jsx(Link, { to: "/mentors", className: "text-slate-300 hover:text-white transition-colors", children: "Mentors" }),
         /* @__PURE__ */ jsx("a", { href: "/#contact", className: "text-slate-300 hover:text-white transition-colors", children: "Contact" }),
         ready && user ? /* @__PURE__ */ jsxs(Fragment, { children: [
           /* @__PURE__ */ jsx(Link, { to: dashboardPath, className: "text-slate-300 hover:text-white transition-colors", children: "Dashboard" }),
@@ -146,7 +146,7 @@ function NavBar() {
     mobileOpen && /* @__PURE__ */ jsxs("div", { className: "md:hidden bg-slate-900/98 backdrop-blur-md border-b border-white/10 py-4 px-4 flex flex-col gap-3 text-sm", children: [
       /* @__PURE__ */ jsx("a", { href: "/#about", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "About" }),
       /* @__PURE__ */ jsx("a", { href: "/#programs", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Programs" }),
-      /* @__PURE__ */ jsx("a", { href: "/#mentors", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Mentors" }),
+      /* @__PURE__ */ jsx(Link, { to: "/mentors", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Mentors" }),
       /* @__PURE__ */ jsx("a", { href: "/#contact", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Contact" }),
       ready && user ? /* @__PURE__ */ jsxs(Fragment, { children: [
         /* @__PURE__ */ jsx(Link, { to: dashboardPath, onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Dashboard" }),
@@ -158,97 +158,25 @@ function NavBar() {
     ] })
   ] });
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-D9ss19De.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-C_2BEJim.js");
 const Route$h = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-function ParticleNetwork({ className = "", density = 42 }) {
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const parent = canvas.parentElement;
-    let animationFrame = 0;
-    let particles = [];
-    let width = 0;
-    let height = 0;
-    const resize = () => {
-      const bounds = parent?.getBoundingClientRect();
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      width = bounds?.width || window.innerWidth;
-      height = bounds?.height || window.innerHeight;
-      canvas.width = width * ratio;
-      canvas.height = height * ratio;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      particles = Array.from({ length: Math.min(density, width < 640 ? 24 : density) }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: (Math.random() - 0.5) * 0.12,
-        radius: Math.random() * 1.4 + 0.6
-      }));
-    };
-    const draw = () => {
-      context.clearRect(0, 0, width, height);
-      for (const particle of particles) {
-        if (!reduceMotion) {
-          particle.x += particle.vx;
-          particle.y += particle.vy;
-          if (particle.x < -10 || particle.x > width + 10) particle.vx *= -1;
-          if (particle.y < -10 || particle.y > height + 10) particle.vy *= -1;
-        }
-        context.beginPath();
-        context.fillStyle = "rgba(125, 211, 252, 0.72)";
-        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        context.fill();
-      }
-      for (let first = 0; first < particles.length; first += 1) {
-        for (let second = first + 1; second < particles.length; second += 1) {
-          const dx = particles[first].x - particles[second].x;
-          const dy = particles[first].y - particles[second].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          if (distance < 150) {
-            context.beginPath();
-            context.strokeStyle = `rgba(56, 189, 248, ${0.16 * (1 - distance / 150)})`;
-            context.lineWidth = 0.7;
-            context.moveTo(particles[first].x, particles[first].y);
-            context.lineTo(particles[second].x, particles[second].y);
-            context.stroke();
-          }
-        }
-      }
-      if (!reduceMotion) animationFrame = requestAnimationFrame(draw);
-    };
-    resize();
-    draw();
-    window.addEventListener("resize", resize);
-    return () => {
-      cancelAnimationFrame(animationFrame);
-      window.removeEventListener("resize", resize);
-    };
-  }, [density]);
-  return /* @__PURE__ */ jsx("canvas", { ref: canvasRef, className: `particle-network ${className}`, "aria-hidden": "true" });
-}
 const Route$g = createFileRoute("/mentors")({
   component: MentorDirectoryPage
 });
 const SUBJECTS_FILTER = [
   "All",
-  "Mathematics",
+  "Math",
   "Physics",
-  "Chemistry",
-  "Biology",
-  "Economics",
-  "Business",
+  "Chem",
+  "Bio",
   "English",
-  "History",
+  "Geo",
   "Computer Science",
-  "Accounting"
+  "Business",
+  "ICT",
+  "Global Citizenship"
 ];
 function MentorDirectoryPage() {
   const { user, ready } = useIdentity();
@@ -296,14 +224,14 @@ function MentorDirectoryPage() {
       /* @__PURE__ */ jsx("p", { className: "text-slate-400", children: "Loading mentor directory…" })
     ] }) });
   }
-  return /* @__PURE__ */ jsx("div", { className: "min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxs("div", { className: "max-w-7xl mx-auto", children: [
+  return /* @__PURE__ */ jsx("div", { className: "min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxs("div", { className: "max-w-6xl mx-auto", children: [
     /* @__PURE__ */ jsxs("div", { className: "text-center mb-12", children: [
-      /* @__PURE__ */ jsx("span", { className: "text-teal-400 font-semibold tracking-wider uppercase text-sm", children: "Knowledge Constellation" }),
+      /* @__PURE__ */ jsx("span", { className: "text-teal-400 font-semibold tracking-wider uppercase text-sm", children: "Mentor Directory" }),
       /* @__PURE__ */ jsxs("h1", { className: "text-4xl sm:text-5xl font-black mt-3 mb-4 text-white", children: [
         "Find your ",
         /* @__PURE__ */ jsx("span", { className: "gradient-text", children: "next connection" })
       ] }),
-      /* @__PURE__ */ jsx("p", { className: "text-slate-400 max-w-2xl mx-auto", children: "Each node is an approved IGCSE mentor. Choose a subject cluster, then open a profile to explore the person behind the expertise." })
+      /* @__PURE__ */ jsx("p", { className: "text-slate-400 max-w-2xl mx-auto", children: "Browse approved mentors, filter by subject, and explore a clean profile list to find the right connection for your academic goals." })
     ] }),
     /* @__PURE__ */ jsx("div", { className: "flex flex-col sm:flex-row gap-4 mb-8", children: /* @__PURE__ */ jsxs("div", { className: "flex-1 relative", children: [
       /* @__PURE__ */ jsx("span", { className: "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400", children: "🔍" }),
@@ -332,45 +260,27 @@ function MentorDirectoryPage() {
       /* @__PURE__ */ jsx("div", { className: "text-5xl mb-4", children: "🔍" }),
       /* @__PURE__ */ jsx("h3", { className: "text-white font-bold text-xl mb-2", children: "No mentors found" }),
       /* @__PURE__ */ jsx("p", { className: "text-slate-400", children: "Try adjusting your search or filters." })
-    ] }) : /* @__PURE__ */ jsxs("div", { className: "constellation", children: [
-      /* @__PURE__ */ jsx(ParticleNetwork, { density: 38 }),
-      /* @__PURE__ */ jsx("div", { className: "constellation-lines" }),
-      mentors.map((mentor) => {
-        const subjects = parseSubjects(mentor.subjects);
-        const isSelected = selectedMentor === mentor.id;
-        return /* @__PURE__ */ jsxs("button", { type: "button", onClick: () => setSelectedMentor(isSelected ? null : mentor.id), className: `constellation-node ${isSelected ? "active" : ""}`, "aria-pressed": isSelected, children: [
-          mentor.profilePicUrl ? /* @__PURE__ */ jsx("img", { src: mentor.profilePicUrl, alt: "" }) : /* @__PURE__ */ jsx("span", { className: "constellation-avatar", children: getInitials(mentor.fullName) }),
-          /* @__PURE__ */ jsx("strong", { className: "text-sm truncate max-w-full", children: mentor.fullName }),
-          /* @__PURE__ */ jsx("small", { children: subjects.slice(0, 2).join(" · ") || "IGCSE Mentor" }),
-          /* @__PURE__ */ jsx("span", { className: "text-[10px] text-sky-300", children: isSelected ? "Close profile" : "Open profile" })
-        ] }, mentor.id);
-      }),
-      selectedMentor !== null && (() => {
-        const mentor = mentors.find((item) => item.id === selectedMentor);
-        if (!mentor) return null;
-        const subjects = parseSubjects(mentor.subjects);
-        return /* @__PURE__ */ jsxs("div", { className: "absolute z-10 bottom-5 right-5 left-5 sm:left-auto sm:w-[360px] rounded-2xl border border-sky-300/30 bg-slate-950/90 p-5 shadow-2xl backdrop-blur-xl", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between gap-4 mb-3", children: [
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("p", { className: "text-xs uppercase tracking-[0.16em] text-sky-300", children: "Selected node" }),
-              /* @__PURE__ */ jsx("h2", { className: "text-xl font-bold text-white mt-1", children: mentor.fullName })
-            ] }),
-            /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setSelectedMentor(null), className: "text-slate-400 hover:text-white", "aria-label": "Close mentor profile", children: "×" })
-          ] }),
-          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1.5 mb-4", children: subjects.map((subject) => /* @__PURE__ */ jsx("span", { className: "px-2 py-1 rounded-md bg-sky-400/10 text-sky-200 text-xs", children: subject }, subject)) }),
-          /* @__PURE__ */ jsx("p", { className: "text-sm text-slate-300 leading-relaxed mb-4", children: mentor.bio || mentor.reason || "An approved mentor ready to share their experience." }),
-          /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-400 mb-4", children: mentor.availability || "Flexible availability" }),
-          mentor.contactEmail && /* @__PURE__ */ jsxs("a", { href: `mailto:${mentor.contactEmail}`, className: "inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors", children: [
-            "Connect with ",
-            mentor.fullName.split(" ")[0],
-            " →"
+    ] }) : /* @__PURE__ */ jsx("div", { className: "grid md:grid-cols-2 xl:grid-cols-3 gap-6", children: mentors.map((mentor) => {
+      const subjects = parseSubjects(mentor.subjects);
+      return /* @__PURE__ */ jsxs("div", { className: "glass rounded-3xl p-6 card-glow glass-hover flex flex-col", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 mb-4", children: [
+          /* @__PURE__ */ jsx("div", { className: "w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm overflow-hidden", children: mentor.profilePicUrl ? /* @__PURE__ */ jsx("img", { src: mentor.profilePicUrl, alt: mentor.fullName, className: "w-full h-full object-cover" }) : getInitials(mentor.fullName) }),
+          /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
+            /* @__PURE__ */ jsx("h3", { className: "text-white font-bold text-lg truncate", children: mentor.fullName }),
+            /* @__PURE__ */ jsx("p", { className: "text-slate-400 text-xs", children: subjects.slice(0, 2).join(" · ") || "IGCSE Mentor" })
           ] })
-        ] });
-      })()
-    ] })
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: "text-slate-300 text-sm leading-relaxed mb-4 flex-1", children: mentor.bio || mentor.reason || "An approved mentor ready to share their experience." }),
+        /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1.5 mb-4", children: subjects.slice(0, 4).map((subject) => /* @__PURE__ */ jsx("span", { className: "px-2 py-1 rounded-md bg-sky-400/10 text-sky-200 text-xs", children: subject }, subject)) }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3 mt-auto", children: [
+          /* @__PURE__ */ jsx("span", { className: "text-xs text-slate-400", children: mentor.availability || "Flexible availability" }),
+          mentor.contactEmail && /* @__PURE__ */ jsx("a", { href: `mailto:${mentor.contactEmail}`, className: "inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors", children: "Connect →" })
+        ] })
+      ] }, mentor.id);
+    }) })
   ] }) });
 }
-const $$splitComponentImporter = () => import("./login-CpG9bWXh.js");
+const $$splitComponentImporter = () => import("./login-CO43UeET.js");
 const Route$f = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
@@ -468,6 +378,19 @@ const NODES = [
   { label: "Students", symbol: "◌", className: "hub-node-student" },
   { label: "Books", symbol: "▤", className: "hub-node-books" }
 ];
+function GraduationCapIcon() {
+  return /* @__PURE__ */ jsxs("svg", { viewBox: "0 0 64 64", fill: "none", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx("defs", { children: /* @__PURE__ */ jsxs("linearGradient", { id: "capGlow", x1: "8", y1: "8", x2: "56", y2: "56", gradientUnits: "userSpaceOnUse", children: [
+      /* @__PURE__ */ jsx("stop", { stopColor: "#E0F2FE" }),
+      /* @__PURE__ */ jsx("stop", { offset: "0.48", stopColor: "#7DD3FC" }),
+      /* @__PURE__ */ jsx("stop", { offset: "1", stopColor: "#BAE6FD" })
+    ] }) }),
+    /* @__PURE__ */ jsx("path", { d: "M11 23.5L32 14L53 23.5L32 33L11 23.5Z", stroke: "url(#capGlow)", strokeWidth: "3.2", strokeLinejoin: "round" }),
+    /* @__PURE__ */ jsx("path", { d: "M18.5 28.5V40.5C18.5 40.5 24.1 45.5 32 45.5C39.9 45.5 45.5 40.5 45.5 40.5V28.5", stroke: "url(#capGlow)", strokeWidth: "3.2", strokeLinecap: "round", strokeLinejoin: "round" }),
+    /* @__PURE__ */ jsx("path", { d: "M48.5 27.5V39.5", stroke: "url(#capGlow)", strokeWidth: "3.2", strokeLinecap: "round" }),
+    /* @__PURE__ */ jsx("path", { d: "M50.5 39.5C50.5 43.3 41.5 46.5 32 46.5C22.5 46.5 13.5 43.3 13.5 39.5", stroke: "url(#capGlow)", strokeWidth: "2.6", strokeLinecap: "round", opacity: "0.88" })
+  ] });
+}
 function KnowledgeHub() {
   const sceneRef = useRef(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -496,7 +419,7 @@ function KnowledgeHub() {
     /* @__PURE__ */ jsxs("div", { className: "hub-core", style: { transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }, children: [
       /* @__PURE__ */ jsx("div", { className: "hub-core-ring" }),
       /* @__PURE__ */ jsx("div", { className: "hub-core-light" }),
-      /* @__PURE__ */ jsx("span", { children: "KN" })
+      /* @__PURE__ */ jsx(GraduationCapIcon, {})
     ] }),
     NODES.map((node, index) => /* @__PURE__ */ jsxs(
       "div",
@@ -514,12 +437,82 @@ function KnowledgeHub() {
     /* @__PURE__ */ jsx("div", { className: "hub-orbit hub-orbit-two" })
   ] });
 }
+function ParticleNetwork({ className = "", density = 42 }) {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const parent = canvas.parentElement;
+    let animationFrame = 0;
+    let particles = [];
+    let width = 0;
+    let height = 0;
+    const resize = () => {
+      const bounds = parent?.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = bounds?.width || window.innerWidth;
+      height = bounds?.height || window.innerHeight;
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      particles = Array.from({ length: Math.min(density, width < 640 ? 24 : density) }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        radius: Math.random() * 1.4 + 0.6
+      }));
+    };
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+      for (const particle of particles) {
+        if (!reduceMotion) {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+          if (particle.x < -10 || particle.x > width + 10) particle.vx *= -1;
+          if (particle.y < -10 || particle.y > height + 10) particle.vy *= -1;
+        }
+        context.beginPath();
+        context.fillStyle = "rgba(125, 211, 252, 0.72)";
+        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        context.fill();
+      }
+      for (let first = 0; first < particles.length; first += 1) {
+        for (let second = first + 1; second < particles.length; second += 1) {
+          const dx = particles[first].x - particles[second].x;
+          const dy = particles[first].y - particles[second].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 150) {
+            context.beginPath();
+            context.strokeStyle = `rgba(56, 189, 248, ${0.16 * (1 - distance / 150)})`;
+            context.lineWidth = 0.7;
+            context.moveTo(particles[first].x, particles[first].y);
+            context.lineTo(particles[second].x, particles[second].y);
+            context.stroke();
+          }
+        }
+      }
+      if (!reduceMotion) animationFrame = requestAnimationFrame(draw);
+    };
+    resize();
+    draw();
+    window.addEventListener("resize", resize);
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", resize);
+    };
+  }, [density]);
+  return /* @__PURE__ */ jsx("canvas", { ref: canvasRef, className: `particle-network ${className}`, "aria-hidden": "true" });
+}
 const Route$e = createFileRoute("/")({
   component: LandingPage
 });
 const DEFAULT_STATS = [
-  { value: "25+", label: "Expert Mentors", icon: "🎓" },
-  { value: "200+", label: "Students Helped", icon: "👩‍🎓" },
   { value: "52", label: "Sessions/Year", icon: "📚" },
   { value: "12", label: "Monthly Q&As", icon: "💬" }
 ];
@@ -545,33 +538,7 @@ const DEFAULT_PROGRAM_CARDS = [
     benefits: ["Face-to-face interaction", "No question too small", "Multiple mentors present", "Networking opportunities"]
   }
 ];
-const SUBJECTS = ["Mathematics", "Physics", "Chemistry", "Biology", "Economics", "Business", "English", "History", "Computer Science", "Accounting"];
-const TESTIMONIALS = [
-  {
-    name: "Sarah M.",
-    grade: "IGCSE 2024 Graduate",
-    text: "GradeBridge completely changed how I approached my exams. My mentor helped me see the bigger picture and go from a D to an A* in Mathematics.",
-    subjects: "Mathematics, Physics",
-    avatar: "SM",
-    color: "from-sky-400 to-blue-600"
-  },
-  {
-    name: "Daniel K.",
-    grade: "IGCSE 2023 Graduate",
-    text: "The weekly sessions were incredibly structured. I learned exam techniques that no textbook teaches. Best community for IGCSE students.",
-    subjects: "Chemistry, Biology",
-    avatar: "DK",
-    color: "from-teal-500 to-cyan-600"
-  },
-  {
-    name: "Amira T.",
-    grade: "IGCSE 2024 Graduate",
-    text: "My mentor was patient and knowledgeable. The monthly Q&As gave me a platform to ask anything without judgment. Highly recommend!",
-    subjects: "Economics, Business",
-    avatar: "AT",
-    color: "from-cyan-400 to-sky-600"
-  }
-];
+const SUBJECTS = ["Math", "Physics", "Chem", "Bio", "English", "Geo", "Computer Science", "Business", "ICT", "Global Citizenship"];
 const BENEFITS = [
   { icon: "🆓", title: "Completely Free", desc: "All tutoring and Q&A sessions are free of charge for registered students." },
   { icon: "🎯", title: "Experienced Mentors", desc: "Learn from students who have successfully completed IGCSE with excellent grades." },
@@ -752,37 +719,6 @@ function LandingPage() {
         /* @__PURE__ */ jsx("p", { className: "text-slate-400 text-sm leading-relaxed", children: benefit.desc })
       ] }, benefit.title)) })
     ] }) }),
-    /* @__PURE__ */ jsxs("section", { className: "network-section py-24 px-4 sm:px-6 lg:px-8", id: "mentors", children: [
-      /* @__PURE__ */ jsx(ParticleNetwork, { density: 44 }),
-      /* @__PURE__ */ jsxs("div", { className: "max-w-6xl mx-auto", children: [
-        /* @__PURE__ */ jsxs("div", { className: "section-fade text-center mb-16", children: [
-          /* @__PURE__ */ jsx("span", { className: "text-sky-200 font-semibold tracking-wider uppercase text-sm", children: "Success Stories" }),
-          /* @__PURE__ */ jsxs("h2", { className: "text-4xl sm:text-5xl font-black mt-3 text-white", children: [
-            "Hear from Our ",
-            /* @__PURE__ */ jsx("span", { className: "gradient-text-gold", children: "Students" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx("div", { className: "section-fade grid md:grid-cols-3 gap-6", children: TESTIMONIALS.map((t) => /* @__PURE__ */ jsxs("div", { className: "glass rounded-3xl p-6 card-glow glass-hover flex flex-col", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 mb-4", children: [
-            /* @__PURE__ */ jsx("div", { className: `w-12 h-12 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold text-sm shadow-lg`, children: t.avatar }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("p", { className: "text-white font-semibold", children: t.name }),
-              /* @__PURE__ */ jsx("p", { className: "text-slate-400 text-xs", children: t.grade })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsx("div", { className: "text-sky-300 text-lg mb-3", children: "★★★★★" }),
-          /* @__PURE__ */ jsxs("p", { className: "text-slate-300 text-sm leading-relaxed flex-1 italic", children: [
-            '"',
-            t.text,
-            '"'
-          ] }),
-          /* @__PURE__ */ jsx("div", { className: "mt-4 pt-4 border-t border-white/5", children: /* @__PURE__ */ jsxs("p", { className: "text-slate-500 text-xs", children: [
-            "Subjects: ",
-            t.subjects
-          ] }) })
-        ] }, t.name)) })
-      ] })
-    ] }),
     /* @__PURE__ */ jsx("section", { className: "py-24 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxs("div", { className: "max-w-5xl mx-auto", children: [
       /* @__PURE__ */ jsxs("div", { className: "section-fade text-center mb-16", children: [
         /* @__PURE__ */ jsxs("h2", { className: "text-4xl sm:text-5xl font-black text-white", children: [
@@ -923,10 +859,10 @@ function LandingPage() {
                   type: "submit",
                   disabled: contactStatus === "sending",
                   className: "px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-teal-500 text-white font-semibold shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all btn-shimmer disabled:opacity-60 disabled:hover:scale-100",
-                  children: contactStatus === "sending" ? "Sending..." : "Send Message"
+                  children: contactStatus === "sending" ? "Sending..." : contactStatus === "sent" ? "Sent!" : "Send Message"
                 }
               ),
-              contactStatus === "sent" && /* @__PURE__ */ jsx("p", { className: "text-teal-300 text-sm font-medium", children: "Thanks. Your message has been sent." }),
+              contactStatus === "sent" && /* @__PURE__ */ jsx("p", { className: "text-teal-300 text-sm font-medium", children: "Sent!" }),
               contactStatus === "error" && /* @__PURE__ */ jsx("p", { className: "text-red-300 text-sm font-medium", children: "Something went wrong. Please try again." })
             ] })
           ]

@@ -1,15 +1,13 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useIdentity } from '../lib/identity-context'
-import { ParticleNetwork } from '../components/ParticleNetwork'
 
 export const Route = createFileRoute('/mentors')({
   component: MentorDirectoryPage,
 })
 
 const SUBJECTS_FILTER = [
-  'All', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'Economics',
-  'Business', 'English', 'History', 'Computer Science', 'Accounting',
+  'All', 'Math', 'Physics', 'Chem', 'Bio', 'English', 'Geo', 'Computer Science', 'Business', 'ICT', 'Global Citizenship',
 ]
 
 type Mentor = {
@@ -83,15 +81,14 @@ export default function MentorDirectoryPage() {
 
   return (
     <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <span className="text-teal-400 font-semibold tracking-wider uppercase text-sm">Knowledge Constellation</span>
+          <span className="text-teal-400 font-semibold tracking-wider uppercase text-sm">Mentor Directory</span>
           <h1 className="text-4xl sm:text-5xl font-black mt-3 mb-4 text-white">
             Find your <span className="gradient-text">next connection</span>
           </h1>
           <p className="text-slate-400 max-w-2xl mx-auto">
-            Each node is an approved IGCSE mentor. Choose a subject cluster, then open a profile to explore the person behind the expertise.
+            Browse approved mentors, filter by subject, and explore a clean profile list to find the right connection for your academic goals.
           </p>
         </div>
 
@@ -130,7 +127,6 @@ export default function MentorDirectoryPage() {
           <div className="text-center py-12 text-red-400">{error}</div>
         )}
 
-        {/* Mentors grid */}
         {mentors.length === 0 && !error ? (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">🔍</div>
@@ -138,39 +134,35 @@ export default function MentorDirectoryPage() {
             <p className="text-slate-400">Try adjusting your search or filters.</p>
           </div>
         ) : (
-          <div className="constellation">
-            <ParticleNetwork density={38} />
-            <div className="constellation-lines" />
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
             {mentors.map((mentor) => {
               const subjects = parseSubjects(mentor.subjects)
-              const isSelected = selectedMentor === mentor.id
-
               return (
-                <button type="button" key={mentor.id} onClick={() => setSelectedMentor(isSelected ? null : mentor.id)} className={`constellation-node ${isSelected ? 'active' : ''}`} aria-pressed={isSelected}>
-                  {mentor.profilePicUrl ? <img src={mentor.profilePicUrl} alt="" /> : <span className="constellation-avatar">{getInitials(mentor.fullName)}</span>}
-                  <strong className="text-sm truncate max-w-full">{mentor.fullName}</strong>
-                  <small>{subjects.slice(0, 2).join(' · ') || 'IGCSE Mentor'}</small>
-                  <span className="text-[10px] text-sky-300">{isSelected ? 'Close profile' : 'Open profile'}</span>
-                </button>
-              )
-            })}
-            {selectedMentor !== null && (() => {
-              const mentor = mentors.find((item) => item.id === selectedMentor)
-              if (!mentor) return null
-              const subjects = parseSubjects(mentor.subjects)
-              return (
-                <div className="absolute z-10 bottom-5 right-5 left-5 sm:left-auto sm:w-[360px] rounded-2xl border border-sky-300/30 bg-slate-950/90 p-5 shadow-2xl backdrop-blur-xl">
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <div><p className="text-xs uppercase tracking-[0.16em] text-sky-300">Selected node</p><h2 className="text-xl font-bold text-white mt-1">{mentor.fullName}</h2></div>
-                    <button type="button" onClick={() => setSelectedMentor(null)} className="text-slate-400 hover:text-white" aria-label="Close mentor profile">×</button>
+                <div key={mentor.id} className="glass rounded-3xl p-6 card-glow glass-hover flex flex-col">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm overflow-hidden">
+                      {mentor.profilePicUrl ? <img src={mentor.profilePicUrl} alt={mentor.fullName} className="w-full h-full object-cover" /> : getInitials(mentor.fullName)}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-white font-bold text-lg truncate">{mentor.fullName}</h3>
+                      <p className="text-slate-400 text-xs">{subjects.slice(0, 2).join(' · ') || 'IGCSE Mentor'}</p>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-1.5 mb-4">{subjects.map((subject) => <span key={subject} className="px-2 py-1 rounded-md bg-sky-400/10 text-sky-200 text-xs">{subject}</span>)}</div>
-                  <p className="text-sm text-slate-300 leading-relaxed mb-4">{mentor.bio || mentor.reason || 'An approved mentor ready to share their experience.'}</p>
-                  <p className="text-xs text-slate-400 mb-4">{mentor.availability || 'Flexible availability'}</p>
-                  {mentor.contactEmail && <a href={`mailto:${mentor.contactEmail}`} className="inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors">Connect with {mentor.fullName.split(' ')[0]} →</a>}
+                  <p className="text-slate-300 text-sm leading-relaxed mb-4 flex-1">{mentor.bio || mentor.reason || 'An approved mentor ready to share their experience.'}</p>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {subjects.slice(0, 4).map((subject) => (
+                      <span key={subject} className="px-2 py-1 rounded-md bg-sky-400/10 text-sky-200 text-xs">{subject}</span>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between gap-3 mt-auto">
+                    <span className="text-xs text-slate-400">{mentor.availability || 'Flexible availability'}</span>
+                    {mentor.contactEmail && (
+                      <a href={`mailto:${mentor.contactEmail}`} className="inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors">Connect →</a>
+                    )}
+                  </div>
                 </div>
               )
-            })()}
+            })}
           </div>
         )}
       </div>
