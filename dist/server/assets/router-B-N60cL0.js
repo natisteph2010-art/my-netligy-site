@@ -49,6 +49,9 @@ function GradeBridgeLogo({ compact = false, className = "" }) {
     {
       src: "/gradebridge-logo.svg",
       alt: "GradeBridge",
+      "data-sb-object-id": "content/site.json",
+      "data-sb-field-path": "logo.src",
+      "data-sb-alt-field-path": "logo.alt",
       className: `${compact ? "h-10 w-10" : "h-16 w-52"} object-contain ${className}`
     }
   );
@@ -155,7 +158,7 @@ function NavBar() {
     ] })
   ] });
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-DDsKdzvB.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-D9ss19De.js");
 const Route$h = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
@@ -367,7 +370,7 @@ function MentorDirectoryPage() {
     ] })
   ] }) });
 }
-const $$splitComponentImporter = () => import("./login-BqIkBumv.js");
+const $$splitComponentImporter = () => import("./login-CpG9bWXh.js");
 const Route$f = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
@@ -420,9 +423,9 @@ function AnnouncementBanner({ className = "" }) {
       className: `glass rounded-2xl px-5 py-4 flex items-start gap-4 border ${a.pinned ? "border-blue-500/40 shadow-lg shadow-blue-500/10" : "border-white/10"}`,
       children: [
         /* @__PURE__ */ jsx("div", { className: "w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center flex-shrink-0 text-white", children: /* @__PURE__ */ jsx("svg", { className: "w-4 h-4", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2, children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" }) }) }),
-        /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", "data-sb-object-id": "content/site.json", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-            a.pinned && /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold text-blue-300 uppercase tracking-wider", children: "Pinned" }),
+            a.pinned && /* @__PURE__ */ jsx("span", { "data-sb-field-path": "pinnedLabel", className: "text-xs font-semibold text-blue-300 uppercase tracking-wider", children: "Pinned" }),
             /* @__PURE__ */ jsx("h4", { className: "text-white font-semibold", children: a.title })
           ] }),
           /* @__PURE__ */ jsx("p", { className: "text-slate-300 text-sm mt-1 leading-relaxed", children: a.body })
@@ -448,12 +451,12 @@ function EntranceOverlay() {
     return () => window.clearTimeout(timer);
   }, []);
   if (!visible) return null;
-  return /* @__PURE__ */ jsxs("div", { className: "entrance-overlay", "aria-hidden": "true", children: [
+  return /* @__PURE__ */ jsxs("div", { className: "entrance-overlay", "aria-hidden": "true", "data-sb-object-id": "content/site.json", children: [
     /* @__PURE__ */ jsx("div", { className: "entrance-grid" }),
     /* @__PURE__ */ jsx("div", { className: "entrance-energy-line" }),
     /* @__PURE__ */ jsxs("div", { className: "entrance-mark", children: [
       /* @__PURE__ */ jsx(GradeBridgeLogo, { compact: true, className: "entrance-logo" }),
-      /* @__PURE__ */ jsx("span", { children: "Knowledge Network" })
+      /* @__PURE__ */ jsx("span", { "data-sb-field-path": "overlayTitle", children: "Knowledge Network" })
     ] })
   ] });
 }
@@ -485,7 +488,7 @@ function KnowledgeHub() {
       scene.removeEventListener("pointerleave", reset);
     };
   }, []);
-  return /* @__PURE__ */ jsxs("div", { ref: sceneRef, className: "knowledge-hub", "aria-label": "Interactive knowledge network visualization", children: [
+  return /* @__PURE__ */ jsxs("div", { ref: sceneRef, className: "knowledge-hub", "aria-label": "Interactive knowledge network visualization", "data-sb-object-id": "content/site.json", children: [
     /* @__PURE__ */ jsx("div", { className: "hub-aura" }),
     /* @__PURE__ */ jsx("div", { className: "hub-plane hub-plane-one" }),
     /* @__PURE__ */ jsx("div", { className: "hub-plane hub-plane-two" }),
@@ -501,8 +504,8 @@ function KnowledgeHub() {
         className: `hub-node ${node.className}`,
         style: { transform: `translateZ(${index * 8}px) rotateX(${tilt.x * 0.35}deg) rotateY(${tilt.y * 0.35}deg)` },
         children: [
-          /* @__PURE__ */ jsx("span", { className: "hub-node-symbol", children: node.symbol }),
-          /* @__PURE__ */ jsx("span", { className: "hub-node-label", children: node.label })
+          /* @__PURE__ */ jsx("span", { className: "hub-node-symbol", "data-sb-field-path": `hubNodes.${index}.symbol`, children: node.symbol }),
+          /* @__PURE__ */ jsx("span", { className: "hub-node-label", "data-sb-field-path": `hubNodes.${index}.label`, children: node.label })
         ]
       },
       node.label
@@ -660,10 +663,10 @@ function LandingPage() {
             pageContent.heroKicker
           ] }),
           /* @__PURE__ */ jsx("p", { className: "text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5", "data-sb-field-path": "heroEyebrow", children: pageContent.heroEyebrow }),
-          /* @__PURE__ */ jsx("div", { "data-sb-object-id": "content/pages/home.json", "data-sb-field-path": "heroHeadline", children: /* @__PURE__ */ jsxs("h1", { className: "hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7", children: [
+          /* @__PURE__ */ jsx("div", { "data-sb-object-id": "content/pages/home.json", "data-sb-field-path": "heroHeadline", children: /* @__PURE__ */ jsxs("h1", { "data-sb-field-path": "heroHeadline", className: "hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7", children: [
             pageContent.heroHeadline,
             " ",
-            /* @__PURE__ */ jsx("strong", { className: "gradient-text", children: pageContent.heroHighlight })
+            /* @__PURE__ */ jsx("strong", { "data-sb-field-path": "heroHighlight", className: "gradient-text", children: pageContent.heroHighlight })
           ] }) }),
           /* @__PURE__ */ jsx("p", { className: "text-slate-300 text-lg sm:text-xl max-w-xl mb-9 leading-relaxed", "data-sb-field-path": "heroSubtitle", children: pageContent.heroSubtitle }),
           /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3 mb-12", children: [
@@ -727,11 +730,11 @@ function LandingPage() {
           /* @__PURE__ */ jsx("span", { className: "px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs font-semibold uppercase tracking-wider", "data-sb-field-path": `programCards.${index}.eyebrow`, children: card.eyebrow }),
           /* @__PURE__ */ jsx("h3", { className: "text-2xl font-black text-white mt-4 mb-3", "data-sb-field-path": `programCards.${index}.title`, children: card.title }),
           /* @__PURE__ */ jsx("p", { className: "text-slate-300 leading-relaxed mb-6", "data-sb-field-path": `programCards.${index}.description`, children: card.description }),
-          /* @__PURE__ */ jsx("ul", { className: "space-y-2 text-slate-300 text-sm", children: card.benefits.map((item) => /* @__PURE__ */ jsxs("li", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx("ul", { className: "space-y-2 text-slate-300 text-sm", children: card.benefits.map((item, bindex) => /* @__PURE__ */ jsxs("li", { "data-sb-field-path": `programCards.${index}.benefits.${bindex}`, className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsx("span", { className: "text-teal-400", children: "✓" }),
             " ",
             item
-          ] }, item)) })
+          ] }, `${index}-${bindex}`)) })
         ] })
       ] }, card.title)) })
     ] }) }),

@@ -3,8 +3,6 @@ import { GitContentSource } from "@stackbit/cms-git";
 
 export default defineStackbitConfig({
     stackbitVersion: "0.6.0",
-                // small shared strings
-                { name: "pinnedLabel", type: "string" }
     ssgName: "custom",
     contentSources: [
         new GitContentSource({
@@ -75,36 +73,36 @@ export default defineStackbitConfig({
                             }
                         }
                     ]
-                }
-            ],
-            // Add a site-level data model for shared UI text and assets
-            {
-                name: "Site",
-                type: "data",
-                filePath: "content/site.json",
-                fields: [
-                    {
-                        name: "logo",
-                        type: "object",
-                        fields: [
-                            { name: "src", type: "string" },
-                            { name: "alt", type: "string" }
-                        ]
-                    },
-                    { name: "overlayTitle", type: "string" },
-                    {
-                        name: "hubNodes",
-                        type: "list",
-                        items: {
+                },
+                {
+                    name: "Site",
+                    type: "data",
+                    filePath: "content/site.json",
+                    fields: [
+                        {
+                            name: "logo",
                             type: "object",
                             fields: [
-                                { name: "label", type: "string" },
-                                { name: "symbol", type: "string" }
+                                { name: "src", type: "string" },
+                                { name: "alt", type: "string" }
                             ]
+                        },
+                        { name: "overlayTitle", type: "string" },
+                        { name: "pinnedLabel", type: "string" },
+                        {
+                            name: "hubNodes",
+                            type: "list",
+                            items: {
+                                type: "object",
+                                fields: [
+                                    { name: "label", type: "string" },
+                                    { name: "symbol", type: "string" }
+                                ]
+                            }
                         }
-                    }
-                ]
-            }
+                    ]
+                }
+            ]
         })
     ],
     sitemap: ({ documents, models }) => {

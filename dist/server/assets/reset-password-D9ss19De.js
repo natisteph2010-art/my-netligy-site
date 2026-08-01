@@ -2,7 +2,7 @@ import { jsx, jsxs } from "react/jsx-runtime";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { handleAuthCallback, getUser, AuthError } from "@netlify/identity";
-import { G as GradeBridgeLogo } from "./router-DH3MsQvw.js";
+import { G as GradeBridgeLogo } from "./router-B-N60cL0.js";
 import "../server.js";
 import "node:async_hooks";
 import "h3-v2";

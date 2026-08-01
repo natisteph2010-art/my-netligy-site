@@ -40,9 +40,9 @@ export function AnnouncementBanner({ className = '' }: { className?: string }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             </svg>
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0" data-sb-object-id="content/site.json">
             <div className="flex items-center gap-2">
-              {a.pinned && <span className="text-xs font-semibold text-blue-300 uppercase tracking-wider">Pinned</span>}
+              {a.pinned && <span data-sb-field-path="pinnedLabel" className="text-xs font-semibold text-blue-300 uppercase tracking-wider">Pinned</span>}
               <h4 className="text-white font-semibold">{a.title}</h4>
             </div>
             <p className="text-slate-300 text-sm mt-1 leading-relaxed">{a.body}</p>

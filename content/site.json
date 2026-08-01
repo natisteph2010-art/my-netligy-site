@@ -1,6 +1,7 @@
 {
   "logo": { "src": "/gradebridge-logo.svg", "alt": "GradeBridge" },
   "overlayTitle": "Knowledge Network",
+  "pinnedLabel": "Pinned",
   "hubNodes": [
     { "label": "Mathematics", "symbol": "∑" },
     { "label": "Physics", "symbol": "F = ma" },
@@ -9,6 +10,4 @@
     { "label": "Students", "symbol": "◌" },
     { "label": "Books", "symbol": "▤" }
   ]
-  ,
-  "pinnedLabel": "Pinned"
 }
