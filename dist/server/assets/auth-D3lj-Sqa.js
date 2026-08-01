@@ -1,5 +1,5 @@
 import { T as TSS_SERVER_FUNCTION, c as createServerFn } from "../server.js";
-import { c as getCurrentUserWithRole } from "./authorization-C4iwimjJ.js";
+import { e as getCurrentUserWithRole } from "./authorization-DEwvlZPH.js";
 import "node:async_hooks";
 import "h3-v2";
 import "@tanstack/router-core";

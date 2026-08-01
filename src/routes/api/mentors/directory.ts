@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '../../../../db/index.js'
-import { mentorProfiles } from '../../../../db/schema.js'
+import { mentorProfiles, mentoringSessions } from '../../../../db/schema.js'
 import { getUser } from '@netlify/identity'
 import { eq } from 'drizzle-orm'
 
@@ -21,6 +21,34 @@ export const Route = createFileRoute('/api/mentors/directory')({
           .select()
           .from(mentorProfiles)
           .where(eq(mentorProfiles.isPublic, true))
+
+        const allSessions = await db.select().from(mentoringSessions)
+        const weekStart = new Date()
+        weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7))
+        weekStart.setHours(0, 0, 0, 0)
+        const weekEnd = new Date(weekStart)
+        weekEnd.setDate(weekEnd.getDate() + 6)
+        weekEnd.setHours(23, 59, 59, 999)
+
+        const mentorCounts = new Map<string, Set<string>>()
+        for (const session of allSessions) {
+          if (!session.scheduledAt || !session.mentorIdentityUserId) continue
+          const scheduledAt = new Date(session.scheduledAt)
+          if (scheduledAt < weekStart || scheduledAt > weekEnd) continue
+          if (session.status !== 'UPCOMING' && session.status !== 'COMPLETED') continue
+
+          const mentorKey = session.mentorIdentityUserId
+          const studentKey = `${session.studentName}::${session.studentContact}`
+          const current = mentorCounts.get(mentorKey) ?? new Set<string>()
+          current.add(studentKey)
+          mentorCounts.set(mentorKey, current)
+        }
+
+        mentors = mentors.map((mentor) => ({
+          ...mentor,
+          weeklyApprovedCount: mentorCounts.get(mentor.identityUserId)?.size ?? 0,
+          weeklyCapacity: 4,
+        }))
 
         if (subject) {
           mentors = mentors.filter((m) => {

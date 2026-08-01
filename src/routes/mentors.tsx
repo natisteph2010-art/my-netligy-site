@@ -10,6 +10,10 @@ const SUBJECTS_FILTER = [
   'All', 'Math', 'Physics', 'Chem', 'Bio', 'English', 'Geo', 'Computer Science', 'Business', 'ICT', 'Global Citizenship',
 ]
 
+const SCHEDULE_SUBJECTS = [
+  'Math', 'Physics', 'Chem', 'Bio', 'English', 'Geo', 'Computer Science', 'Business', 'ICT', 'Global Citizenship',
+]
+
 type Mentor = {
   id: number
   identityUserId: string
@@ -26,6 +30,8 @@ type Mentor = {
   whatsapp: string | null
   contactEmail: string | null
   linkedin: string | null
+  weeklyApprovedCount?: number
+  weeklyCapacity?: number
 }
 
 export default function MentorDirectoryPage() {
@@ -36,7 +42,16 @@ export default function MentorDirectoryPage() {
   const [search, setSearch] = useState('')
   const [subjectFilter, setSubjectFilter] = useState('All')
   const [error, setError] = useState('')
-  const [selectedMentor, setSelectedMentor] = useState<number | null>(null)
+  const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null)
+  const [scheduleForm, setScheduleForm] = useState({
+    studentName: '',
+    studentContact: '',
+    subject: 'Math',
+    topicDescription: '',
+    scheduledAt: '',
+  })
+  const [scheduleStatus, setScheduleStatus] = useState('')
+  const [submittingSchedule, setSubmittingSchedule] = useState(false)
 
   useEffect(() => {
     if (!ready) return
@@ -67,6 +82,52 @@ export default function MentorDirectoryPage() {
 
   const getInitials = (name: string) =>
     name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+
+  const openScheduleModal = (mentor: Mentor) => {
+    setSelectedMentor(mentor)
+    setScheduleForm({
+      studentName: '',
+      studentContact: '',
+      subject: 'Math',
+      topicDescription: '',
+      scheduledAt: '',
+    })
+    setScheduleStatus('')
+  }
+
+  const submitSchedule = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!selectedMentor) return
+
+    setSubmittingSchedule(true)
+    setScheduleStatus('')
+
+    try {
+      const response = await fetch('/api/mentors/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mentorIdentityUserId: selectedMentor.identityUserId,
+          studentName: scheduleForm.studentName,
+          studentContact: scheduleForm.studentContact,
+          subject: scheduleForm.subject,
+          topicDescription: scheduleForm.topicDescription,
+          scheduledAt: scheduleForm.scheduledAt,
+        }),
+      })
+
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.error || 'Request failed.')
+
+      setScheduleStatus('Session request saved as pending.')
+      setSelectedMentor(null)
+      setTimeout(() => window.location.reload(), 700)
+    } catch (err) {
+      setScheduleStatus(err instanceof Error ? err.message : 'Unable to submit request.')
+    } finally {
+      setSubmittingSchedule(false)
+    }
+  }
 
   if (!ready || loading) {
     return (
@@ -160,12 +221,84 @@ export default function MentorDirectoryPage() {
                       <a href={`mailto:${mentor.contactEmail}`} className="inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors">Connect →</a>
                     )}
                   </div>
+                  <div className="mt-4 flex items-center justify-between gap-3">
+                    <div className="flex flex-col gap-1">
+                      {((mentor.weeklyApprovedCount ?? 0) >= 4) ? (
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-300">Fully Booked This Week</span>
+                      ) : (
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-300">{Math.max(0, 4 - (mentor.weeklyApprovedCount ?? 0))} slots left this week</span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      disabled={(mentor.weeklyApprovedCount ?? 0) >= 4}
+                      onClick={() => openScheduleModal(mentor)}
+                      className="px-3 py-2 rounded-lg bg-white/5 text-white text-sm font-semibold border border-white/10 hover:border-sky-400/50 hover:bg-sky-500/10 disabled:opacity-45 disabled:cursor-not-allowed"
+                    >
+                      Schedule Session
+                    </button>
+                  </div>
                 </div>
               )
             })}
           </div>
         )}
       </div>
+
+      {selectedMentor && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-slate-900/95 p-6 shadow-2xl shadow-blue-950/40">
+            <div className="flex items-start justify-between gap-3 mb-5">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-sky-300">Session Request</p>
+                <h3 className="text-2xl font-black text-white">Book with {selectedMentor.fullName}</h3>
+              </div>
+              <button type="button" onClick={() => setSelectedMentor(null)} className="text-slate-400 hover:text-white">✕</button>
+            </div>
+
+            <form onSubmit={submitSchedule} className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <label className="block text-sm text-slate-300">
+                  <span className="mb-1 block">Student Name</span>
+                  <input required value={scheduleForm.studentName} onChange={(e) => setScheduleForm((f) => ({ ...f, studentName: e.target.value }))} className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white" />
+                </label>
+                <label className="block text-sm text-slate-300">
+                  <span className="mb-1 block">Student Contact</span>
+                  <input required value={scheduleForm.studentContact} onChange={(e) => setScheduleForm((f) => ({ ...f, studentContact: e.target.value }))} className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white" placeholder="Email or Telegram" />
+                </label>
+              </div>
+
+              <label className="block text-sm text-slate-300">
+                <span className="mb-1 block">Subject</span>
+                <select required value={scheduleForm.subject} onChange={(e) => setScheduleForm((f) => ({ ...f, subject: e.target.value }))} className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white">
+                  {SCHEDULE_SUBJECTS.map((subject) => (
+                    <option key={subject} value={subject}>{subject}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block text-sm text-slate-300">
+                <span className="mb-1 block">Topic Description</span>
+                <textarea required rows={4} value={scheduleForm.topicDescription} onChange={(e) => setScheduleForm((f) => ({ ...f, topicDescription: e.target.value }))} className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white" placeholder="Describe the topic you want help with." />
+              </label>
+
+              <label className="block text-sm text-slate-300">
+                <span className="mb-1 block">Date & Time</span>
+                <input required type="datetime-local" value={scheduleForm.scheduledAt} onChange={(e) => setScheduleForm((f) => ({ ...f, scheduledAt: e.target.value }))} className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white" />
+              </label>
+
+              {scheduleStatus && <p className="text-sm text-sky-300">{scheduleStatus}</p>}
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setSelectedMentor(null)} className="rounded-xl border border-white/10 px-4 py-2 text-slate-300">Cancel</button>
+                <button type="submit" disabled={submittingSchedule} className="rounded-xl bg-sky-500 px-4 py-2 font-semibold text-white disabled:opacity-60">
+                  {submittingSchedule ? 'Submitting…' : 'Send Request'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

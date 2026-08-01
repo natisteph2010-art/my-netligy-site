@@ -20,12 +20,14 @@ import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as ApplyMentorRouteImport } from './routes/apply/mentor'
 import { Route as ApiAnnouncementsRouteImport } from './routes/api/announcements'
 import { Route as ApiRegisterStudentRouteImport } from './routes/api/register/student'
+import { Route as ApiMentorsSessionsRouteImport } from './routes/api/mentors/sessions'
 import { Route as ApiMentorsDirectoryRouteImport } from './routes/api/mentors/directory'
 import { Route as ApiApplicationsMentorRouteImport } from './routes/api/applications/mentor'
 import { Route as ApiAnnouncementsIdRouteImport } from './routes/api/announcements.$id'
 import { Route as ApiAdminStudentsRouteImport } from './routes/api/admin/students'
 import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
 import { Route as ApiAdminMentorsRouteImport } from './routes/api/admin/mentors'
+import { Route as ApiMentorsSessionsIdRouteImport } from './routes/api/mentors/sessions.$id'
 import { Route as ApiMentorsProfileUserIdRouteImport } from './routes/api/mentors/profile.$userId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -83,6 +85,11 @@ const ApiRegisterStudentRoute = ApiRegisterStudentRouteImport.update({
   path: '/api/register/student',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMentorsSessionsRoute = ApiMentorsSessionsRouteImport.update({
+  id: '/api/mentors/sessions',
+  path: '/api/mentors/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMentorsDirectoryRoute = ApiMentorsDirectoryRouteImport.update({
   id: '/api/mentors/directory',
   path: '/api/mentors/directory',
@@ -113,6 +120,11 @@ const ApiAdminMentorsRoute = ApiAdminMentorsRouteImport.update({
   path: '/api/admin/mentors',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMentorsSessionsIdRoute = ApiMentorsSessionsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiMentorsSessionsRoute,
+} as any)
 const ApiMentorsProfileUserIdRoute = ApiMentorsProfileUserIdRouteImport.update({
   id: '/api/mentors/profile/$userId',
   path: '/api/mentors/profile/$userId',
@@ -136,8 +148,10 @@ export interface FileRoutesByFullPath {
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
   '/api/applications/mentor': typeof ApiApplicationsMentorRoute
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
+  '/api/mentors/sessions': typeof ApiMentorsSessionsRouteWithChildren
   '/api/register/student': typeof ApiRegisterStudentRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
+  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -156,8 +170,10 @@ export interface FileRoutesByTo {
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
   '/api/applications/mentor': typeof ApiApplicationsMentorRoute
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
+  '/api/mentors/sessions': typeof ApiMentorsSessionsRouteWithChildren
   '/api/register/student': typeof ApiRegisterStudentRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
+  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -177,8 +193,10 @@ export interface FileRoutesById {
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
   '/api/applications/mentor': typeof ApiApplicationsMentorRoute
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
+  '/api/mentors/sessions': typeof ApiMentorsSessionsRouteWithChildren
   '/api/register/student': typeof ApiRegisterStudentRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
+  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -199,8 +217,10 @@ export interface FileRouteTypes {
     | '/api/announcements/$id'
     | '/api/applications/mentor'
     | '/api/mentors/directory'
+    | '/api/mentors/sessions'
     | '/api/register/student'
     | '/api/mentors/profile/$userId'
+    | '/api/mentors/sessions/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,8 +239,10 @@ export interface FileRouteTypes {
     | '/api/announcements/$id'
     | '/api/applications/mentor'
     | '/api/mentors/directory'
+    | '/api/mentors/sessions'
     | '/api/register/student'
     | '/api/mentors/profile/$userId'
+    | '/api/mentors/sessions/$id'
   id:
     | '__root__'
     | '/'
@@ -239,8 +261,10 @@ export interface FileRouteTypes {
     | '/api/announcements/$id'
     | '/api/applications/mentor'
     | '/api/mentors/directory'
+    | '/api/mentors/sessions'
     | '/api/register/student'
     | '/api/mentors/profile/$userId'
+    | '/api/mentors/sessions/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -259,6 +283,7 @@ export interface RootRouteChildren {
   ApiAdminStudentsRoute: typeof ApiAdminStudentsRoute
   ApiApplicationsMentorRoute: typeof ApiApplicationsMentorRoute
   ApiMentorsDirectoryRoute: typeof ApiMentorsDirectoryRoute
+  ApiMentorsSessionsRoute: typeof ApiMentorsSessionsRouteWithChildren
   ApiRegisterStudentRoute: typeof ApiRegisterStudentRoute
   ApiMentorsProfileUserIdRoute: typeof ApiMentorsProfileUserIdRoute
 }
@@ -342,6 +367,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRegisterStudentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mentors/sessions': {
+      id: '/api/mentors/sessions'
+      path: '/api/mentors/sessions'
+      fullPath: '/api/mentors/sessions'
+      preLoaderRoute: typeof ApiMentorsSessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/mentors/directory': {
       id: '/api/mentors/directory'
       path: '/api/mentors/directory'
@@ -384,6 +416,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminMentorsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mentors/sessions/$id': {
+      id: '/api/mentors/sessions/$id'
+      path: '/$id'
+      fullPath: '/api/mentors/sessions/$id'
+      preLoaderRoute: typeof ApiMentorsSessionsIdRouteImport
+      parentRoute: typeof ApiMentorsSessionsRoute
+    }
     '/api/mentors/profile/$userId': {
       id: '/api/mentors/profile/$userId'
       path: '/api/mentors/profile/$userId'
@@ -405,6 +444,17 @@ const ApiAnnouncementsRouteChildren: ApiAnnouncementsRouteChildren = {
 const ApiAnnouncementsRouteWithChildren =
   ApiAnnouncementsRoute._addFileChildren(ApiAnnouncementsRouteChildren)
 
+interface ApiMentorsSessionsRouteChildren {
+  ApiMentorsSessionsIdRoute: typeof ApiMentorsSessionsIdRoute
+}
+
+const ApiMentorsSessionsRouteChildren: ApiMentorsSessionsRouteChildren = {
+  ApiMentorsSessionsIdRoute: ApiMentorsSessionsIdRoute,
+}
+
+const ApiMentorsSessionsRouteWithChildren =
+  ApiMentorsSessionsRoute._addFileChildren(ApiMentorsSessionsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
@@ -421,6 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminStudentsRoute: ApiAdminStudentsRoute,
   ApiApplicationsMentorRoute: ApiApplicationsMentorRoute,
   ApiMentorsDirectoryRoute: ApiMentorsDirectoryRoute,
+  ApiMentorsSessionsRoute: ApiMentorsSessionsRouteWithChildren,
   ApiRegisterStudentRoute: ApiRegisterStudentRoute,
   ApiMentorsProfileUserIdRoute: ApiMentorsProfileUserIdRoute,
 }

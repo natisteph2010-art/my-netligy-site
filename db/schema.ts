@@ -5,6 +5,7 @@ import {
   timestamp,
   boolean,
   integer,
+  real,
 } from "drizzle-orm/pg-core";
 
 export const mentorApplications = pgTable("mentor_applications", {
@@ -41,9 +42,29 @@ export const mentorProfiles = pgTable("mentor_profiles", {
   whatsapp: text(),
   contactEmail: text("contact_email"),
   linkedin: text(),
+  totalHoursTaught: real("total_hours_taught").notNull().default(0),
   isPublic: boolean("is_public").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const mentoringSessions = pgTable("mentoring_sessions", {
+  id: serial().primaryKey(),
+  mentorIdentityUserId: text("mentor_identity_user_id").notNull(),
+  studentName: text("student_name").notNull(),
+  studentContact: text("student_contact").notNull(),
+  subject: text().notNull(),
+  topicDescription: text("topic_description").notNull(),
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  status: text().notNull().default("PENDING"), // PENDING | UPCOMING | COMPLETED | DECLINED
+  reminderSentAt: timestamp("reminder_sent_at"),
+  actualDurationMinutes: integer("actual_duration_minutes"),
+  topicsCovered: text("topics_covered"),
+  evidenceLink: text("evidence_link"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  approvedAt: timestamp("approved_at"),
+  completedAt: timestamp("completed_at"),
 });
 
 export const announcements = pgTable("announcements", {

@@ -1,6 +1,6 @@
 import { getUser } from "@netlify/identity";
 import { drizzle } from "drizzle-orm/netlify-db";
-import { pgTable, timestamp, boolean, text, integer, serial } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, boolean, real, text, integer, serial } from "drizzle-orm/pg-core";
 const mentorApplications = pgTable("mentor_applications", {
   id: serial().primaryKey(),
   fullName: text("full_name").notNull(),
@@ -37,9 +37,29 @@ const mentorProfiles = pgTable("mentor_profiles", {
   whatsapp: text(),
   contactEmail: text("contact_email"),
   linkedin: text(),
+  totalHoursTaught: real("total_hours_taught").notNull().default(0),
   isPublic: boolean("is_public").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
+});
+const mentoringSessions = pgTable("mentoring_sessions", {
+  id: serial().primaryKey(),
+  mentorIdentityUserId: text("mentor_identity_user_id").notNull(),
+  studentName: text("student_name").notNull(),
+  studentContact: text("student_contact").notNull(),
+  subject: text().notNull(),
+  topicDescription: text("topic_description").notNull(),
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  status: text().notNull().default("PENDING"),
+  // PENDING | UPCOMING | COMPLETED | DECLINED
+  reminderSentAt: timestamp("reminder_sent_at"),
+  actualDurationMinutes: integer("actual_duration_minutes"),
+  topicsCovered: text("topics_covered"),
+  evidenceLink: text("evidence_link"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  approvedAt: timestamp("approved_at"),
+  completedAt: timestamp("completed_at")
 });
 const announcements = pgTable("announcements", {
   id: serial().primaryKey(),
@@ -75,6 +95,7 @@ const schema = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   announcements,
   mentorApplications,
   mentorProfiles,
+  mentoringSessions,
   students,
   userAccounts
 }, Symbol.toStringTag, { value: "Module" }));
@@ -104,9 +125,10 @@ async function getAdminUser() {
 }
 export {
   announcements as a,
-  mentorApplications as b,
-  getCurrentUserWithRole as c,
+  mentoringSessions as b,
+  mentorApplications as c,
   db as d,
+  getCurrentUserWithRole as e,
   getAdminUser as g,
   mentorProfiles as m,
   students as s

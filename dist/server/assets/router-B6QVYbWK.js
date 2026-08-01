@@ -3,8 +3,8 @@ import { jsx, Fragment, jsxs } from "react/jsx-runtime";
 import { useState, useEffect, createContext, useContext, useRef } from "react";
 import { getUser, onAuthChange, logout, handleAuthCallback, signup, AuthError } from "@netlify/identity";
 import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "../server.js";
-import { g as getAdminUser, d as db, a as announcements, s as students, m as mentorProfiles, b as mentorApplications } from "./authorization-C4iwimjJ.js";
-import { desc, and, eq, lte, or, isNull, gt, count } from "drizzle-orm";
+import { g as getAdminUser, d as db, a as announcements, s as students, m as mentorProfiles, b as mentoringSessions, c as mentorApplications } from "./authorization-DEwvlZPH.js";
+import { desc, and, eq, lte, or, isNull, gt, asc, gte, count } from "drizzle-orm";
 const IdentityContext = createContext(null);
 function IdentityProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -56,7 +56,7 @@ function GradeBridgeLogo({ compact = false, className = "" }) {
     }
   );
 }
-const Route$i = createRootRoute({
+const Route$k = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -158,15 +158,27 @@ function NavBar() {
     ] })
   ] });
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-BKjVEOAR.js");
-const Route$h = createFileRoute("/reset-password")({
+const $$splitComponentImporter$1 = () => import("./reset-password-ChTWXDhl.js");
+const Route$j = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-const Route$g = createFileRoute("/mentors")({
+const Route$i = createFileRoute("/mentors")({
   component: MentorDirectoryPage
 });
 const SUBJECTS_FILTER = [
   "All",
+  "Math",
+  "Physics",
+  "Chem",
+  "Bio",
+  "English",
+  "Geo",
+  "Computer Science",
+  "Business",
+  "ICT",
+  "Global Citizenship"
+];
+const SCHEDULE_SUBJECTS = [
   "Math",
   "Physics",
   "Chem",
@@ -187,6 +199,15 @@ function MentorDirectoryPage() {
   const [subjectFilter, setSubjectFilter] = useState("All");
   const [error, setError] = useState("");
   const [selectedMentor, setSelectedMentor] = useState(null);
+  const [scheduleForm, setScheduleForm] = useState({
+    studentName: "",
+    studentContact: "",
+    subject: "Math",
+    topicDescription: "",
+    scheduledAt: ""
+  });
+  const [scheduleStatus, setScheduleStatus] = useState("");
+  const [submittingSchedule, setSubmittingSchedule] = useState(false);
   useEffect(() => {
     if (!ready) return;
     if (!user) {
@@ -218,70 +239,169 @@ function MentorDirectoryPage() {
     }
   };
   const getInitials = (name) => name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  const openScheduleModal = (mentor) => {
+    setSelectedMentor(mentor);
+    setScheduleForm({
+      studentName: "",
+      studentContact: "",
+      subject: "Math",
+      topicDescription: "",
+      scheduledAt: ""
+    });
+    setScheduleStatus("");
+  };
+  const submitSchedule = async (event) => {
+    event.preventDefault();
+    if (!selectedMentor) return;
+    setSubmittingSchedule(true);
+    setScheduleStatus("");
+    try {
+      const response = await fetch("/api/mentors/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mentorIdentityUserId: selectedMentor.identityUserId,
+          studentName: scheduleForm.studentName,
+          studentContact: scheduleForm.studentContact,
+          subject: scheduleForm.subject,
+          topicDescription: scheduleForm.topicDescription,
+          scheduledAt: scheduleForm.scheduledAt
+        })
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Request failed.");
+      setScheduleStatus("Session request saved as pending.");
+      setSelectedMentor(null);
+      setTimeout(() => window.location.reload(), 700);
+    } catch (err) {
+      setScheduleStatus(err instanceof Error ? err.message : "Unable to submit request.");
+    } finally {
+      setSubmittingSchedule(false);
+    }
+  };
   if (!ready || loading) {
     return /* @__PURE__ */ jsx("div", { className: "min-h-screen flex items-center justify-center", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center gap-4", children: [
       /* @__PURE__ */ jsx("div", { className: "w-12 h-12 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" }),
       /* @__PURE__ */ jsx("p", { className: "text-slate-400", children: "Loading mentor directory…" })
     ] }) });
   }
-  return /* @__PURE__ */ jsx("div", { className: "min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxs("div", { className: "max-w-6xl mx-auto", children: [
-    /* @__PURE__ */ jsxs("div", { className: "text-center mb-12", children: [
-      /* @__PURE__ */ jsx("span", { className: "text-teal-400 font-semibold tracking-wider uppercase text-sm", children: "Mentor Directory" }),
-      /* @__PURE__ */ jsxs("h1", { className: "text-4xl sm:text-5xl font-black mt-3 mb-4 text-white", children: [
-        "Find your ",
-        /* @__PURE__ */ jsx("span", { className: "gradient-text", children: "next connection" })
+  return /* @__PURE__ */ jsxs("div", { className: "min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8", children: [
+    /* @__PURE__ */ jsxs("div", { className: "max-w-6xl mx-auto", children: [
+      /* @__PURE__ */ jsxs("div", { className: "text-center mb-12", children: [
+        /* @__PURE__ */ jsx("span", { className: "text-teal-400 font-semibold tracking-wider uppercase text-sm", children: "Mentor Directory" }),
+        /* @__PURE__ */ jsxs("h1", { className: "text-4xl sm:text-5xl font-black mt-3 mb-4 text-white", children: [
+          "Find your ",
+          /* @__PURE__ */ jsx("span", { className: "gradient-text", children: "next connection" })
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: "text-slate-400 max-w-2xl mx-auto", children: "Browse approved mentors, filter by subject, and explore a clean profile list to find the right connection for your academic goals." })
       ] }),
-      /* @__PURE__ */ jsx("p", { className: "text-slate-400 max-w-2xl mx-auto", children: "Browse approved mentors, filter by subject, and explore a clean profile list to find the right connection for your academic goals." })
-    ] }),
-    /* @__PURE__ */ jsx("div", { className: "flex flex-col sm:flex-row gap-4 mb-8", children: /* @__PURE__ */ jsxs("div", { className: "flex-1 relative", children: [
-      /* @__PURE__ */ jsx("span", { className: "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400", children: "🔍" }),
-      /* @__PURE__ */ jsx(
-        "input",
+      /* @__PURE__ */ jsx("div", { className: "flex flex-col sm:flex-row gap-4 mb-8", children: /* @__PURE__ */ jsxs("div", { className: "flex-1 relative", children: [
+        /* @__PURE__ */ jsx("span", { className: "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400", children: "🔍" }),
+        /* @__PURE__ */ jsx(
+          "input",
+          {
+            type: "text",
+            value: search,
+            onChange: (e) => setSearch(e.target.value),
+            placeholder: "Search mentors by name, bio, or subject…",
+            className: "w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
+          }
+        )
+      ] }) }),
+      /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-8", children: SUBJECTS_FILTER.map((s) => /* @__PURE__ */ jsx(
+        "button",
         {
-          type: "text",
-          value: search,
-          onChange: (e) => setSearch(e.target.value),
-          placeholder: "Search mentors by name, bio, or subject…",
-          className: "w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all"
-        }
-      )
-    ] }) }),
-    /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-8", children: SUBJECTS_FILTER.map((s) => /* @__PURE__ */ jsx(
-      "button",
-      {
-        onClick: () => setSubjectFilter(s),
-        className: `px-4 py-2 rounded-xl text-sm font-medium transition-all ${subjectFilter === s ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "glass border border-white/10 text-slate-300 hover:text-white hover:border-blue-500/30"}`,
-        children: s
-      },
-      s
-    )) }),
-    error && /* @__PURE__ */ jsx("div", { className: "text-center py-12 text-red-400", children: error }),
-    mentors.length === 0 && !error ? /* @__PURE__ */ jsxs("div", { className: "text-center py-20", children: [
-      /* @__PURE__ */ jsx("div", { className: "text-5xl mb-4", children: "🔍" }),
-      /* @__PURE__ */ jsx("h3", { className: "text-white font-bold text-xl mb-2", children: "No mentors found" }),
-      /* @__PURE__ */ jsx("p", { className: "text-slate-400", children: "Try adjusting your search or filters." })
-    ] }) : /* @__PURE__ */ jsx("div", { className: "grid md:grid-cols-2 xl:grid-cols-3 gap-6", children: mentors.map((mentor) => {
-      const subjects = parseSubjects(mentor.subjects);
-      return /* @__PURE__ */ jsxs("div", { className: "glass rounded-3xl p-6 card-glow glass-hover flex flex-col", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 mb-4", children: [
-          /* @__PURE__ */ jsx("div", { className: "w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm overflow-hidden", children: mentor.profilePicUrl ? /* @__PURE__ */ jsx("img", { src: mentor.profilePicUrl, alt: mentor.fullName, className: "w-full h-full object-cover" }) : getInitials(mentor.fullName) }),
-          /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
-            /* @__PURE__ */ jsx("h3", { className: "text-white font-bold text-lg truncate", children: mentor.fullName }),
-            /* @__PURE__ */ jsx("p", { className: "text-slate-400 text-xs", children: subjects.slice(0, 2).join(" · ") || "IGCSE Mentor" })
+          onClick: () => setSubjectFilter(s),
+          className: `px-4 py-2 rounded-xl text-sm font-medium transition-all ${subjectFilter === s ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "glass border border-white/10 text-slate-300 hover:text-white hover:border-blue-500/30"}`,
+          children: s
+        },
+        s
+      )) }),
+      error && /* @__PURE__ */ jsx("div", { className: "text-center py-12 text-red-400", children: error }),
+      mentors.length === 0 && !error ? /* @__PURE__ */ jsxs("div", { className: "text-center py-20", children: [
+        /* @__PURE__ */ jsx("div", { className: "text-5xl mb-4", children: "🔍" }),
+        /* @__PURE__ */ jsx("h3", { className: "text-white font-bold text-xl mb-2", children: "No mentors found" }),
+        /* @__PURE__ */ jsx("p", { className: "text-slate-400", children: "Try adjusting your search or filters." })
+      ] }) : /* @__PURE__ */ jsx("div", { className: "grid md:grid-cols-2 xl:grid-cols-3 gap-6", children: mentors.map((mentor) => {
+        const subjects = parseSubjects(mentor.subjects);
+        return /* @__PURE__ */ jsxs("div", { className: "glass rounded-3xl p-6 card-glow glass-hover flex flex-col", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 mb-4", children: [
+            /* @__PURE__ */ jsx("div", { className: "w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm overflow-hidden", children: mentor.profilePicUrl ? /* @__PURE__ */ jsx("img", { src: mentor.profilePicUrl, alt: mentor.fullName, className: "w-full h-full object-cover" }) : getInitials(mentor.fullName) }),
+            /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
+              /* @__PURE__ */ jsx("h3", { className: "text-white font-bold text-lg truncate", children: mentor.fullName }),
+              /* @__PURE__ */ jsx("p", { className: "text-slate-400 text-xs", children: subjects.slice(0, 2).join(" · ") || "IGCSE Mentor" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: "text-slate-300 text-sm leading-relaxed mb-4 flex-1", children: mentor.bio || mentor.reason || "An approved mentor ready to share their experience." }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1.5 mb-4", children: subjects.slice(0, 4).map((subject) => /* @__PURE__ */ jsx("span", { className: "px-2 py-1 rounded-md bg-sky-400/10 text-sky-200 text-xs", children: subject }, subject)) }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3 mt-auto", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-xs text-slate-400", children: mentor.availability || "Flexible availability" }),
+            mentor.contactEmail && /* @__PURE__ */ jsx("a", { href: `mailto:${mentor.contactEmail}`, className: "inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors", children: "Connect →" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "mt-4 flex items-center justify-between gap-3", children: [
+            /* @__PURE__ */ jsx("div", { className: "flex flex-col gap-1", children: (mentor.weeklyApprovedCount ?? 0) >= 4 ? /* @__PURE__ */ jsx("span", { className: "text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-300", children: "Fully Booked This Week" }) : /* @__PURE__ */ jsxs("span", { className: "text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-300", children: [
+              Math.max(0, 4 - (mentor.weeklyApprovedCount ?? 0)),
+              " slots left this week"
+            ] }) }),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                type: "button",
+                disabled: (mentor.weeklyApprovedCount ?? 0) >= 4,
+                onClick: () => openScheduleModal(mentor),
+                className: "px-3 py-2 rounded-lg bg-white/5 text-white text-sm font-semibold border border-white/10 hover:border-sky-400/50 hover:bg-sky-500/10 disabled:opacity-45 disabled:cursor-not-allowed",
+                children: "Schedule Session"
+              }
+            )
+          ] })
+        ] }, mentor.id);
+      }) })
+    ] }),
+    selectedMentor && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm", children: /* @__PURE__ */ jsxs("div", { className: "w-full max-w-xl rounded-3xl border border-white/10 bg-slate-900/95 p-6 shadow-2xl shadow-blue-950/40", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between gap-3 mb-5", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("p", { className: "text-xs uppercase tracking-[0.2em] text-sky-300", children: "Session Request" }),
+          /* @__PURE__ */ jsxs("h3", { className: "text-2xl font-black text-white", children: [
+            "Book with ",
+            selectedMentor.fullName
           ] })
         ] }),
-        /* @__PURE__ */ jsx("p", { className: "text-slate-300 text-sm leading-relaxed mb-4 flex-1", children: mentor.bio || mentor.reason || "An approved mentor ready to share their experience." }),
-        /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1.5 mb-4", children: subjects.slice(0, 4).map((subject) => /* @__PURE__ */ jsx("span", { className: "px-2 py-1 rounded-md bg-sky-400/10 text-sky-200 text-xs", children: subject }, subject)) }),
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3 mt-auto", children: [
-          /* @__PURE__ */ jsx("span", { className: "text-xs text-slate-400", children: mentor.availability || "Flexible availability" }),
-          mentor.contactEmail && /* @__PURE__ */ jsx("a", { href: `mailto:${mentor.contactEmail}`, className: "inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 text-white text-sm font-semibold hover:bg-sky-400 transition-colors", children: "Connect →" })
+        /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setSelectedMentor(null), className: "text-slate-400 hover:text-white", children: "✕" })
+      ] }),
+      /* @__PURE__ */ jsxs("form", { onSubmit: submitSchedule, className: "space-y-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "grid sm:grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxs("label", { className: "block text-sm text-slate-300", children: [
+            /* @__PURE__ */ jsx("span", { className: "mb-1 block", children: "Student Name" }),
+            /* @__PURE__ */ jsx("input", { required: true, value: scheduleForm.studentName, onChange: (e) => setScheduleForm((f) => ({ ...f, studentName: e.target.value })), className: "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white" })
+          ] }),
+          /* @__PURE__ */ jsxs("label", { className: "block text-sm text-slate-300", children: [
+            /* @__PURE__ */ jsx("span", { className: "mb-1 block", children: "Student Contact" }),
+            /* @__PURE__ */ jsx("input", { required: true, value: scheduleForm.studentContact, onChange: (e) => setScheduleForm((f) => ({ ...f, studentContact: e.target.value })), className: "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white", placeholder: "Email or Telegram" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("label", { className: "block text-sm text-slate-300", children: [
+          /* @__PURE__ */ jsx("span", { className: "mb-1 block", children: "Subject" }),
+          /* @__PURE__ */ jsx("select", { required: true, value: scheduleForm.subject, onChange: (e) => setScheduleForm((f) => ({ ...f, subject: e.target.value })), className: "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white", children: SCHEDULE_SUBJECTS.map((subject) => /* @__PURE__ */ jsx("option", { value: subject, children: subject }, subject)) })
+        ] }),
+        /* @__PURE__ */ jsxs("label", { className: "block text-sm text-slate-300", children: [
+          /* @__PURE__ */ jsx("span", { className: "mb-1 block", children: "Topic Description" }),
+          /* @__PURE__ */ jsx("textarea", { required: true, rows: 4, value: scheduleForm.topicDescription, onChange: (e) => setScheduleForm((f) => ({ ...f, topicDescription: e.target.value })), className: "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white", placeholder: "Describe the topic you want help with." })
+        ] }),
+        /* @__PURE__ */ jsxs("label", { className: "block text-sm text-slate-300", children: [
+          /* @__PURE__ */ jsx("span", { className: "mb-1 block", children: "Date & Time" }),
+          /* @__PURE__ */ jsx("input", { required: true, type: "datetime-local", value: scheduleForm.scheduledAt, onChange: (e) => setScheduleForm((f) => ({ ...f, scheduledAt: e.target.value })), className: "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white" })
+        ] }),
+        scheduleStatus && /* @__PURE__ */ jsx("p", { className: "text-sm text-sky-300", children: scheduleStatus }),
+        /* @__PURE__ */ jsxs("div", { className: "flex justify-end gap-3 pt-2", children: [
+          /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setSelectedMentor(null), className: "rounded-xl border border-white/10 px-4 py-2 text-slate-300", children: "Cancel" }),
+          /* @__PURE__ */ jsx("button", { type: "submit", disabled: submittingSchedule, className: "rounded-xl bg-sky-500 px-4 py-2 font-semibold text-white disabled:opacity-60", children: submittingSchedule ? "Submitting…" : "Send Request" })
         ] })
-      ] }, mentor.id);
-    }) })
-  ] }) });
+      ] })
+    ] }) })
+  ] });
 }
-const $$splitComponentImporter = () => import("./login-DyoLIFKN.js");
-const Route$f = createFileRoute("/login")({
+const $$splitComponentImporter = () => import("./login-BXSXP_pq.js");
+const Route$h = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
 const heroKicker = "The Knowledge Network";
@@ -507,7 +627,7 @@ function ParticleNetwork({ className = "", density = 42 }) {
   }, [density]);
   return /* @__PURE__ */ jsx("canvas", { ref: canvasRef, className: `particle-network ${className}`, "aria-hidden": "true" });
 }
-const Route$e = createFileRoute("/")({
+const Route$g = createFileRoute("/")({
   component: LandingPage
 });
 const DEFAULT_ABOUT_CARDS = [
@@ -881,7 +1001,7 @@ function LandingPage() {
     ] }) })
   ] });
 }
-const Route$d = createFileRoute("/register/student")({
+const Route$f = createFileRoute("/register/student")({
   component: StudentRegisterPage
 });
 const GRADE_LEVELS = [
@@ -1062,7 +1182,7 @@ function StudentRegisterPage() {
     ] }, b.label)) })
   ] }) });
 }
-const Route$c = createFileRoute("/dashboard/student")({
+const Route$e = createFileRoute("/dashboard/student")({
   component: StudentDashboard
 });
 function StudentDashboard() {
@@ -1160,7 +1280,7 @@ function StudentDashboard() {
     ] })
   ] }) });
 }
-const Route$b = createFileRoute("/dashboard/mentor")({
+const Route$d = createFileRoute("/dashboard/mentor")({
   component: MentorDashboard
 });
 const AVAILABLE_SUBJECTS$1 = [
@@ -1188,6 +1308,10 @@ function MentorDashboard() {
   const [saveMsg, setSaveMsg] = useState("");
   const [subjectsList, setSubjectsList] = useState([]);
   const [gradeInputs, setGradeInputs] = useState([]);
+  const [sessionsView, setSessionsView] = useState("requests");
+  const [sessions, setSessions] = useState([]);
+  const [sessionActionMsg, setSessionActionMsg] = useState("");
+  const [logDrafts, setLogDrafts] = useState({});
   useEffect(() => {
     if (ready && !user) {
       navigate({ to: "/login" });
@@ -1209,6 +1333,9 @@ function MentorDashboard() {
           } catch {
           }
         }
+      });
+      fetch(`/api/mentors/sessions?mentorId=${user.id}`).then((r) => r.ok ? r.json() : null).then((data) => {
+        if (data?.sessions) setSessions(data.sessions);
       });
     }
   }, [ready, user, navigate]);
@@ -1236,6 +1363,35 @@ function MentorDashboard() {
     setEditing(false);
     setSaving(false);
     setTimeout(() => setSaveMsg(""), 3e3);
+  };
+  const pendingSessions = sessions.filter((session) => session.status === "PENDING");
+  const upcomingSessions = sessions.filter((session) => session.status === "UPCOMING");
+  const completedSessions = sessions.filter((session) => session.status === "COMPLETED");
+  const sessionNeedsLogging = upcomingSessions.filter((session) => new Date(session.scheduledAt).getTime() < Date.now());
+  const updateSessionStatus = async (sessionId, action, payload) => {
+    const response = await fetch(`/api/mentors/sessions/${sessionId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, ...payload })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      setSessionActionMsg(data.error || "Action failed.");
+      return;
+    }
+    setSessionActionMsg(action === "approve" ? "Request approved." : action === "decline" ? "Request declined." : "Session logged successfully.");
+    fetch(`/api/mentors/sessions?mentorId=${user.id}`).then((r) => r.ok ? r.json() : null).then((data2) => {
+      if (data2?.sessions) setSessions(data2.sessions);
+    });
+  };
+  const handleLogSubmit = async (sessionId) => {
+    const draft = logDrafts[sessionId];
+    if (!draft) return;
+    await updateSessionStatus(sessionId, "complete", {
+      actualDurationMinutes: Number(draft.actualDurationMinutes),
+      topicsCovered: draft.topicsCovered,
+      evidenceLink: draft.evidenceLink
+    });
   };
   if (!ready || !user) {
     return /* @__PURE__ */ jsx("div", { className: "min-h-screen flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" }) });
@@ -1448,7 +1604,93 @@ function MentorDashboard() {
           /* @__PURE__ */ jsx("p", { className: "text-white font-semibold", children: "Approved Mentor" }),
           /* @__PURE__ */ jsx("p", { className: "text-slate-400 text-sm", children: "Your profile is live in the mentor directory" })
         ] }),
-        /* @__PURE__ */ jsx(Link, { to: "/mentors", className: "ml-auto px-4 py-2 rounded-xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 text-sm transition-colors", children: "View Directory →" })
+        /* @__PURE__ */ jsxs("div", { className: "ml-auto flex items-center gap-3", children: [
+          /* @__PURE__ */ jsxs("div", { className: "rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300", children: [
+            "Total Hours Taught: ",
+            /* @__PURE__ */ jsx("span", { className: "font-semibold text-white", children: (profile.totalHoursTaught ?? 0).toFixed(1) })
+          ] }),
+          /* @__PURE__ */ jsx(Link, { to: "/mentors", className: "px-4 py-2 rounded-xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 text-sm transition-colors", children: "View Directory →" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "glass rounded-3xl p-6", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-5", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("p", { className: "text-xs uppercase tracking-[0.24em] text-sky-300", children: "Sessions" }),
+            /* @__PURE__ */ jsx("h2", { className: "text-2xl font-black text-white", children: "Requests & Logbook" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex rounded-xl bg-white/5 p-1", children: [
+            /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setSessionsView("requests"), className: `rounded-lg px-3 py-1.5 text-sm font-semibold ${sessionsView === "requests" ? "bg-blue-600 text-white" : "text-slate-300"}`, children: "Requests & Upcoming" }),
+            /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setSessionsView("completed"), className: `rounded-lg px-3 py-1.5 text-sm font-semibold ${sessionsView === "completed" ? "bg-blue-600 text-white" : "text-slate-300"}`, children: "Completed Logs" })
+          ] })
+        ] }),
+        sessionActionMsg && /* @__PURE__ */ jsx("p", { className: "mb-4 rounded-xl bg-sky-500/10 px-3 py-2 text-sm text-sky-200", children: sessionActionMsg }),
+        sessionsView === "requests" ? /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+          pendingSessions.length === 0 && upcomingSessions.length === 0 ? /* @__PURE__ */ jsx("div", { className: "rounded-2xl border border-dashed border-white/10 px-4 py-8 text-center text-slate-400", children: "No session requests or upcoming sessions yet." }) : null,
+          pendingSessions.length > 0 && /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsx("h3", { className: "text-sm font-semibold uppercase tracking-[0.2em] text-slate-400", children: "Pending Requests" }),
+            pendingSessions.map((session) => /* @__PURE__ */ jsx("div", { className: "rounded-2xl border border-white/10 bg-white/5 p-4", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3 md:flex-row md:items-center md:justify-between", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("div", { className: "text-white font-semibold", children: session.studentName }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-slate-400", children: [
+                  session.studentContact,
+                  " · ",
+                  session.subject,
+                  " · ",
+                  new Date(session.scheduledAt).toLocaleString()
+                ] }),
+                /* @__PURE__ */ jsx("p", { className: "mt-2 text-sm text-slate-300", children: session.topicDescription })
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
+                /* @__PURE__ */ jsx("button", { type: "button", onClick: () => updateSessionStatus(session.id, "approve"), className: "rounded-lg bg-teal-500 px-3 py-2 text-sm font-semibold text-white", children: "Approve" }),
+                /* @__PURE__ */ jsx("button", { type: "button", onClick: () => updateSessionStatus(session.id, "decline"), className: "rounded-lg bg-red-500/20 px-3 py-2 text-sm font-semibold text-red-300", children: "Decline" })
+              ] })
+            ] }) }, session.id))
+          ] }),
+          upcomingSessions.length > 0 && /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsx("h3", { className: "text-sm font-semibold uppercase tracking-[0.2em] text-slate-400", children: "Upcoming Sessions" }),
+            upcomingSessions.map((session) => /* @__PURE__ */ jsx("div", { className: "rounded-2xl border border-white/10 bg-white/5 p-4", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3 md:flex-row md:items-center md:justify-between", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("div", { className: "text-white font-semibold", children: session.studentName }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-slate-400", children: [
+                  session.subject,
+                  " · ",
+                  new Date(session.scheduledAt).toLocaleString()
+                ] }),
+                /* @__PURE__ */ jsx("p", { className: "mt-2 text-sm text-slate-300", children: session.topicDescription })
+              ] }),
+              sessionNeedsLogging.some((item) => item.id === session.id) && /* @__PURE__ */ jsxs("div", { className: "rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-100", children: [
+                /* @__PURE__ */ jsx("div", { className: "font-semibold", children: "Log Notes & Evidence" }),
+                /* @__PURE__ */ jsxs("div", { className: "mt-2 space-y-2", children: [
+                  /* @__PURE__ */ jsx("input", { value: logDrafts[session.id]?.actualDurationMinutes ?? "", onChange: (e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: e.target.value, topicsCovered: prev[session.id]?.topicsCovered ?? "", evidenceLink: prev[session.id]?.evidenceLink ?? "" } })), placeholder: "Actual duration (minutes)", className: "w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" }),
+                  /* @__PURE__ */ jsx("textarea", { rows: 3, value: logDrafts[session.id]?.topicsCovered ?? "", onChange: (e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? "", topicsCovered: e.target.value, evidenceLink: prev[session.id]?.evidenceLink ?? "" } })), placeholder: "Topics covered", className: "w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" }),
+                  /* @__PURE__ */ jsx("input", { value: logDrafts[session.id]?.evidenceLink ?? "", onChange: (e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? "", topicsCovered: prev[session.id]?.topicsCovered ?? "", evidenceLink: e.target.value } })), placeholder: "Evidence link (optional)", className: "w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" }),
+                  /* @__PURE__ */ jsx("button", { type: "button", onClick: () => handleLogSubmit(session.id), className: "rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white", children: "Submit Log" })
+                ] })
+              ] })
+            ] }) }, session.id))
+          ] })
+        ] }) : /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+          completedSessions.length === 0 ? /* @__PURE__ */ jsx("div", { className: "rounded-2xl border border-dashed border-white/10 px-4 py-8 text-center text-slate-400", children: "No completed logs yet." }) : null,
+          completedSessions.map((session) => /* @__PURE__ */ jsxs("div", { className: "rounded-2xl border border-white/10 bg-white/5 p-4", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-2 md:flex-row md:items-center md:justify-between", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("div", { className: "text-white font-semibold", children: session.studentName }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-slate-400", children: [
+                  session.subject,
+                  " · Completed ",
+                  new Date(session.completedAt || session.scheduledAt).toLocaleString()
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "text-sm text-slate-300", children: [
+                "Duration: ",
+                session.actualDurationMinutes ?? 0,
+                " min"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: "mt-3 text-sm text-slate-300", children: session.topicsCovered || "No notes recorded." }),
+            session.evidenceLink && /* @__PURE__ */ jsx("a", { href: session.evidenceLink, className: "mt-2 inline-block text-sm text-sky-300", children: "View evidence" })
+          ] }, session.id))
+        ] })
       ] })
     ] })
   ] }) });
@@ -1468,7 +1710,7 @@ var createSsrRpc = (functionId) => {
 const getServerUser = createServerFn({
   method: "GET"
 }).handler(createSsrRpc("49106938b52c8bf2e7795ac418917757130e43844a341613882f98c174227919"));
-const Route$a = createFileRoute("/dashboard/admin")({
+const Route$c = createFileRoute("/dashboard/admin")({
   beforeLoad: async () => {
     const user = await getServerUser();
     if (!user) throw redirect({ to: "/login" });
@@ -2304,7 +2546,7 @@ function SettingsPanel({ email }) {
     ] })
   ] });
 }
-const Route$9 = createFileRoute("/apply/mentor")({
+const Route$b = createFileRoute("/apply/mentor")({
   component: MentorApplyPage
 });
 const AVAILABLE_SUBJECTS = [
@@ -2554,7 +2796,7 @@ function MentorApplyPage() {
     ] })
   ] }) });
 }
-const Route$8 = createFileRoute("/api/announcements")({
+const Route$a = createFileRoute("/api/announcements")({
   server: {
     handlers: {
       // GET /api/announcements            -> public: active (published, not expired, not archived)
@@ -2607,7 +2849,7 @@ const Route$8 = createFileRoute("/api/announcements")({
     }
   }
 });
-const Route$7 = createFileRoute("/api/register/student")({
+const Route$9 = createFileRoute("/api/register/student")({
   server: {
     handlers: {
       POST: async ({ request }) => {
@@ -2633,7 +2875,138 @@ const Route$7 = createFileRoute("/api/register/student")({
     }
   }
 });
-const Route$6 = createFileRoute("/api/mentors/directory")({
+const ALLOWED_SUBJECTS = [
+  "Math",
+  "Physics",
+  "Chem",
+  "Bio",
+  "English",
+  "Geo",
+  "Computer Science",
+  "Business",
+  "ICT",
+  "Global Citizenship"
+];
+const MAX_WEEKLY_APPROVED = 4;
+const startOfWeek$1 = (date) => {
+  const start = new Date(date);
+  const day = start.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + diff);
+  start.setHours(0, 0, 0, 0);
+  return start;
+};
+const endOfWeek$1 = (date) => {
+  const end = new Date(date);
+  const start = startOfWeek$1(date);
+  end.setTime(start.getTime());
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return end;
+};
+const loadWeekSessions = async (mentorIdentityUserId) => {
+  const weekStart = startOfWeek$1(/* @__PURE__ */ new Date());
+  const weekEnd = endOfWeek$1(/* @__PURE__ */ new Date());
+  const records = await db.select().from(mentoringSessions).where(
+    and(
+      eq(mentoringSessions.mentorIdentityUserId, mentorIdentityUserId),
+      or(eq(mentoringSessions.status, "UPCOMING"), eq(mentoringSessions.status, "COMPLETED")),
+      gte(mentoringSessions.scheduledAt, weekStart),
+      lte(mentoringSessions.scheduledAt, weekEnd)
+    )
+  );
+  return records;
+};
+const computeUniqueCount = (records) => {
+  const distinct = new Set(records.map((session) => `${session.studentName}::${session.studentContact}`));
+  return distinct.size;
+};
+const Route$8 = createFileRoute("/api/mentors/sessions")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        const user = await getUser();
+        if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        const url = new URL(request.url);
+        const mentorIdentityUserId = url.searchParams.get("mentorId") || user.id;
+        const scope = url.searchParams.get("scope") || "dashboard";
+        const isMentorOwner = user.roles?.includes("mentor") && user.id === mentorIdentityUserId;
+        const isAdmin = user.roles?.includes("admin");
+        if (!isMentorOwner && !isAdmin) {
+          return Response.json({ error: "Forbidden" }, { status: 403 });
+        }
+        const requestedStatuses = scope === "completed" ? ["COMPLETED"] : scope === "requests" ? ["PENDING"] : ["PENDING", "UPCOMING", "COMPLETED", "DECLINED"];
+        const records = await db.select().from(mentoringSessions).where(
+          and(
+            eq(mentoringSessions.mentorIdentityUserId, mentorIdentityUserId),
+            inArray(mentoringSessions.status, requestedStatuses)
+          )
+        ).orderBy(asc(mentoringSessions.scheduledAt));
+        const weeklyRecords = await loadWeekSessions(mentorIdentityUserId);
+        const weeklyApprovedCount = computeUniqueCount(weeklyRecords);
+        const reminderWindowStart = /* @__PURE__ */ new Date();
+        reminderWindowStart.setHours(reminderWindowStart.getHours() + 24);
+        for (const record of records) {
+          if (record.status !== "UPCOMING" || record.reminderSentAt) continue;
+          if (record.scheduledAt && new Date(record.scheduledAt) <= reminderWindowStart) {
+            await db.update(mentoringSessions).set({ reminderSentAt: /* @__PURE__ */ new Date(), updatedAt: /* @__PURE__ */ new Date() }).where(eq(mentoringSessions.id, record.id));
+          }
+        }
+        return Response.json({
+          mentorIdentityUserId,
+          weeklyApprovedCount,
+          maxWeeklyCapacity: MAX_WEEKLY_APPROVED,
+          sessions: records
+        });
+      },
+      POST: async ({ request }) => {
+        const user = await getUser();
+        if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        const body = await request.json();
+        const {
+          mentorIdentityUserId,
+          studentName,
+          studentContact,
+          subject,
+          topicDescription,
+          scheduledAt
+        } = body;
+        if (!mentorIdentityUserId || !studentName || !studentContact || !subject || !topicDescription || !scheduledAt) {
+          return Response.json({ error: "Missing scheduling fields." }, { status: 400 });
+        }
+        if (!ALLOWED_SUBJECTS.includes(subject)) {
+          return Response.json({ error: "Invalid subject selected." }, { status: 400 });
+        }
+        const [mentor] = await db.select().from(mentorProfiles).where(eq(mentorProfiles.identityUserId, mentorIdentityUserId));
+        if (!mentor) {
+          return Response.json({ error: "Mentor not found." }, { status: 404 });
+        }
+        const scheduledDate = new Date(scheduledAt);
+        if (Number.isNaN(scheduledDate.getTime())) {
+          return Response.json({ error: "Invalid session date/time." }, { status: 400 });
+        }
+        const weeklyRecords = await loadWeekSessions(mentorIdentityUserId);
+        const weeklyCount = computeUniqueCount(weeklyRecords);
+        if (weeklyCount >= MAX_WEEKLY_APPROVED) {
+          return Response.json({ error: "Fully booked this week." }, { status: 409 });
+        }
+        await db.insert(mentoringSessions).values({
+          mentorIdentityUserId,
+          studentName,
+          studentContact,
+          subject,
+          topicDescription,
+          scheduledAt: scheduledDate,
+          status: "PENDING",
+          createdAt: /* @__PURE__ */ new Date(),
+          updatedAt: /* @__PURE__ */ new Date()
+        });
+        return Response.json({ success: true }, { status: 201 });
+      }
+    }
+  }
+});
+const Route$7 = createFileRoute("/api/mentors/directory")({
   server: {
     handlers: {
       GET: async ({ request }) => {
@@ -2645,6 +3018,30 @@ const Route$6 = createFileRoute("/api/mentors/directory")({
         const subject = url.searchParams.get("subject");
         const search = url.searchParams.get("search")?.toLowerCase();
         let mentors = await db.select().from(mentorProfiles).where(eq(mentorProfiles.isPublic, true));
+        const allSessions = await db.select().from(mentoringSessions);
+        const weekStart = /* @__PURE__ */ new Date();
+        weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 6) % 7);
+        weekStart.setHours(0, 0, 0, 0);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999);
+        const mentorCounts = /* @__PURE__ */ new Map();
+        for (const session of allSessions) {
+          if (!session.scheduledAt || !session.mentorIdentityUserId) continue;
+          const scheduledAt = new Date(session.scheduledAt);
+          if (scheduledAt < weekStart || scheduledAt > weekEnd) continue;
+          if (session.status !== "UPCOMING" && session.status !== "COMPLETED") continue;
+          const mentorKey = session.mentorIdentityUserId;
+          const studentKey = `${session.studentName}::${session.studentContact}`;
+          const current = mentorCounts.get(mentorKey) ?? /* @__PURE__ */ new Set();
+          current.add(studentKey);
+          mentorCounts.set(mentorKey, current);
+        }
+        mentors = mentors.map((mentor) => ({
+          ...mentor,
+          weeklyApprovedCount: mentorCounts.get(mentor.identityUserId)?.size ?? 0,
+          weeklyCapacity: 4
+        }));
         if (subject) {
           mentors = mentors.filter((m) => {
             try {
@@ -2665,7 +3062,7 @@ const Route$6 = createFileRoute("/api/mentors/directory")({
     }
   }
 });
-const Route$5 = createFileRoute("/api/applications/mentor")({
+const Route$6 = createFileRoute("/api/applications/mentor")({
   server: {
     handlers: {
       POST: async ({ request }) => {
@@ -2703,7 +3100,7 @@ const Route$5 = createFileRoute("/api/applications/mentor")({
     }
   }
 });
-const Route$4 = createFileRoute("/api/announcements/$id")({
+const Route$5 = createFileRoute("/api/announcements/$id")({
   server: {
     handlers: {
       // Edit an announcement or toggle pinned / archived state.
@@ -2742,7 +3139,7 @@ const Route$4 = createFileRoute("/api/announcements/$id")({
     }
   }
 });
-const Route$3 = createFileRoute("/api/admin/students")({
+const Route$4 = createFileRoute("/api/admin/students")({
   server: {
     handlers: {
       GET: async () => {
@@ -2755,7 +3152,7 @@ const Route$3 = createFileRoute("/api/admin/students")({
     }
   }
 });
-const Route$2 = createFileRoute("/api/admin/stats")({
+const Route$3 = createFileRoute("/api/admin/stats")({
   server: {
     handlers: {
       GET: async () => {
@@ -2775,7 +3172,7 @@ const Route$2 = createFileRoute("/api/admin/stats")({
     }
   }
 });
-const Route$1 = createFileRoute("/api/admin/mentors")({
+const Route$2 = createFileRoute("/api/admin/mentors")({
   server: {
     handlers: {
       GET: async () => {
@@ -2784,6 +3181,103 @@ const Route$1 = createFileRoute("/api/admin/mentors")({
         }
         const mentors = await db.select().from(mentorProfiles).orderBy(mentorProfiles.fullName);
         return Response.json(mentors);
+      }
+    }
+  }
+});
+const startOfWeek = (date) => {
+  const start = new Date(date);
+  const day = start.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + diff);
+  start.setHours(0, 0, 0, 0);
+  return start;
+};
+const endOfWeek = (date) => {
+  const end = new Date(date);
+  const start = startOfWeek(date);
+  end.setTime(start.getTime());
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return end;
+};
+const getMentorWeeklyUniqueCount = async (mentorIdentityUserId) => {
+  const records = await db.select().from(mentoringSessions).where(
+    and(
+      eq(mentoringSessions.mentorIdentityUserId, mentorIdentityUserId),
+      or(eq(mentoringSessions.status, "UPCOMING"), eq(mentoringSessions.status, "COMPLETED")),
+      gte(mentoringSessions.scheduledAt, startOfWeek(/* @__PURE__ */ new Date())),
+      lte(mentoringSessions.scheduledAt, endOfWeek(/* @__PURE__ */ new Date()))
+    )
+  );
+  const unique = new Set(records.map((session) => `${session.studentName}::${session.studentContact}`));
+  return unique.size;
+};
+const Route$1 = createFileRoute("/api/mentors/sessions/$id")({
+  server: {
+    handlers: {
+      PATCH: async ({ request, params }) => {
+        const user = await getUser();
+        if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+        const body = await request.json();
+        const { action } = body;
+        const sessionId = Number(params.id);
+        const [session] = await db.select().from(mentoringSessions).where(eq(mentoringSessions.id, sessionId));
+        if (!session) {
+          return Response.json({ error: "Session not found." }, { status: 404 });
+        }
+        if (user.id !== session.mentorIdentityUserId && !user.roles?.includes("admin")) {
+          return Response.json({ error: "Forbidden" }, { status: 403 });
+        }
+        if (action === "approve") {
+          if (session.status !== "PENDING") {
+            return Response.json({ error: "Only pending requests can be approved." }, { status: 409 });
+          }
+          const weeklyApprovedCount = await getMentorWeeklyUniqueCount(session.mentorIdentityUserId);
+          if (weeklyApprovedCount >= 4) {
+            return Response.json({ error: "Mentor has already reached the weekly booking limit." }, { status: 409 });
+          }
+          await db.update(mentoringSessions).set({
+            status: "UPCOMING",
+            approvedAt: /* @__PURE__ */ new Date(),
+            updatedAt: /* @__PURE__ */ new Date()
+          }).where(eq(mentoringSessions.id, sessionId));
+          return Response.json({ success: true });
+        }
+        if (action === "decline") {
+          await db.update(mentoringSessions).set({
+            status: "DECLINED",
+            updatedAt: /* @__PURE__ */ new Date()
+          }).where(eq(mentoringSessions.id, sessionId));
+          return Response.json({ success: true });
+        }
+        if (action === "complete") {
+          const duration = Number(body.actualDurationMinutes);
+          const topicsCovered = String(body.topicsCovered || "");
+          const evidenceLink = String(body.evidenceLink || "");
+          if (!duration || duration <= 0 || !topicsCovered.trim()) {
+            return Response.json({ error: "Actual duration and topics covered are required." }, { status: 400 });
+          }
+          const [mentorRecord] = await db.select().from(mentorProfiles).where(eq(mentorProfiles.identityUserId, session.mentorIdentityUserId));
+          if (!mentorRecord) {
+            return Response.json({ error: "Mentor profile missing." }, { status: 404 });
+          }
+          const hoursToAdd = duration / 60;
+          await db.update(mentoringSessions).set({
+            status: "COMPLETED",
+            actualDurationMinutes: duration,
+            topicsCovered,
+            evidenceLink,
+            completedAt: /* @__PURE__ */ new Date(),
+            updatedAt: /* @__PURE__ */ new Date()
+          }).where(eq(mentoringSessions.id, sessionId));
+          await db.update(mentorProfiles).set({
+            totalHoursTaught: Number(mentorRecord.totalHoursTaught ?? 0) + hoursToAdd,
+            updatedAt: /* @__PURE__ */ new Date()
+          }).where(eq(mentorProfiles.identityUserId, session.mentorIdentityUserId));
+          return Response.json({ success: true });
+        }
+        return Response.json({ error: "Unsupported action." }, { status: 400 });
       }
     }
   }
@@ -2827,100 +3321,114 @@ const Route = createFileRoute("/api/mentors/profile/$userId")({
     }
   }
 });
-const ResetPasswordRoute = Route$h.update({
+const ResetPasswordRoute = Route$j.update({
   id: "/reset-password",
   path: "/reset-password",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const MentorsRoute = Route$g.update({
+const MentorsRoute = Route$i.update({
   id: "/mentors",
   path: "/mentors",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const LoginRoute = Route$f.update({
+const LoginRoute = Route$h.update({
   id: "/login",
   path: "/login",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const IndexRoute = Route$e.update({
+const IndexRoute = Route$g.update({
   id: "/",
   path: "/",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const RegisterStudentRoute = Route$d.update({
+const RegisterStudentRoute = Route$f.update({
   id: "/register/student",
   path: "/register/student",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const DashboardStudentRoute = Route$c.update({
+const DashboardStudentRoute = Route$e.update({
   id: "/dashboard/student",
   path: "/dashboard/student",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const DashboardMentorRoute = Route$b.update({
+const DashboardMentorRoute = Route$d.update({
   id: "/dashboard/mentor",
   path: "/dashboard/mentor",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const DashboardAdminRoute = Route$a.update({
+const DashboardAdminRoute = Route$c.update({
   id: "/dashboard/admin",
   path: "/dashboard/admin",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApplyMentorRoute = Route$9.update({
+const ApplyMentorRoute = Route$b.update({
   id: "/apply/mentor",
   path: "/apply/mentor",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApiAnnouncementsRoute = Route$8.update({
+const ApiAnnouncementsRoute = Route$a.update({
   id: "/api/announcements",
   path: "/api/announcements",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApiRegisterStudentRoute = Route$7.update({
+const ApiRegisterStudentRoute = Route$9.update({
   id: "/api/register/student",
   path: "/api/register/student",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApiMentorsDirectoryRoute = Route$6.update({
+const ApiMentorsSessionsRoute = Route$8.update({
+  id: "/api/mentors/sessions",
+  path: "/api/mentors/sessions",
+  getParentRoute: () => Route$k
+});
+const ApiMentorsDirectoryRoute = Route$7.update({
   id: "/api/mentors/directory",
   path: "/api/mentors/directory",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApiApplicationsMentorRoute = Route$5.update({
+const ApiApplicationsMentorRoute = Route$6.update({
   id: "/api/applications/mentor",
   path: "/api/applications/mentor",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApiAnnouncementsIdRoute = Route$4.update({
+const ApiAnnouncementsIdRoute = Route$5.update({
   id: "/$id",
   path: "/$id",
   getParentRoute: () => ApiAnnouncementsRoute
 });
-const ApiAdminStudentsRoute = Route$3.update({
+const ApiAdminStudentsRoute = Route$4.update({
   id: "/api/admin/students",
   path: "/api/admin/students",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApiAdminStatsRoute = Route$2.update({
+const ApiAdminStatsRoute = Route$3.update({
   id: "/api/admin/stats",
   path: "/api/admin/stats",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
-const ApiAdminMentorsRoute = Route$1.update({
+const ApiAdminMentorsRoute = Route$2.update({
   id: "/api/admin/mentors",
   path: "/api/admin/mentors",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
+});
+const ApiMentorsSessionsIdRoute = Route$1.update({
+  id: "/$id",
+  path: "/$id",
+  getParentRoute: () => ApiMentorsSessionsRoute
 });
 const ApiMentorsProfileUserIdRoute = Route.update({
   id: "/api/mentors/profile/$userId",
   path: "/api/mentors/profile/$userId",
-  getParentRoute: () => Route$i
+  getParentRoute: () => Route$k
 });
 const ApiAnnouncementsRouteChildren = {
   ApiAnnouncementsIdRoute
 };
 const ApiAnnouncementsRouteWithChildren = ApiAnnouncementsRoute._addFileChildren(ApiAnnouncementsRouteChildren);
+const ApiMentorsSessionsRouteChildren = {
+  ApiMentorsSessionsIdRoute
+};
+const ApiMentorsSessionsRouteWithChildren = ApiMentorsSessionsRoute._addFileChildren(ApiMentorsSessionsRouteChildren);
 const rootRouteChildren = {
   IndexRoute,
   LoginRoute,
@@ -2937,10 +3445,11 @@ const rootRouteChildren = {
   ApiAdminStudentsRoute,
   ApiApplicationsMentorRoute,
   ApiMentorsDirectoryRoute,
+  ApiMentorsSessionsRoute: ApiMentorsSessionsRouteWithChildren,
   ApiRegisterStudentRoute,
   ApiMentorsProfileUserIdRoute
 };
-const routeTree = Route$i._addFileChildren(rootRouteChildren)._addFileTypes();
+const routeTree = Route$k._addFileChildren(rootRouteChildren)._addFileTypes();
 const getRouter = () => {
   const router2 = createRouter({
     routeTree,

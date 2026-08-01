@@ -19,6 +19,26 @@ type Profile = {
   whatsapp: string | null
   contactEmail: string | null
   linkedin: string | null
+  totalHoursTaught?: number
+}
+
+type SessionRecord = {
+  id: number
+  mentorIdentityUserId: string
+  studentName: string
+  studentContact: string
+  subject: string
+  topicDescription: string
+  scheduledAt: string
+  status: 'PENDING' | 'UPCOMING' | 'COMPLETED' | 'DECLINED'
+  reminderSentAt?: string | null
+  actualDurationMinutes?: number | null
+  topicsCovered?: string | null
+  evidenceLink?: string | null
+  createdAt?: string
+  updatedAt?: string
+  approvedAt?: string | null
+  completedAt?: string | null
 }
 
 const AVAILABLE_SUBJECTS = [
@@ -37,6 +57,10 @@ export default function MentorDashboard() {
   const [saveMsg, setSaveMsg] = useState('')
   const [subjectsList, setSubjectsList] = useState<string[]>([])
   const [gradeInputs, setGradeInputs] = useState<{ subject: string; grade: string }[]>([])
+  const [sessionsView, setSessionsView] = useState<'requests' | 'completed'>('requests')
+  const [sessions, setSessions] = useState<SessionRecord[]>([])
+  const [sessionActionMsg, setSessionActionMsg] = useState('')
+  const [logDrafts, setLogDrafts] = useState<Record<number, { actualDurationMinutes: string; topicsCovered: string; evidenceLink: string }>>({})
 
   useEffect(() => {
     if (ready && !user) { navigate({ to: '/login' }); return }
@@ -53,6 +77,12 @@ export default function MentorDashboard() {
               setGradeInputs(Object.entries(g).map(([subject, grade]) => ({ subject, grade: grade as string })))
             } catch { }
           }
+        })
+
+      fetch(`/api/mentors/sessions?mentorId=${user.id}`)
+        .then((r) => r.ok ? r.json() : null)
+        .then((data) => {
+          if (data?.sessions) setSessions(data.sessions)
         })
     }
   }, [ready, user, navigate])
@@ -82,6 +112,41 @@ export default function MentorDashboard() {
     setEditing(false)
     setSaving(false)
     setTimeout(() => setSaveMsg(''), 3000)
+  }
+
+  const pendingSessions = sessions.filter((session) => session.status === 'PENDING')
+  const upcomingSessions = sessions.filter((session) => session.status === 'UPCOMING')
+  const completedSessions = sessions.filter((session) => session.status === 'COMPLETED')
+  const sessionNeedsLogging = upcomingSessions.filter((session) => new Date(session.scheduledAt).getTime() < Date.now())
+
+  const updateSessionStatus = async (sessionId: number, action: 'approve' | 'decline', payload?: Record<string, unknown>) => {
+    const response = await fetch(`/api/mentors/sessions/${sessionId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, ...payload }),
+    })
+    const data = await response.json().catch(() => ({}))
+    if (!response.ok) {
+      setSessionActionMsg(data.error || 'Action failed.')
+      return
+    }
+
+    setSessionActionMsg(action === 'approve' ? 'Request approved.' : action === 'decline' ? 'Request declined.' : 'Session logged successfully.')
+    fetch(`/api/mentors/sessions?mentorId=${user.id}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data?.sessions) setSessions(data.sessions)
+      })
+  }
+
+  const handleLogSubmit = async (sessionId: number) => {
+    const draft = logDrafts[sessionId]
+    if (!draft) return
+    await updateSessionStatus(sessionId, 'complete', {
+      actualDurationMinutes: Number(draft.actualDurationMinutes),
+      topicsCovered: draft.topicsCovered,
+      evidenceLink: draft.evidenceLink,
+    })
   }
 
   if (!ready || !user) {
@@ -313,16 +378,115 @@ export default function MentorDashboard() {
               )}
             </div>
 
-            {/* Status */}
             <div className="glass rounded-2xl p-6 flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-teal-500/20 flex items-center justify-center text-teal-400 text-lg">✓</div>
               <div>
                 <p className="text-white font-semibold">Approved Mentor</p>
                 <p className="text-slate-400 text-sm">Your profile is live in the mentor directory</p>
               </div>
-              <Link to="/mentors" className="ml-auto px-4 py-2 rounded-xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 text-sm transition-colors">
-                View Directory →
-              </Link>
+              <div className="ml-auto flex items-center gap-3">
+                <div className="rounded-xl bg-white/5 px-3 py-2 text-sm text-slate-300">
+                  Total Hours Taught: <span className="font-semibold text-white">{(profile.totalHoursTaught ?? 0).toFixed(1)}</span>
+                </div>
+                <Link to="/mentors" className="px-4 py-2 rounded-xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 text-sm transition-colors">
+                  View Directory →
+                </Link>
+              </div>
+            </div>
+
+            <div className="glass rounded-3xl p-6">
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.24em] text-sky-300">Sessions</p>
+                  <h2 className="text-2xl font-black text-white">Requests &amp; Logbook</h2>
+                </div>
+                <div className="flex rounded-xl bg-white/5 p-1">
+                  <button type="button" onClick={() => setSessionsView('requests')} className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${sessionsView === 'requests' ? 'bg-blue-600 text-white' : 'text-slate-300'}`}>Requests &amp; Upcoming</button>
+                  <button type="button" onClick={() => setSessionsView('completed')} className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${sessionsView === 'completed' ? 'bg-blue-600 text-white' : 'text-slate-300'}`}>Completed Logs</button>
+                </div>
+              </div>
+
+              {sessionActionMsg && <p className="mb-4 rounded-xl bg-sky-500/10 px-3 py-2 text-sm text-sky-200">{sessionActionMsg}</p>}
+
+              {sessionsView === 'requests' ? (
+                <div className="space-y-4">
+                  {pendingSessions.length === 0 && upcomingSessions.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-white/10 px-4 py-8 text-center text-slate-400">
+                      No session requests or upcoming sessions yet.
+                    </div>
+                  ) : null}
+
+                  {pendingSessions.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Pending Requests</h3>
+                      {pendingSessions.map((session) => (
+                        <div key={session.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <div>
+                              <div className="text-white font-semibold">{session.studentName}</div>
+                              <div className="text-sm text-slate-400">{session.studentContact} · {session.subject} · {new Date(session.scheduledAt).toLocaleString()}</div>
+                              <p className="mt-2 text-sm text-slate-300">{session.topicDescription}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button type="button" onClick={() => updateSessionStatus(session.id, 'approve')} className="rounded-lg bg-teal-500 px-3 py-2 text-sm font-semibold text-white">Approve</button>
+                              <button type="button" onClick={() => updateSessionStatus(session.id, 'decline')} className="rounded-lg bg-red-500/20 px-3 py-2 text-sm font-semibold text-red-300">Decline</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {upcomingSessions.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Upcoming Sessions</h3>
+                      {upcomingSessions.map((session) => (
+                        <div key={session.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <div>
+                              <div className="text-white font-semibold">{session.studentName}</div>
+                              <div className="text-sm text-slate-400">{session.subject} · {new Date(session.scheduledAt).toLocaleString()}</div>
+                              <p className="mt-2 text-sm text-slate-300">{session.topicDescription}</p>
+                            </div>
+                            {sessionNeedsLogging.some((item) => item.id === session.id) && (
+                              <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+                                <div className="font-semibold">Log Notes &amp; Evidence</div>
+                                <div className="mt-2 space-y-2">
+                                  <input value={logDrafts[session.id]?.actualDurationMinutes ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: e.target.value, topicsCovered: prev[session.id]?.topicsCovered ?? '', evidenceLink: prev[session.id]?.evidenceLink ?? '' } }))} placeholder="Actual duration (minutes)" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
+                                  <textarea rows={3} value={logDrafts[session.id]?.topicsCovered ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? '', topicsCovered: e.target.value, evidenceLink: prev[session.id]?.evidenceLink ?? '' } }))} placeholder="Topics covered" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
+                                  <input value={logDrafts[session.id]?.evidenceLink ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? '', topicsCovered: prev[session.id]?.topicsCovered ?? '', evidenceLink: e.target.value } }))} placeholder="Evidence link (optional)" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
+                                  <button type="button" onClick={() => handleLogSubmit(session.id)} className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white">Submit Log</button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {completedSessions.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-white/10 px-4 py-8 text-center text-slate-400">
+                      No completed logs yet.
+                    </div>
+                  ) : null}
+                  {completedSessions.map((session) => (
+                    <div key={session.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <div className="text-white font-semibold">{session.studentName}</div>
+                          <div className="text-sm text-slate-400">{session.subject} · Completed {new Date(session.completedAt || session.scheduledAt).toLocaleString()}</div>
+                        </div>
+                        <div className="text-sm text-slate-300">Duration: {session.actualDurationMinutes ?? 0} min</div>
+                      </div>
+                      <p className="mt-3 text-sm text-slate-300">{session.topicsCovered || 'No notes recorded.'}</p>
+                      {session.evidenceLink && <a href={session.evidenceLink} className="mt-2 inline-block text-sm text-sky-300">View evidence</a>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
