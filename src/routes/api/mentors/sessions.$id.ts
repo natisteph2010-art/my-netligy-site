@@ -97,6 +97,10 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
         }
 
         if (action === 'complete') {
+          if (session.status !== 'UPCOMING') {
+            return Response.json({ error: 'Only upcoming sessions can be completed.' }, { status: 409 })
+          }
+
           const duration = Number(body.actualDurationMinutes)
           const topicsCovered = String(body.topicsCovered || '')
           const evidenceLink = String(body.evidenceLink || '')

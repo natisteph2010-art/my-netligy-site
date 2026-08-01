@@ -4,7 +4,7 @@ import { useState, useEffect, createContext, useContext, useRef } from "react";
 import { getUser, onAuthChange, logout, handleAuthCallback, signup, AuthError } from "@netlify/identity";
 import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "../server.js";
 import { g as getAdminUser, d as db, a as announcements, s as students, m as mentorProfiles, b as mentoringSessions, c as mentorApplications } from "./authorization-DEwvlZPH.js";
-import { desc, and, eq, lte, or, isNull, gt, asc, gte, count } from "drizzle-orm";
+import { desc, and, eq, lte, or, isNull, gt, inArray, asc, gte, count } from "drizzle-orm";
 const IdentityContext = createContext(null);
 function IdentityProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -158,7 +158,7 @@ function NavBar() {
     ] })
   ] });
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-ChTWXDhl.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-UZkUTkhM.js");
 const Route$j = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
@@ -400,7 +400,7 @@ function MentorDirectoryPage() {
     ] }) })
   ] });
 }
-const $$splitComponentImporter = () => import("./login-BXSXP_pq.js");
+const $$splitComponentImporter = () => import("./login-DKDfvroC.js");
 const Route$h = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
@@ -3252,6 +3252,9 @@ const Route$1 = createFileRoute("/api/mentors/sessions/$id")({
           return Response.json({ success: true });
         }
         if (action === "complete") {
+          if (session.status !== "UPCOMING") {
+            return Response.json({ error: "Only upcoming sessions can be completed." }, { status: 409 });
+          }
           const duration = Number(body.actualDurationMinutes);
           const topicsCovered = String(body.topicsCovered || "");
           const evidenceLink = String(body.evidenceLink || "");

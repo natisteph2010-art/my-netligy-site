@@ -119,7 +119,7 @@ export default function MentorDashboard() {
   const completedSessions = sessions.filter((session) => session.status === 'COMPLETED')
   const sessionNeedsLogging = upcomingSessions.filter((session) => new Date(session.scheduledAt).getTime() < Date.now())
 
-  const updateSessionStatus = async (sessionId: number, action: 'approve' | 'decline', payload?: Record<string, unknown>) => {
+  const updateSessionStatus = async (sessionId: number, action: 'approve' | 'decline' | 'complete', payload?: Record<string, unknown>) => {
     const response = await fetch(`/api/mentors/sessions/${sessionId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },

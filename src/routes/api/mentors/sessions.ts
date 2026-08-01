@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '../../../../db/index.js'
 import { mentorProfiles, mentoringSessions } from '../../../../db/schema.js'
 import { getUser } from '@netlify/identity'
-import { and, asc, eq, gte, lte, or } from 'drizzle-orm'
+import { and, asc, eq, gte, inArray, lte, or } from 'drizzle-orm'
 
 const ALLOWED_SUBJECTS = [
   'Math',
