@@ -256,6 +256,54 @@
 .hero-display { max-width: 760px; font-family: 'Playfair Display', Georgia, serif; font-weight: 800; letter-spacing: -0.045em; }
 .hero-display strong { font-family: 'Inter', system-ui, sans-serif; font-weight: 800; letter-spacing: -0.06em; }
 
+/* Real WebGL knowledge constellation (React Three Fiber) */
+.constellation-canvas {
+  position: relative;
+  width: min(52vw, 640px);
+  min-width: 320px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: grab;
+}
+.constellation-canvas::before {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, rgba(14, 165, 233, 0.22), rgba(8, 47, 73, 0.06) 55%, transparent 72%);
+  filter: blur(28px);
+  pointer-events: none;
+  z-index: -1;
+}
+.constellation-label {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  user-select: none;
+  transition: opacity 0.25s ease;
+}
+.constellation-symbol {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e0f2fe;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.85);
+}
+.constellation-name {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8aa2c2;
+  transition: color 0.25s ease;
+}
+.constellation-label[data-hovered='true'] .constellation-name {
+  color: #bae6fd;
+}
+@media (max-width: 900px) {
+  .constellation-canvas { width: min(86vw, 460px); min-width: 260px; }
+}
+
 .knowledge-hub { position: relative; width: min(48vw, 600px); aspect-ratio: 1; min-width: 340px; perspective: 900px; transform-style: preserve-3d; animation: hubFloat 8s ease-in-out infinite; }
 .hub-aura { position: absolute; inset: 20%; border-radius: 50%; background: rgba(14, 165, 233, 0.18); filter: blur(54px); }
 .hub-plane { position: absolute; inset: 18%; border: 1px solid rgba(125, 211, 252, 0.16); border-radius: 50%; transform: rotateX(66deg) rotateZ(15deg); }
