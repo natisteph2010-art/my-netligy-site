@@ -30,42 +30,104 @@ const EDGES: Array<[number, number]> = [
   [0, 6], [1, 7], [2, 6], [3, 5],
 ]
 
-function CoreOrb() {
-  const inner = useRef<THREE.Mesh>(null)
+function GraduationCap() {
+  const cap = useRef<THREE.Group>(null)
+  const tassel = useRef<THREE.Group>(null)
   const ring1 = useRef<THREE.Mesh>(null)
   const ring2 = useRef<THREE.Mesh>(null)
 
-  useFrame((_, delta) => {
-    if (inner.current) inner.current.rotation.y += delta * 0.4
+  useFrame(({ clock }, delta) => {
+    if (cap.current) {
+      // gentle continuous spin + subtle bob
+      cap.current.rotation.y += delta * 0.5
+      cap.current.position.y = Math.sin(clock.elapsedTime * 1.2) * 0.08
+    }
+    // tassel sways with a slight lag for a lively feel
+    if (tassel.current) {
+      tassel.current.rotation.z = Math.sin(clock.elapsedTime * 1.6) * 0.18
+    }
     if (ring1.current) ring1.current.rotation.z += delta * 0.25
     if (ring2.current) ring2.current.rotation.z -= delta * 0.18
   })
 
+  const boardMaterial = (
+    <meshStandardMaterial
+      color="#0b1f3a"
+      emissive="#0ea5e9"
+      emissiveIntensity={0.6}
+      roughness={0.35}
+      metalness={0.5}
+    />
+  )
+
   return (
     <group>
-      {/* glowing central sphere */}
-      <mesh ref={inner}>
-        <icosahedronGeometry args={[0.62, 3]} />
-        <meshStandardMaterial
-          color="#e0f2fe"
-          emissive="#38bdf8"
-          emissiveIntensity={2.4}
-          roughness={0.2}
-          metalness={0.1}
-        />
-      </mesh>
+      <group ref={cap} rotation={[0.15, 0, 0]}>
+        {/* mortarboard (flat square top) */}
+        <mesh position={[0, 0.42, 0]}>
+          <boxGeometry args={[1.5, 0.05, 1.5]} />
+          {boardMaterial}
+        </mesh>
+        {/* glowing edge trim on the board */}
+        <mesh position={[0, 0.4, 0]}>
+          <boxGeometry args={[1.56, 0.02, 1.56]} />
+          <meshBasicMaterial color="#38bdf8" transparent opacity={0.7} />
+        </mesh>
+
+        {/* crown / head band of the cap */}
+        <mesh position={[0, 0.14, 0]}>
+          <cylinderGeometry args={[0.5, 0.56, 0.42, 40]} />
+          {boardMaterial}
+        </mesh>
+
+        {/* center button */}
+        <mesh position={[0, 0.47, 0]}>
+          <sphereGeometry args={[0.08, 20, 20]} />
+          <meshStandardMaterial
+            color="#e0f2fe"
+            emissive="#7dd3fc"
+            emissiveIntensity={2.2}
+            roughness={0.2}
+          />
+        </mesh>
+
+        {/* tassel: string running to the corner, then hanging down with a bob */}
+        <group ref={tassel} position={[0, 0.47, 0]}>
+          {/* string along the board to the corner */}
+          <mesh position={[0.34, -0.01, 0.34]} rotation={[0, -Math.PI / 4, Math.PI / 2]}>
+            <cylinderGeometry args={[0.015, 0.015, 0.96, 8]} />
+            <meshBasicMaterial color="#7dd3fc" />
+          </mesh>
+          {/* hanging string */}
+          <mesh position={[0.66, -0.32, 0.66]}>
+            <cylinderGeometry args={[0.015, 0.015, 0.62, 8]} />
+            <meshBasicMaterial color="#7dd3fc" />
+          </mesh>
+          {/* tassel bob */}
+          <mesh position={[0.66, -0.66, 0.66]}>
+            <coneGeometry args={[0.09, 0.22, 12]} />
+            <meshStandardMaterial
+              color="#38bdf8"
+              emissive="#38bdf8"
+              emissiveIntensity={1.6}
+              roughness={0.3}
+            />
+          </mesh>
+        </group>
+      </group>
+
       {/* soft halo */}
-      <mesh scale={1.9}>
+      <mesh scale={2.1}>
         <sphereGeometry args={[0.62, 32, 32]} />
-        <meshBasicMaterial color="#0ea5e9" transparent opacity={0.08} />
+        <meshBasicMaterial color="#0ea5e9" transparent opacity={0.07} />
       </mesh>
       {/* orbiting rings */}
       <mesh ref={ring1} rotation={[Math.PI / 2.2, 0.3, 0]}>
-        <torusGeometry args={[1.35, 0.012, 16, 120]} />
+        <torusGeometry args={[1.5, 0.012, 16, 120]} />
         <meshBasicMaterial color="#7dd3fc" transparent opacity={0.55} />
       </mesh>
       <mesh ref={ring2} rotation={[Math.PI / 1.7, -0.4, 0.2]}>
-        <torusGeometry args={[1.75, 0.008, 16, 120]} />
+        <torusGeometry args={[1.9, 0.008, 16, 120]} />
         <meshBasicMaterial color="#67e8f9" transparent opacity={0.35} />
       </mesh>
       <pointLight position={[0, 0, 0]} intensity={3} distance={9} color="#38bdf8" />
@@ -232,7 +294,7 @@ export function KnowledgeConstellation() {
         <ambientLight intensity={0.4} />
         <directionalLight position={[5, 5, 5]} intensity={0.6} color="#bae6fd" />
         <InteractiveRig>
-          <CoreOrb />
+          <GraduationCap />
           <Connections />
           {NODES.map((node) => (
             <KnowledgeNode key={node.label} node={node} />
