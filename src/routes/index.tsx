@@ -5,7 +5,7 @@ import homePageContent from '../../content/pages/home.json'
 import { AnnouncementBanner } from '../components/AnnouncementBanner'
 import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
 import { EntranceOverlay } from '../components/EntranceOverlay'
-import { KnowledgeHub } from '../components/KnowledgeHub'
+import { KnowledgeConstellation } from '../components/KnowledgeConstellation'
 import { ParticleNetwork } from '../components/ParticleNetwork'
 
 export const Route = createFileRoute('/')({
@@ -185,7 +185,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative flex justify-center lg:justify-end">
-              <KnowledgeHub />
+              <KnowledgeConstellation />
             </div>
           </div>
         </div>
