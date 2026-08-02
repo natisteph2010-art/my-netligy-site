@@ -222,16 +222,26 @@ export default function LandingPage() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-teal-500/20 rounded-3xl blur-2xl" />
               <div className="relative glass rounded-3xl p-8 space-y-4" data-sb-object-id="content/pages/home.json" data-sb-field-path="aboutCards">
-                {aboutCards.map((item, index) => (
-                  <div key={item.title} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/8 transition-colors" data-sb-field-path={`aboutCards.${index}`}>
-                    <span className="text-2xl" data-sb-field-path={`aboutCards.${index}.icon`}>{item.icon}</span>
-                    <div className="flex-1">
-                      <p className="text-slate-400 text-xs uppercase tracking-wider" data-sb-field-path={`aboutCards.${index}.title`}>{item.title}</p>
-                      <p className="text-white font-bold" data-sb-field-path={`aboutCards.${index}.value`}>{item.value}</p>
+                {aboutCards.map((item, index) => 
+                  index === 3 ? null : (
+                    <div key={item.title} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/8 transition-colors" data-sb-field-path={`aboutCards.${index}`}>
+                      <span className="text-2xl" data-sb-field-path={`aboutCards.${index}.icon`}>{item.icon}</span>
+                      <div className="flex-1">
+                        {index === 0 ? (
+                          <p className="text-white font-bold" data-sb-field-path={`aboutCards.${index}.title`}>
+                            Founded {item.value} By {item.desc}
+                          </p>
+                        ) : (
+                          <>
+                            <p className="text-slate-400 text-xs uppercase tracking-wider" data-sb-field-path={`aboutCards.${index}.title`}>{item.title}</p>
+                            <p className="text-white font-bold" data-sb-field-path={`aboutCards.${index}.value`}>{item.value}</p>
+                          </>
+                        )}
+                      </div>
+                      {index !== 0 && <p className="text-slate-400 text-sm" data-sb-field-path={`aboutCards.${index}.desc`}>{item.desc}</p>}
                     </div>
-                    <p className="text-slate-400 text-sm" data-sb-field-path={`aboutCards.${index}.desc`}>{item.desc}</p>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
           </div>
