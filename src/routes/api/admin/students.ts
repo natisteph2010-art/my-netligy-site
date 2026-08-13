@@ -44,17 +44,29 @@ export const Route = createFileRoute('/api/admin/students')({
         const [student] = await db.select().from(students).where(students.id.eq(id))
         if (!student) return Response.json({ error: 'Student not found' }, { status: 404 })
 
-        // remove student record
-        await db.delete(students).where(students.id.eq(id))
-
-        // also try removing any user_accounts row for this identityUserId if present
+        // Soft-delete student to avoid FK constraint failures
         try {
-          await db.delete(userAccounts).where(userAccounts.identityUserId.eq(student.identityUserId))
-        } catch {
-          /* best-effort */
-        }
+          const newIdentity = `removed-${student.id}-${Date.now()}`
+          await db
+            .update(students)
+            .set({
+              identityUserId: newIdentity,
+              fullName: `[removed] ${student.fullName}`,
+              email: '',
+            })
+            .where(students.id.eq(id))
 
-        return Response.json({ success: true })
+          // also try removing any user_accounts row for this identityUserId if present
+          try {
+            await db.delete(userAccounts).where(userAccounts.identityUserId.eq(student.identityUserId))
+          } catch {
+            /* best-effort */
+          }
+
+          return Response.json({ success: true, action: 'soft_delete' })
+        } catch (err: any) {
+          return Response.json({ error: 'Failed to remove student', details: err?.message || String(err), stack: err?.stack }, { status: 500 })
+        }
       },
     },
   },

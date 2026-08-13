@@ -235,15 +235,22 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/admin/mentors', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
       if (res.ok) {
-        flash('Mentor removed')
+        const data = await res.json().catch(() => ({}))
+        flash(data?.action === 'soft_delete' ? 'Mentor soft-removed' : 'Mentor removed')
         await loadMentors()
         await loadStats()
       } else {
-        const err = await res.json().catch(() => ({}))
-        flash(err?.error || 'Failed to remove mentor')
+        let bodyText = ''
+        try { bodyText = await res.text() } catch {}
+        let parsed: any = {}
+        try { parsed = JSON.parse(bodyText) } catch {}
+        const message = parsed?.error || parsed?.details || bodyText || `Status ${res.status}`
+        flash(`Failed to remove mentor: ${message}`)
+        console.error('Delete mentor failed', res.status, parsed || bodyText)
       }
     } catch {
       flash('Failed to remove mentor')
+      console.error('Delete mentor fetch error')
     }
     setActionLoading(null)
   }
@@ -263,15 +270,22 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/admin/students', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
       if (res.ok) {
-        flash('Student account removed')
+        const data = await res.json().catch(() => ({}))
+        flash(data?.action === 'soft_delete' ? 'Student soft-removed' : 'Student removed')
         await loadStudents()
         await loadStats()
       } else {
-        const err = await res.json().catch(() => ({}))
-        flash(err?.error || 'Failed to remove student')
+        let bodyText = ''
+        try { bodyText = await res.text() } catch {}
+        let parsed: any = {}
+        try { parsed = JSON.parse(bodyText) } catch {}
+        const message = parsed?.error || parsed?.details || bodyText || `Status ${res.status}`
+        flash(`Failed to remove student: ${message}`)
+        console.error('Delete student failed', res.status, parsed || bodyText)
       }
     } catch {
       flash('Failed to remove student')
+      console.error('Delete student fetch error')
     }
     setActionLoading(null)
   }
