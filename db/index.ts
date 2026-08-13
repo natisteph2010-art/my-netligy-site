@@ -1,19 +1,21 @@
-import { drizzle } from "drizzle-orm/netlify-db";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema.js";
 
 type DrizzleDb = ReturnType<typeof drizzle<typeof schema>>;
 
-// Initialize the Drizzle client lazily. Creating it at module load throws when
-// NETLIFY_DB_URL is not configured, and because the generated route tree
-// statically imports every API route (including the announcements feed that
-// uses this module), that throw would take down the entire site — even public
-// pages that never touch the database. Deferring initialization keeps the app
-// rendering and lets individual DB-backed requests fail on their own.
 let _db: DrizzleDb | null = null;
 
 function getDb(): DrizzleDb {
   if (!_db) {
-    _db = drizzle({ schema });
+    const connectionString = process.env.SUPABASE_DB_URL || process.env.DATABASE_URL;
+    
+    if (!connectionString) {
+      throw new Error("Database connection string (SUPABASE_DB_URL or DATABASE_URL) is not defined.");
+    }
+
+    const client = postgres(connectionString, { prepare: false });
+    _db = drizzle(client, { schema });
   }
   return _db;
 }
