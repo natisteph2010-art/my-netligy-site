@@ -1,3 +1,5 @@
 # Local Netlify folder
 .netlify
 node_modules
+# Ignore database dumps
+backup.sql
