@@ -32,6 +32,8 @@ export const Route = createFileRoute('/api/admin/mentors')({
             /* ignore */
           }
 
+          console.log('Admin mentors DELETE called, parsed id=', id, 'url=', request.url)
+
           if (!id) {
             const url = new URL(request.url)
             const q = url.searchParams.get('id')

@@ -31,7 +31,12 @@ export async function getCurrentUserWithRole() {
   if (!user) return null
 
   const role = getIdentityRole(user)
-  await syncUserAccount(user, role)
+  try {
+    await syncUserAccount(user, role)
+  } catch (err: any) {
+    console.error('syncUserAccount failed (continuing without persisting):', err)
+  }
+
   return { user, role }
 }
 
