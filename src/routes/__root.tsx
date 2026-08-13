@@ -80,7 +80,8 @@ function NavBar() {
             <a href="/#about" className="text-slate-300 hover:text-white transition-colors">About</a>
             <a href="/#programs" className="text-slate-300 hover:text-white transition-colors">Programs</a>
             <Link to="/mentors" className="text-slate-300 hover:text-white transition-colors">Mentors</Link>
-            <a href="/#contact" className="text-slate-300 hover:text-white transition-colors">Contact</a>
+              <Link to="/assistant" className="text-slate-300 hover:text-white transition-colors">Assistant</Link>
+              <a href="/#contact" className="text-slate-300 hover:text-white transition-colors">Contact</a>
             {ready && user ? (
               <>
                 <Link to={dashboardPath} className="text-slate-300 hover:text-white transition-colors">Dashboard</Link>
@@ -126,6 +127,7 @@ function NavBar() {
         <div className="md:hidden bg-slate-900/98 backdrop-blur-md border-b border-white/10 py-4 px-4 flex flex-col gap-3 text-sm">
           <a href="/#about" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">About</a>
           <a href="/#programs" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Programs</a>
+          <Link to="/assistant" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Assistant</Link>
           <Link to="/mentors" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Mentors</Link>
           <a href="/#contact" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Contact</a>
           {ready && user ? (

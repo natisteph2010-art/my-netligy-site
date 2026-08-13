@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useEffect, useRef, useState } from 'react'
+import { useIdentity } from '../lib/identity-context'
 
 export const Route = createFileRoute('/assistant')({
   component: AssistantPage,
@@ -13,6 +14,7 @@ const MENTORS = [
 ]
 
 export default function AssistantPage() {
+  const { user, ready } = useIdentity()
   const [status, setStatus] = useState('Initializing…')
   const [messages, setMessages] = useState<Array<{ role: string; text: string }>>([])
   const [engineReady, setEngineReady] = useState(false)
@@ -58,6 +60,30 @@ export default function AssistantPage() {
     // no-op UI handled in JSX
   }
 
+  // Fetch mentors from server directory (requires auth). Falls back to local MENTORS or mock.
+  async function fetchMentors({ subject, search }: { subject?: string; search?: string } = {}) {
+    if (!ready) return mentorsRef.current
+    try {
+      const params = new URLSearchParams()
+      if (subject) params.set('subject', subject)
+      if (search) params.set('search', search)
+      const res = await fetch(`/api/mentors/directory?${params.toString()}`)
+      if (res.status === 401) {
+        setStatus('Sign in to access mentor directory')
+        return mentorsRef.current
+      }
+      const data = await res.json()
+      if (Array.isArray(data)) {
+        mentorsRef.current = data
+        return data
+      }
+      return mentorsRef.current
+    } catch (e) {
+      console.warn('Failed to fetch mentors, falling back to local list', e)
+      return mentorsRef.current
+    }
+  }
+
   async function callChat(history: any[]) {
     if (useMock) {
       const last = history.slice().reverse().find((h) => h.role === 'user')?.content || ''
@@ -83,17 +109,48 @@ export default function AssistantPage() {
 
   async function executeTool(name: string, args: any) {
     if (name === 'searchMentors') {
-      const q = String(args.subject || '').toLowerCase()
-      const found = MENTORS.filter((m) => m.subjects.some((s) => s.toLowerCase().includes(q)))
+      const subject = args.subject || args.query || ''
+      const found = await fetchMentors({ subject })
       renderMentors(found)
       return { results: found }
     }
     if (name === 'bookMentorSession') {
-      const mentor = MENTORS.find((m) => m.name.toLowerCase() === String(args.mentorName || '').toLowerCase()) || MENTORS[0]
-      const code = `GB-${Math.random().toString(36).slice(2, 9).toUpperCase()}`
-      const booking = { mentor: mentor.name, mentorId: mentor.id, student: args.studentName || 'Student', time: args.time, code }
-      setBookings((b) => [...b, booking])
-      return { success: true, booking }
+      // Prefer booking via server API when available
+      try {
+        // Find mentor identityUserId from directory
+        const mentors = await fetchMentors({})
+        const mentor = mentors.find((m: any) => (m.fullName || m.name || '').toLowerCase() === String(args.mentorName || '').toLowerCase()) || mentors[0]
+        if (!mentor) throw new Error('Mentor not found')
+
+        const body = {
+          mentorIdentityUserId: mentor.identityUserId || mentor.identity_user_id || mentor.userId || mentor.id,
+          studentName: args.studentName || (user?.user_metadata?.full_name as string) || user?.email || 'Student',
+          studentContact: user?.email || args.studentContact || '',
+          subject: args.subject || 'Math',
+          topicDescription: args.topicDescription || args.topic || 'Booked via assistant',
+          scheduledAt: args.time || args.scheduledAt,
+        }
+
+        if (!body.mentorIdentityUserId) throw new Error('Mentor identity id missing')
+        if (!body.scheduledAt) throw new Error('Missing scheduled time')
+
+        const res = await fetch('/api/mentors/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        const payload = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(payload.error || 'Booking failed')
+
+        // reflect booking locally as well
+        const code = `GB-${Math.random().toString(36).slice(2, 9).toUpperCase()}`
+        const booking = { mentor: mentor.fullName || mentor.name, mentorId: mentor.identityUserId || mentor.id, student: body.studentName, time: body.scheduledAt, code }
+        setBookings((b) => [...b, booking])
+        return { success: true, booking }
+      } catch (err: any) {
+        // fallback to local booking
+        const mentor = MENTORS.find((m) => m.name.toLowerCase() === String(args.mentorName || '').toLowerCase()) || MENTORS[0]
+        const code = `GB-${Math.random().toString(36).slice(2, 9).toUpperCase()}`
+        const booking = { mentor: mentor.name, mentorId: mentor.id, student: args.studentName || 'Student', time: args.time, code }
+        setBookings((b) => [...b, booking])
+        return { success: false, error: String(err), booking }
+      }
     }
     if (name === 'toggleDarkMode') {
       document.body.classList.toggle('dark-mode')
@@ -172,6 +229,15 @@ export default function AssistantPage() {
             >
               Send
             </button>
+            {!user && (
+              <button
+                className="px-3 rounded border border-slate-700 text-slate-200"
+                onClick={() => (window.location.href = '/login')}
+                title="Sign in to access mentors"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </div>
 
