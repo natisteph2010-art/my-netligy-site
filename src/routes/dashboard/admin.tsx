@@ -248,9 +248,10 @@ export default function AdminDashboard() {
         flash(`Failed to remove mentor: ${message}`)
         console.error('Delete mentor failed', res.status, parsed || bodyText)
       }
-    } catch {
-      flash('Failed to remove mentor')
-      console.error('Delete mentor fetch error')
+    } catch (err: any) {
+      const msg = err?.message || String(err)
+      flash(`Failed to remove mentor: ${msg}`)
+      console.error('Delete mentor fetch error', err)
     }
     setActionLoading(null)
   }
@@ -283,9 +284,10 @@ export default function AdminDashboard() {
         flash(`Failed to remove student: ${message}`)
         console.error('Delete student failed', res.status, parsed || bodyText)
       }
-    } catch {
-      flash('Failed to remove student')
-      console.error('Delete student fetch error')
+    } catch (err: any) {
+      const msg = err?.message || String(err)
+      flash(`Failed to remove student: ${msg}`)
+      console.error('Delete student fetch error', err)
     }
     setActionLoading(null)
   }
