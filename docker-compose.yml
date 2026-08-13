@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:18-alpine
+    container_name: aisi-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-aisi_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-aisi_password}
+      POSTGRES_DB: ${DB_NAME:-aisi_db}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database with backup
+      - ./backup.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-aisi_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - aisi-network
+
+  # Application Service
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aisi-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${DB_USER:-aisi_user}:${DB_PASSWORD:-aisi_password}@db:5432/${DB_NAME:-aisi_db}
+      # Add other environment variables as needed
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source code for hot-reload during development
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+      - /app/dist
+    networks:
+      - aisi-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # Optional: PgAdmin for database management UI
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: aisi-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@aisi.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - aisi-network
+    restart: unless-stopped
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  aisi-network:
+    driver: bridge

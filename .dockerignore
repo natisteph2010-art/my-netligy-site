@@ -1,0 +1,72 @@
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Node modules
+node_modules
+npm-debug.log
+npm-error.log
+yarn-error.log
+pnpm-debug.log
+pnpm-error.log
+
+# Build outputs
+dist
+.next
+.vite
+.turbo
+build
+out
+
+# Environment files (don't copy to image)
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# Database backups
+backup.sql
+*.sql
+
+# IDE and editor
+.vscode
+.idea
+.sublime-project
+.sublime-workspace
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Development
+.netlify
+.tanstack
+.cache
+coverage
+.nyc_output
+
+# Testing
+cypress
+e2e
+__tests__
+jest.config.js
+
+# Docker and container files
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+README.md
+CONTRIBUTING.md
+*.md
+
+# Misc
+backup.*
+*.bak
+.env.example
