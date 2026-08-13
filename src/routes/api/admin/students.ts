@@ -19,33 +19,33 @@ export const Route = createFileRoute('/api/admin/students')({
         return Response.json(studentList)
       },
       DELETE: async ({ request }) => {
-        if (!(await getAdminUser())) {
-          return Response.json({ error: 'Access denied' }, { status: 403 })
-        }
-
-        let id: number | undefined
         try {
-          const body = await request.json().catch(() => ({}))
-          id = body?.id
-        } catch {
-          /* ignore */
-        }
+          if (!(await getAdminUser())) {
+            return Response.json({ error: 'Access denied' }, { status: 403 })
+          }
 
-        if (!id) {
-          const url = new URL(request.url)
-          const q = url.searchParams.get('id')
-          if (q) id = parseInt(q, 10)
-        }
+          let id: number | undefined
+          try {
+            const body = await request.json().catch(() => ({}))
+            id = body?.id
+          } catch {
+            /* ignore */
+          }
 
-        if (!id || Number.isNaN(id)) {
-          return Response.json({ error: 'Invalid student id' }, { status: 400 })
-        }
+          if (!id) {
+            const url = new URL(request.url)
+            const q = url.searchParams.get('id')
+            if (q) id = parseInt(q, 10)
+          }
 
-        const [student] = await db.select().from(students).where(students.id.eq(id))
-        if (!student) return Response.json({ error: 'Student not found' }, { status: 404 })
+          if (!id || Number.isNaN(id)) {
+            return Response.json({ error: 'Invalid student id' }, { status: 400 })
+          }
 
-        // Soft-delete student to avoid FK constraint failures
-        try {
+          const [student] = await db.select().from(students).where(students.id.eq(id))
+          if (!student) return Response.json({ error: 'Student not found' }, { status: 404 })
+
+          // Soft-delete student to avoid FK constraint failures
           const newIdentity = `removed-${student.id}-${Date.now()}`
           await db
             .update(students)
@@ -65,6 +65,7 @@ export const Route = createFileRoute('/api/admin/students')({
 
           return Response.json({ success: true, action: 'soft_delete' })
         } catch (err: any) {
+          console.error('Admin students DELETE error', err)
           return Response.json({ error: 'Failed to remove student', details: err?.message || String(err), stack: err?.stack }, { status: 500 })
         }
       },
