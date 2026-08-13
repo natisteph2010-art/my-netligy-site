@@ -18,6 +18,36 @@ export const Route = createFileRoute('/api/admin/mentors')({
 
         return Response.json(mentors)
       },
+      DELETE: async ({ request }) => {
+        if (!(await getAdminUser())) {
+          return Response.json({ error: 'Access denied' }, { status: 403 })
+        }
+
+        let id: number | undefined
+        try {
+          const body = await request.json().catch(() => ({}))
+          id = body?.id
+        } catch {
+          /* ignore */
+        }
+
+        if (!id) {
+          const url = new URL(request.url)
+          const q = url.searchParams.get('id')
+          if (q) id = parseInt(q, 10)
+        }
+
+        if (!id || Number.isNaN(id)) {
+          return Response.json({ error: 'Invalid mentor id' }, { status: 400 })
+        }
+
+        const [mentor] = await db.select().from(mentorProfiles).where(mentorProfiles.id.eq(id))
+        if (!mentor) return Response.json({ error: 'Mentor not found' }, { status: 404 })
+
+        await db.delete(mentorProfiles).where(mentorProfiles.id.eq(id))
+
+        return Response.json({ success: true })
+      },
     },
   },
 })

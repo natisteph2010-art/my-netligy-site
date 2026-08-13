@@ -229,6 +229,25 @@ export default function AdminDashboard() {
     setMentorsLoading(false)
   }
 
+  const deleteMentor = async (id: number) => {
+    if (!window.confirm('Remove this mentor profile from the directory? This cannot be undone.')) return
+    setActionLoading(id)
+    try {
+      const res = await fetch('/api/admin/mentors', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      if (res.ok) {
+        flash('Mentor removed')
+        await loadMentors()
+        await loadStats()
+      } else {
+        const err = await res.json().catch(() => ({}))
+        flash(err?.error || 'Failed to remove mentor')
+      }
+    } catch {
+      flash('Failed to remove mentor')
+    }
+    setActionLoading(null)
+  }
+
   const loadStudents = async () => {
     setStudentsLoading(true)
     try {
@@ -236,6 +255,25 @@ export default function AdminDashboard() {
       if (res.ok) setStudents(await res.json())
     } catch { /* ignore */ }
     setStudentsLoading(false)
+  }
+
+  const deleteStudent = async (id: number) => {
+    if (!window.confirm('Permanently delete this student account? This cannot be undone.')) return
+    setActionLoading(id)
+    try {
+      const res = await fetch('/api/admin/students', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      if (res.ok) {
+        flash('Student account removed')
+        await loadStudents()
+        await loadStats()
+      } else {
+        const err = await res.json().catch(() => ({}))
+        flash(err?.error || 'Failed to remove student')
+      }
+    } catch {
+      flash('Failed to remove student')
+    }
+    setActionLoading(null)
   }
 
   const loadAnnouncements = async () => {
@@ -485,6 +523,8 @@ export default function AdminDashboard() {
               loading={mentorsLoading}
               search={search}
               onRefresh={loadMentors}
+              onDelete={deleteMentor}
+              actionLoading={actionLoading}
             />
           )}
           {view === 'students' && (
@@ -493,6 +533,8 @@ export default function AdminDashboard() {
               loading={studentsLoading}
               search={search}
               onRefresh={loadStudents}
+              onDelete={deleteStudent}
+              actionLoading={actionLoading}
             />
           )}
           {view === 'sessions' && <Placeholder title="Tutoring Sessions" icon={I.sessions} desc="Scheduled and past tutoring sessions will be managed from this space." />}
@@ -832,11 +874,13 @@ function IconBtn({ label, icon, onClick, danger, active }: { label: string; icon
   )
 }
 
-function MentorsList({ mentors, loading, search, onRefresh }: {
+function MentorsList({ mentors, loading, search, onRefresh, onDelete, actionLoading }: {
   mentors: Mentor[]
   loading: boolean
   search: string
   onRefresh: () => void
+  onDelete?: (id: number) => void
+  actionLoading?: number | null
 }) {
   const q = search.trim().toLowerCase()
   const filtered = q
@@ -891,6 +935,15 @@ function MentorsList({ mentors, loading, search, onRefresh }: {
                   <p className="text-xs uppercase tracking-[0.18em] text-slate-400 mb-2">Contact</p>
                   <p className="text-sm text-slate-600">{mentor.contactEmail || mentor.email}</p>
                   <p className="text-xs text-slate-400 mt-2">{mentor.isPublic ? 'Public profile' : 'Private profile'}</p>
+                  <div className="mt-3">
+                    <IconBtn
+                      label="Remove"
+                      icon={I.trash}
+                      onClick={() => onDelete?.(mentor.id)}
+                      danger
+                      active={actionLoading === mentor.id}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -901,11 +954,13 @@ function MentorsList({ mentors, loading, search, onRefresh }: {
   )
 }
 
-function StudentsList({ students, loading, search, onRefresh }: {
+function StudentsList({ students, loading, search, onRefresh, onDelete, actionLoading }: {
   students: Student[]
   loading: boolean
   search: string
   onRefresh: () => void
+  onDelete?: (id: number) => void
+  actionLoading?: number | null
 }) {
   const q = search.trim().toLowerCase()
   const filtered = q
@@ -957,6 +1012,15 @@ function StudentsList({ students, loading, search, onRefresh }: {
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-slate-400 mb-2">Joined</p>
                   <p className="text-sm text-slate-600">{new Date(student.createdAt).toLocaleDateString()}</p>
+                  <div className="mt-3">
+                    <IconBtn
+                      label="Delete"
+                      icon={I.trash}
+                      onClick={() => onDelete?.(student.id)}
+                      danger
+                      active={actionLoading === student.id}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
