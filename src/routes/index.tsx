@@ -127,20 +127,20 @@ export default function LandingPage() {
   useScrollReveal()
   const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
-  const handleContactSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setContactStatus('sending')
 
     try {
       const response = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(new FormData(event.target as HTMLFormElement)).toString(),
+        body: new URLSearchParams(new FormData(e.target as HTMLFormElement)).toString(),
       })
 
       if (!response.ok) throw new Error('Contact form submission failed')
 
-      event.currentTarget.reset()
+      e.currentTarget.reset()
       setContactStatus('sent')
     } catch {
       setContactStatus('error')
@@ -369,7 +369,7 @@ export default function LandingPage() {
             method="POST"
             data-netlify="true"
             netlify-honeypot="bot-field"
-            onSubmit={handleContactSubmit}
+            onSubmit={handleSubmit}
             className="glass rounded-3xl p-6 sm:p-8 shadow-2xl shadow-blue-900/20 mb-10 text-left"
           >
             <input type="hidden" name="form-name" value="contact" />
