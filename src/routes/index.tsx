@@ -369,6 +369,7 @@ export default function LandingPage() {
             method="POST"
             data-netlify="true"
             netlify-honeypot="bot-field"
+            action="/"
             onSubmit={handleSubmit}
             className="glass rounded-3xl p-6 sm:p-8 shadow-2xl shadow-blue-900/20 mb-10 text-left"
           >
