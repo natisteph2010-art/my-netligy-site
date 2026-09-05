@@ -132,10 +132,10 @@ export default function LandingPage() {
     setContactStatus('sending')
 
     try {
-      const response = await fetch('/', {
+      const response = await fetch('/contact.html', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(new FormData(e.target as HTMLFormElement)).toString(),
+        body: new URLSearchParams(new FormData(e.currentTarget)).toString(),
       })
 
       if (!response.ok) throw new Error('Contact form submission failed')
