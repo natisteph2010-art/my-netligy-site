@@ -130,19 +130,24 @@ export default function LandingPage() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setContactStatus('sending')
+    const form = e.currentTarget
+    const formData = new FormData(form)
 
     try {
       const response = await fetch('/contact.html', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(new FormData(e.currentTarget)).toString(),
+        body: new URLSearchParams(formData as any).toString(),
       })
 
-      if (!response.ok) throw new Error('Contact form submission failed')
-
-      e.currentTarget.reset()
-      setContactStatus('sent')
-    } catch {
+      if (response.ok || response.status === 200 || response.status === 303) {
+        setContactStatus('sent')
+        form.reset()
+      } else {
+        setContactStatus('error')
+      }
+    } catch (error) {
+      console.error('Contact form submission failed', error)
       setContactStatus('error')
     }
   }
@@ -376,7 +381,7 @@ export default function LandingPage() {
             <input type="hidden" name="form-name" value="contact" />
             <p className="hidden">
               <label>
-                Do not fill this out: <input name="bot-field" />
+                Do not fill this out: <input type="hidden" name="bot-field" value="" />
               </label>
             </p>
             <div className="grid sm:grid-cols-2 gap-5 mb-5">
