@@ -429,10 +429,10 @@ export default function LandingPage() {
                 disabled={contactStatus === 'sending'}
                 className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-teal-500 text-white font-semibold shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all btn-shimmer disabled:opacity-60 disabled:hover:scale-100"
               >
-                {contactStatus === 'sending' ? 'Sending...' : contactStatus === 'sent' ? 'Sent!' : 'Send Message'}
+                {contactStatus === 'sending' ? 'Sending...' : contactStatus === 'sent' ? 'Submitted successfully' : 'Send Message'}
               </button>
               {contactStatus === 'sent' && (
-                <p className="text-teal-300 text-sm font-medium">Sent!</p>
+                <p className="text-teal-300 text-sm font-medium">Submitted successfully. We&apos;ll reach out soon.</p>
               )}
               {contactStatus === 'error' && (
                 <p className="text-red-300 text-sm font-medium">Something went wrong. Please try again.</p>
