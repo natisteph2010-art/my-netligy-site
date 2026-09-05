@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GradeBridge — In-browser AI Assistant</title>
+    <style>
+      :root{--bg:#071025;--panel:#071026;--muted:#9fb0c8;--accent:#60a5fa}
+      html,body{height:100%;margin:0;background:linear-gradient(180deg,#021025 0%,#071026 100%);font-family:Inter,system-ui,Segoe UI,Arial;color:#e6eef8}
+      .app{display:flex;height:100vh;gap:24px;padding:24px;box-sizing:border-box}
+      .left{flex:1;max-width:760px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column}
+      .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+      .title{font-weight:700;font-size:18px}
+      .status{font-size:13px;color:var(--muted)}
+      .chat{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+      .msg{max-width:82%;padding:10px 12px;border-radius:10px;font-size:14px;line-height:1.35}
+      .user{align-self:flex-end;background:linear-gradient(90deg,#2563eb,#06b6d4);box-shadow:0 6px 18px rgba(2,6,23,0.4)}
+      .assistant{align-self:flex-start;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+      .controls{display:flex;gap:8px;padding-top:12px}
+      .input{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+      button{background:var(--accent);color:#04203a;border:none;padding:10px 14px;border-radius:8px;font-weight:700;cursor:pointer}
+      .right{width:320px;display:flex;flex-direction:column;gap:12px}
+      .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+      .mentors{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow:auto}
+      .mentor{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01)}
+      .small{font-size:13px;color:var(--muted)}
+      .log{font-family:monospace;font-size:12px;color:#9fb0c8;padding:8px;background:rgba(255,255,255,0.01);border-radius:8px;max-height:140px;overflow:auto}
+      .bookings{display:flex;flex-direction:column;gap:8px}
+      .booking{padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);font-size:13px}
+      .hidden{display:none}
+      .dark-mode{background:#0f1724;color:#e6eef8}
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="left">
+        <div class="header">
+          <div>
+            <div class="title">Site Assistant — Mentor Helper</div>
+            <div class="small">Ask to find mentors, book sessions, or navigate the site.</div>
+          </div>
+          <div id="status" class="status">Initializing model…</div>
+        </div>
+
+        <div id="chat" class="chat" aria-live="polite"></div>
+
+        <div class="controls">
+          <input id="input" class="input" placeholder='Try: "Find physics mentors" or "Book Aisha for tomorrow 4pm"' />
+          <button id="send">Send</button>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <strong>Mentor Directory</strong>
+            <div class="small">Live</div>
+          </div>
+          <div id="mentors" class="mentors"></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <strong>Bookings</strong>
+            <div class="small">Persistent</div>
+          </div>
+          <div id="bookings" class="bookings"></div>
+        </div>
+
+        <div class="card">
+          <strong>Execution Log</strong>
+          <div id="log" class="log"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import * as webllm from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/+esm";
+
+      // System instruction
+      const SYSTEM = "You are a helpful student assistant. Help students navigate the website, find resources, toggle settings, and book mentor sessions by calling the provided functions when requested.";
+
+      // Local mentor data
+      const MENTORS = [
+        { id: 1, name: 'Sarah Connor', subjects: ['Aerodynamics','Math'] },
+        { id: 2, name: 'Alex Rivera', subjects: ['CAD','Drones'] },
+        { id: 3, name: 'Aisha Bekele', subjects: ['Physics','Math'] },
+        { id: 4, name: 'Samuel Tesfaye', subjects: ['Chemistry','Biology'] }
+      ];
+
+      // DOM refs
+      const statusEl = document.getElementById('status');
+      const chatEl = document.getElementById('chat');
+      const inputEl = document.getElementById('input');
+      const sendBtn = document.getElementById('send');
+      const mentorsEl = document.getElementById('mentors');
+      const bookingsEl = document.getElementById('bookings');
+      const logEl = document.getElementById('log');
+
+      function log(msg){
+        const d = document.createElement('div'); d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; logEl.prepend(d);
+      }
+
+      function appendMessage(role, text, meta){
+        const d = document.createElement('div'); d.className = 'msg ' + (role==='user' ? 'user' : 'assistant'); d.innerHTML = text.replace(/\n/g,'<br>');
+        if(meta){ const m = document.createElement('div'); m.className='small'; m.textContent = meta; d.appendChild(m); }
+        chatEl.appendChild(d); chatEl.scrollTop = chatEl.scrollHeight;
+      }
+
+      // Bookings persistent storage
+      function loadBookings(){
+        try{ return JSON.parse(localStorage.getItem('gb_bookings')||'[]'); }catch{return []}
+      }
+      function saveBookings(arr){ localStorage.setItem('gb_bookings', JSON.stringify(arr)); }
+
+      function renderMentors(list){
+        mentorsEl.innerHTML='';
+        (list||MENTORS).forEach(m=>{
+          const el = document.createElement('div'); el.className='mentor';
+          el.innerHTML = `<div><strong>${m.name}</strong><div class="small">${m.subjects.join(', ')}</div></div><div class="small">ID ${m.id}</div>`;
+          mentorsEl.appendChild(el);
+        });
+      }
+
+      function renderBookings(){
+        const bookings = loadBookings(); bookingsEl.innerHTML='';
+        if(bookings.length===0){ bookingsEl.innerHTML='<div class="small">No bookings yet</div>'; return }
+        bookings.forEach(b=>{
+          const e = document.createElement('div'); e.className='booking'; e.textContent = `${b.student} — ${b.mentor} @ ${b.time} (code: ${b.code})`;
+          bookingsEl.appendChild(e);
+        });
+      }
+
+      // Local tools
+      async function searchMentors({ subject }){
+        const q = String(subject||'').toLowerCase();
+        const found = MENTORS.filter(m => m.subjects.some(s => s.toLowerCase().includes(q)));
+        renderMentors(found);
+        return { results: found };
+      }
+
+      async function bookMentorSession({ mentorName, time, studentName }){
+        const mentor = MENTORS.find(m => m.name.toLowerCase()===String(mentorName||'').toLowerCase()) || MENTORS[0];
+        const bookings = loadBookings();
+        const code = `GB-${Math.random().toString(36).slice(2,9).toUpperCase()}`;
+        const booking = { mentor: mentor.name, mentorId: mentor.id, student: studentName||'Student', time, code };
+        bookings.push(booking); saveBookings(bookings); renderBookings();
+        return { success:true, booking };
+      }
+
+      async function navigateToPage({ pageName }){
+        window.location.hash = '#/'+(pageName||'home');
+        return { navigated:true, page: window.location.hash };
+      }
+
+      async function toggleDarkMode(){
+        document.body.classList.toggle('dark-mode');
+        return { dark: document.body.classList.contains('dark-mode') };
+      }
+
+      const LOCAL_TOOLS = { searchMentors, bookMentorSession, navigateToPage, toggleDarkMode };
+
+      // Tools schema (OpenAI-style)
+      const TOOLS_SCHEMA = [
+        { name:'searchMentors', description:'Search mentors by subject', parameters:{ type:'object', properties:{ subject:{type:'string'} }, required:['subject'] } },
+        { name:'bookMentorSession', description:'Book a mentor session', parameters:{ type:'object', properties:{ mentorName:{type:'string'}, time:{type:'string'}, studentName:{type:'string'} }, required:['mentorName','time'] } },
+        { name:'navigateToPage', description:'Navigate to a site page', parameters:{ type:'object', properties:{ pageName:{type:'string'} }, required:['pageName'] } },
+        { name:'toggleDarkMode', description:'Toggle dark theme', parameters:{ type:'object', properties: {} } }
+      ];
+
+      // Engine + conversation history
+      let engine = null; let useMock=false;
+      const history = [{ role:'system', content: SYSTEM }];
+
+      async function init(){
+        statusEl.textContent = 'Creating engine…';
+        try{
+          engine = await webllm.CreateMLCEngine({ backend:'webgpu' });
+          statusEl.textContent = 'Engine created — model loading on demand';
+        }catch(err){
+          console.error('CreateMLCEngine failed', err);
+          statusEl.textContent = 'WebLLM init failed — using mock';
+          useMock = true;
+        }
+        renderMentors(MENTORS); renderBookings();
+        appendWelcome();
+        statusEl.textContent = useMock ? 'Ready (mock)' : 'Ready';
+      }
+
+      function appendWelcome(){ appendMessage('assistant','Hello — I can find mentors, book sessions, navigate pages, and toggle dark mode. Try: "Find physics mentors", "Book Sarah Connor tomorrow at 4pm for John".'); }
+
+      // call engine chat
+      async function callChat(messages){
+        if(useMock){
+          // simple mock logic
+          const last = messages.slice().reverse().find(m=>m.role==='user')?.content||'';
+          if(/book/i.test(last)){
+            return { choices:[{ message:{ tool_calls:[{ name:'bookMentorSession', arguments: { mentorName:'Sarah Connor', time:'Tomorrow 4pm', studentName:'Student' } }] } }] };
+          }
+          if(/find|search|mentor/i.test(last)){
+            const subj = (last.match(/aerodynamics|math|cad|drones|physics|chemistry|biology|programming/i)||['Math'])[0];
+            return { choices:[{ message:{ tool_calls:[{ name:'searchMentors', arguments:{ subject:subj } }] } }] };
+          }
+          if(/dark mode|toggle dark/i.test(last)){
+            return { choices:[{ message:{ tool_calls:[{ name:'toggleDarkMode', arguments:{} }] } }] };
+          }
+          return { choices:[{ message:{ content:'I can help you book mentors, search mentors, and toggle settings.' } }] };
+        }
+
+        // real engine call
+        try{
+          const resp = await engine.chat.completions.create({ model:'Llama-3.2-1B-Instruct-q4f16_1-MLC', messages, tools: TOOLS_SCHEMA, max_tokens:256 });
+          return resp;
+        }catch(e){
+          console.error('chat call failed', e); useMock=true; return callChat(messages);
+        }
+      }
+
+      // main loop: send user input, process tool calls
+      async function send(text){
+        appendMessage('user', text); history.push({ role:'user', content:text }); statusEl.textContent='Thinking…';
+        const resp = await callChat(history);
+        const choice = resp.choices && resp.choices[0] ? resp.choices[0] : resp;
+        const message = choice.message || choice;
+
+        // detect tool_calls (preferred) or function_call
+        const tool_calls = message.tool_calls || message.function_call || message.tool_call || null;
+        if(tool_calls){
+          const calls = Array.isArray(tool_calls) ? tool_calls : [tool_calls];
+          for(const call of calls){
+            const name = call.name || call.function_name || (call.function_call && call.function_call.name);
+            let args = call.arguments || call.args || (call.function_call && call.function_call.arguments) || {};
+            if(typeof args === 'string'){
+              try{ args = JSON.parse(args); }catch(e){ args = {} }
+            }
+            log(`Tool requested: ${name} ${JSON.stringify(args)}`);
+            statusEl.textContent = `Executing ${name}…`;
+            let result;
+            try{
+              const fn = LOCAL_TOOLS[name];
+              if(!fn) throw new Error('Unknown tool '+name);
+              result = await fn(args);
+            }catch(err){ result = { error: String(err) } }
+
+            // add tool result to history and UI
+            history.push({ role:'assistant', content:`TOOL_CALL:${name}` });
+            history.push({ role:'tool', name, content: JSON.stringify(result) });
+            appendMessage('assistant', `Executed ${name}`, `result: ${JSON.stringify(result)}`);
+            log(`Tool executed: ${name} => ${JSON.stringify(result)}`);
+          }
+
+          // after tools executed, ask model to produce final assistant message
+          statusEl.textContent = 'Summarizing…';
+          const finalResp = await callChat(history);
+          const finalChoice = finalResp.choices && finalResp.choices[0] ? finalResp.choices[0] : finalResp;
+          const finalMsg = finalChoice.message && finalChoice.message.content ? finalChoice.message.content : (finalChoice.content || JSON.stringify(finalChoice));
+          appendMessage('assistant', finalMsg);
+          history.push({ role:'assistant', content: finalMsg });
+          statusEl.textContent = useMock ? 'Ready (mock)' : 'Ready';
+          return;
+        }
+
+        // no tools — direct assistant text
+        const assistantText = message.content || message.text || JSON.stringify(message);
+        appendMessage('assistant', assistantText);
+        history.push({ role:'assistant', content: assistantText });
+        statusEl.textContent = useMock ? 'Ready (mock)' : 'Ready';
+      }
+
+      // wire UI
+      sendBtn.addEventListener('click', ()=>{ const t = inputEl.value.trim(); if(!t) return; inputEl.value=''; send(t); });
+      inputEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendBtn.click(); } });
+
+      // initialize
+      init();
+    </script>
+  </body>
+</html>

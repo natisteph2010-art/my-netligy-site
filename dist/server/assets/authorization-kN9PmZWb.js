@@ -1,5 +1,6 @@
 import { getUser } from "@netlify/identity";
-import { drizzle } from "drizzle-orm/netlify-db";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { pgTable, timestamp, boolean, real, text, integer, serial } from "drizzle-orm/pg-core";
 const mentorApplications = pgTable("mentor_applications", {
   id: serial().primaryKey(),
@@ -99,7 +100,25 @@ const schema = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   students,
   userAccounts
 }, Symbol.toStringTag, { value: "Module" }));
-const db = drizzle({ schema });
+let _db = null;
+function getDb() {
+  if (!_db) {
+    const connectionString = process.env.SUPABASE_DB_URL || process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error("Database connection string (SUPABASE_DB_URL or DATABASE_URL) is not defined.");
+    }
+    const client = postgres(connectionString, { prepare: false });
+    _db = drizzle(client, { schema });
+  }
+  return _db;
+}
+const db = new Proxy({}, {
+  get(_target, prop, receiver) {
+    const instance = getDb();
+    const value = Reflect.get(instance, prop, receiver);
+    return typeof value === "function" ? value.bind(instance) : value;
+  }
+});
 const rolePriority = ["admin", "mentor", "student"];
 function getIdentityRole(user) {
   const assigned = /* @__PURE__ */ new Set([user.role, ...user.roles ?? []]);
@@ -116,7 +135,11 @@ async function getCurrentUserWithRole() {
   const user = await getUser();
   if (!user) return null;
   const role = getIdentityRole(user);
-  await syncUserAccount(user, role);
+  try {
+    await syncUserAccount(user, role);
+  } catch (err) {
+    console.error("syncUserAccount failed (continuing without persisting):", err);
+  }
   return { user, role };
 }
 async function getAdminUser() {
@@ -131,5 +154,6 @@ export {
   getCurrentUserWithRole as e,
   getAdminUser as g,
   mentorProfiles as m,
-  students as s
+  students as s,
+  userAccounts as u
 };

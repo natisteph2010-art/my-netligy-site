@@ -73,7 +73,7 @@ function getResponse() {
 }
 var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 async function getStartManifest(matchedRoutes) {
-  const { tsrStartManifest } = await import("./assets/_tanstack-start-manifest_v-CNxkB1nH.js");
+  const { tsrStartManifest } = await import("./assets/_tanstack-start-manifest_v-BxbMw46f.js");
   const startManifest = tsrStartManifest();
   const rootRoute = startManifest.routes[rootRouteId] = startManifest.routes[rootRouteId] || {};
   rootRoute.assets = rootRoute.assets || [];
@@ -100,7 +100,7 @@ async function getStartManifest(matchedRoutes) {
 const manifest = {
   "49106938b52c8bf2e7795ac418917757130e43844a341613882f98c174227919": {
     functionName: "getServerUser_createServerFn_handler",
-    importer: () => import("./assets/auth-D3lj-Sqa.js")
+    importer: () => import("./assets/auth-Bq3NV0Gc.js")
   }
 };
 async function getServerFnById(id, access) {
@@ -617,7 +617,7 @@ var handleServerAction = async ({ request, context, serverFnId }) => {
       let res = await (async () => {
         if (FORM_DATA_CONTENT_TYPES.some((type) => contentType && contentType.includes(type))) {
           if (methodUpper === "GET") {
-            if (false) ;
+            if (true) throw new Error("Invariant failed: GET requests with FormData payloads are not supported");
             invariant();
           }
           const formData = await request.formData();
@@ -632,7 +632,7 @@ var handleServerAction = async ({ request, context, serverFnId }) => {
             const deserializedContext = fromJSON(JSON.parse(serializedContext), { plugins: serovalPlugins });
             if (typeof deserializedContext === "object" && deserializedContext) params.context = safeObjectMerge(deserializedContext, context);
           } catch (e) {
-            if (false) ;
+            if (true) console.warn("Failed to parse FormData context:", e);
           }
           return await action(params);
         }
@@ -694,6 +694,13 @@ function isNotFoundResponse(error) {
     }
   });
 }
+var hasWarnedAboutDeprecatedTransformAssetUrls = false;
+function warnDeprecatedTransformAssetUrls() {
+  if (!hasWarnedAboutDeprecatedTransformAssetUrls) {
+    hasWarnedAboutDeprecatedTransformAssetUrls = true;
+    console.warn("[TanStack Start] `transformAssetUrls` is deprecated. Use `transformAssets` instead.");
+  }
+}
 function normalizeTransformAssetResult(result) {
   if (typeof result === "string") return { href: result };
   return result;
@@ -754,6 +761,7 @@ function adaptTransformAssetUrlsToTransformAssets(transformFn) {
   }) });
 }
 function adaptTransformAssetUrlsConfigToTransformAssets(transform) {
+  warnDeprecatedTransformAssetUrls();
   if (typeof transform === "string") return transform;
   if (typeof transform === "function") return adaptTransformAssetUrlsToTransformAssets(transform);
   if ("createTransform" in transform && transform.createTransform) return {
@@ -855,7 +863,7 @@ var baseManifestPromise;
 var cachedFinalManifestPromise;
 async function loadEntries() {
   const [routerEntry, startEntry, pluginAdapters] = await Promise.all([
-    import("./assets/router-mO68wcaI.js").then((n) => n.r),
+    import("./assets/router-B_5X4ilg.js").then((n) => n.r),
     import("./assets/start-HYkvq4Ni.js"),
     import("./assets/__23tanstack-start-plugin-adapters-Cwee5PKy.js")
   ]);
@@ -888,8 +896,8 @@ var ROUTER_BASEPATH = "/";
 var SERVER_FN_BASE = "/_serverFn/";
 var IS_PRERENDERING = process.env.TSS_PRERENDERING === "true";
 var IS_SHELL_ENV = process.env.TSS_SHELL === "true";
-var ERR_NO_RESPONSE = "Internal Server Error";
-var ERR_NO_DEFER = "Internal Server Error";
+var ERR_NO_RESPONSE = `It looks like you forgot to return a response from your server route handler. If you want to defer to the app router, make sure to have a component set in this route.`;
+var ERR_NO_DEFER = `You cannot defer to the app router if there is no component defined on this route.`;
 function throwRouteHandlerError() {
   throw new Error(ERR_NO_RESPONSE);
 }

@@ -132,16 +132,10 @@ export default function LandingPage() {
     setContactStatus('sending')
 
     try {
-      const formData = new FormData(event.currentTarget)
-      const body = new URLSearchParams()
-      formData.forEach((value, key) => {
-        if (typeof value === 'string') body.append(key, value)
-      })
-
-      const response = await fetch('/__forms.html', {
+      const response = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString(),
+        body: new URLSearchParams(new FormData(event.target as HTMLFormElement)).toString(),
       })
 
       if (!response.ok) throw new Error('Contact form submission failed')
@@ -375,7 +369,6 @@ export default function LandingPage() {
             method="POST"
             data-netlify="true"
             netlify-honeypot="bot-field"
-            action="/__forms.html"
             onSubmit={handleContactSubmit}
             className="glass rounded-3xl p-6 sm:p-8 shadow-2xl shadow-blue-900/20 mb-10 text-left"
           >

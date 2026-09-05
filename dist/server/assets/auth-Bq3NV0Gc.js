@@ -1,5 +1,5 @@
 import { T as TSS_SERVER_FUNCTION, c as createServerFn } from "../server.js";
-import { e as getCurrentUserWithRole } from "./authorization-DEwvlZPH.js";
+import { e as getCurrentUserWithRole } from "./authorization-kN9PmZWb.js";
 import "node:async_hooks";
 import "h3-v2";
 import "@tanstack/router-core";
@@ -12,7 +12,8 @@ import "@tanstack/react-router";
 import "react/jsx-runtime";
 import "@tanstack/react-router/ssr/server";
 import "@netlify/identity";
-import "drizzle-orm/netlify-db";
+import "drizzle-orm/postgres-js";
+import "postgres";
 import "drizzle-orm/pg-core";
 var createServerRpc = (serverFnMeta, splitImportFn) => {
   const url = "/_serverFn/" + serverFnMeta.id;
