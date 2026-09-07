@@ -1,6 +1,5 @@
 import { getUser } from "@netlify/identity";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/netlify-db";
 import { pgTable, timestamp, boolean, real, text, integer, serial } from "drizzle-orm/pg-core";
 const mentorApplications = pgTable("mentor_applications", {
   id: serial().primaryKey(),
@@ -103,12 +102,13 @@ const schema = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
 let _db = null;
 function getDb() {
   if (!_db) {
-    const connectionString = process.env.SUPABASE_DB_URL || process.env.DATABASE_URL;
+    const connectionString = process.env.NETLIFY_DB_URL || process.env.SUPABASE_DB_URL || process.env.DATABASE_URL;
     if (!connectionString) {
-      throw new Error("Database connection string (SUPABASE_DB_URL or DATABASE_URL) is not defined.");
+      throw new Error(
+        "Database connection string (NETLIFY_DB_URL, SUPABASE_DB_URL, or DATABASE_URL) is not defined."
+      );
     }
-    const client = postgres(connectionString, { prepare: false });
-    _db = drizzle(client, { schema });
+    _db = drizzle(connectionString, { schema });
   }
   return _db;
 }

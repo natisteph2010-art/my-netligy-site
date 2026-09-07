@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '../../../../db/index.js'
 import { mentorProfiles } from '../../../../db/schema.js'
+import { eq } from 'drizzle-orm'
 import { getAdminUser } from '../../../lib/authorization.js'
 
 export const Route = createFileRoute('/api/admin/mentors')({
@@ -44,7 +45,7 @@ export const Route = createFileRoute('/api/admin/mentors')({
             return Response.json({ error: 'Invalid mentor id' }, { status: 400 })
           }
 
-          const [mentor] = await db.select().from(mentorProfiles).where(mentorProfiles.id.eq(id))
+          const [mentor] = await db.select().from(mentorProfiles).where(eq(mentorProfiles.id, id))
           if (!mentor) return Response.json({ error: 'Mentor not found' }, { status: 404 })
 
           // Soft-delete: avoid cascading/foreign-key errors by sanitizing the profile
@@ -60,7 +61,7 @@ export const Route = createFileRoute('/api/admin/mentors')({
               identityUserId: newIdentity,
               updatedAt: new Date(),
             })
-            .where(mentorProfiles.id.eq(id))
+            .where(eq(mentorProfiles.id, id))
 
           return Response.json({ success: true, action: 'soft_delete' })
         } catch (err: any) {

@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '../../../../db/index.js'
 import { students, userAccounts } from '../../../../db/schema.js'
+import { eq } from 'drizzle-orm'
 import { getAdminUser } from '../../../lib/authorization.js'
 
 export const Route = createFileRoute('/api/admin/students')({
@@ -44,7 +45,7 @@ export const Route = createFileRoute('/api/admin/students')({
             return Response.json({ error: 'Invalid student id' }, { status: 400 })
           }
 
-          const [student] = await db.select().from(students).where(students.id.eq(id))
+          const [student] = await db.select().from(students).where(eq(students.id, id))
           if (!student) return Response.json({ error: 'Student not found' }, { status: 404 })
 
           // Soft-delete student to avoid FK constraint failures
@@ -56,11 +57,11 @@ export const Route = createFileRoute('/api/admin/students')({
               fullName: `[removed] ${student.fullName}`,
               email: '',
             })
-            .where(students.id.eq(id))
+            .where(eq(students.id, id))
 
           // also try removing any user_accounts row for this identityUserId if present
           try {
-            await db.delete(userAccounts).where(userAccounts.identityUserId.eq(student.identityUserId))
+            await db.delete(userAccounts).where(eq(userAccounts.identityUserId, student.identityUserId))
           } catch {
             /* best-effort */
           }
