@@ -45,6 +45,7 @@ const mentorProfiles = pgTable("mentor_profiles", {
 const mentoringSessions = pgTable("mentoring_sessions", {
   id: serial().primaryKey(),
   mentorIdentityUserId: text("mentor_identity_user_id").notNull(),
+  studentIdentityUserId: text("student_identity_user_id"),
   studentName: text("student_name").notNull(),
   studentContact: text("student_contact").notNull(),
   subject: text().notNull(),
@@ -56,10 +57,15 @@ const mentoringSessions = pgTable("mentoring_sessions", {
   actualDurationMinutes: integer("actual_duration_minutes"),
   topicsCovered: text("topics_covered"),
   evidenceLink: text("evidence_link"),
+  evidenceFileName: text("evidence_file_name"),
+  evidenceMimeType: text("evidence_mime_type"),
+  evidenceData: text("evidence_data"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   approvedAt: timestamp("approved_at"),
-  completedAt: timestamp("completed_at")
+  completedAt: timestamp("completed_at"),
+  evidenceReviewedAt: timestamp("evidence_reviewed_at"),
+  evidenceReviewedBy: text("evidence_reviewed_by")
 });
 const announcements = pgTable("announcements", {
   id: serial().primaryKey(),
@@ -148,12 +154,12 @@ async function getAdminUser() {
 }
 export {
   announcements as a,
-  mentoringSessions as b,
+  mentorProfiles as b,
   mentorApplications as c,
   db as d,
   getCurrentUserWithRole as e,
   getAdminUser as g,
-  mentorProfiles as m,
+  mentoringSessions as m,
   students as s,
   userAccounts as u
 };

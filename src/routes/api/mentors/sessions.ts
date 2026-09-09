@@ -83,7 +83,7 @@ export const Route = createFileRoute('/api/mentors/sessions')({
           ? ['COMPLETED']
           : scope === 'requests'
             ? ['PENDING']
-            : ['PENDING', 'UPCOMING', 'COMPLETED', 'DECLINED']
+            : ['PENDING', 'UPCOMING', 'PENDING_REVIEW', 'COMPLETED', 'DECLINED']
 
         const records = await db
           .select()
@@ -171,6 +171,7 @@ export const Route = createFileRoute('/api/mentors/sessions')({
 
         await db.insert(mentoringSessions).values({
           mentorIdentityUserId,
+          studentIdentityUserId: user.id,
           studentName,
           studentContact,
           subject,

@@ -20,6 +20,7 @@ import { Route as DashboardMentorRouteImport } from './routes/dashboard/mentor'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as ApplyMentorRouteImport } from './routes/apply/mentor'
 import { Route as ApiAnnouncementsRouteImport } from './routes/api/announcements'
+import { Route as ApiStudentsSessionsRouteImport } from './routes/api/students/sessions'
 import { Route as ApiRegisterStudentRouteImport } from './routes/api/register/student'
 import { Route as ApiMentorsSessionsRouteImport } from './routes/api/mentors/sessions'
 import { Route as ApiMentorsDirectoryRouteImport } from './routes/api/mentors/directory'
@@ -27,9 +28,11 @@ import { Route as ApiApplicationsMentorRouteImport } from './routes/api/applicat
 import { Route as ApiAnnouncementsIdRouteImport } from './routes/api/announcements.$id'
 import { Route as ApiAdminStudentsRouteImport } from './routes/api/admin/students'
 import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
+import { Route as ApiAdminSessionsRouteImport } from './routes/api/admin/sessions'
 import { Route as ApiAdminMentorsRouteImport } from './routes/api/admin/mentors'
 import { Route as ApiMentorsSessionsIdRouteImport } from './routes/api/mentors/sessions.$id'
 import { Route as ApiMentorsProfileUserIdRouteImport } from './routes/api/mentors/profile.$userId'
+import { Route as ApiMentorsSessionsIdEvidenceRouteImport } from './routes/api/mentors/sessions.$id.evidence'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -86,6 +89,11 @@ const ApiAnnouncementsRoute = ApiAnnouncementsRouteImport.update({
   path: '/api/announcements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStudentsSessionsRoute = ApiStudentsSessionsRouteImport.update({
+  id: '/api/students/sessions',
+  path: '/api/students/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRegisterStudentRoute = ApiRegisterStudentRouteImport.update({
   id: '/api/register/student',
   path: '/api/register/student',
@@ -121,6 +129,11 @@ const ApiAdminStatsRoute = ApiAdminStatsRouteImport.update({
   path: '/api/admin/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminSessionsRoute = ApiAdminSessionsRouteImport.update({
+  id: '/api/admin/sessions',
+  path: '/api/admin/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminMentorsRoute = ApiAdminMentorsRouteImport.update({
   id: '/api/admin/mentors',
   path: '/api/admin/mentors',
@@ -136,6 +149,12 @@ const ApiMentorsProfileUserIdRoute = ApiMentorsProfileUserIdRouteImport.update({
   path: '/api/mentors/profile/$userId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMentorsSessionsIdEvidenceRoute =
+  ApiMentorsSessionsIdEvidenceRouteImport.update({
+    id: '/evidence',
+    path: '/evidence',
+    getParentRoute: () => ApiMentorsSessionsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -150,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/student': typeof DashboardStudentRoute
   '/register/student': typeof RegisterStudentRoute
   '/api/admin/mentors': typeof ApiAdminMentorsRoute
+  '/api/admin/sessions': typeof ApiAdminSessionsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/students': typeof ApiAdminStudentsRoute
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
@@ -157,8 +177,10 @@ export interface FileRoutesByFullPath {
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
   '/api/mentors/sessions': typeof ApiMentorsSessionsRouteWithChildren
   '/api/register/student': typeof ApiRegisterStudentRoute
+  '/api/students/sessions': typeof ApiStudentsSessionsRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
-  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRoute
+  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRouteWithChildren
+  '/api/mentors/sessions/$id/evidence': typeof ApiMentorsSessionsIdEvidenceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -173,6 +195,7 @@ export interface FileRoutesByTo {
   '/dashboard/student': typeof DashboardStudentRoute
   '/register/student': typeof RegisterStudentRoute
   '/api/admin/mentors': typeof ApiAdminMentorsRoute
+  '/api/admin/sessions': typeof ApiAdminSessionsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/students': typeof ApiAdminStudentsRoute
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
@@ -180,8 +203,10 @@ export interface FileRoutesByTo {
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
   '/api/mentors/sessions': typeof ApiMentorsSessionsRouteWithChildren
   '/api/register/student': typeof ApiRegisterStudentRoute
+  '/api/students/sessions': typeof ApiStudentsSessionsRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
-  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRoute
+  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRouteWithChildren
+  '/api/mentors/sessions/$id/evidence': typeof ApiMentorsSessionsIdEvidenceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,6 +222,7 @@ export interface FileRoutesById {
   '/dashboard/student': typeof DashboardStudentRoute
   '/register/student': typeof RegisterStudentRoute
   '/api/admin/mentors': typeof ApiAdminMentorsRoute
+  '/api/admin/sessions': typeof ApiAdminSessionsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/students': typeof ApiAdminStudentsRoute
   '/api/announcements/$id': typeof ApiAnnouncementsIdRoute
@@ -204,8 +230,10 @@ export interface FileRoutesById {
   '/api/mentors/directory': typeof ApiMentorsDirectoryRoute
   '/api/mentors/sessions': typeof ApiMentorsSessionsRouteWithChildren
   '/api/register/student': typeof ApiRegisterStudentRoute
+  '/api/students/sessions': typeof ApiStudentsSessionsRoute
   '/api/mentors/profile/$userId': typeof ApiMentorsProfileUserIdRoute
-  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRoute
+  '/api/mentors/sessions/$id': typeof ApiMentorsSessionsIdRouteWithChildren
+  '/api/mentors/sessions/$id/evidence': typeof ApiMentorsSessionsIdEvidenceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -222,6 +250,7 @@ export interface FileRouteTypes {
     | '/dashboard/student'
     | '/register/student'
     | '/api/admin/mentors'
+    | '/api/admin/sessions'
     | '/api/admin/stats'
     | '/api/admin/students'
     | '/api/announcements/$id'
@@ -229,8 +258,10 @@ export interface FileRouteTypes {
     | '/api/mentors/directory'
     | '/api/mentors/sessions'
     | '/api/register/student'
+    | '/api/students/sessions'
     | '/api/mentors/profile/$userId'
     | '/api/mentors/sessions/$id'
+    | '/api/mentors/sessions/$id/evidence'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -245,6 +276,7 @@ export interface FileRouteTypes {
     | '/dashboard/student'
     | '/register/student'
     | '/api/admin/mentors'
+    | '/api/admin/sessions'
     | '/api/admin/stats'
     | '/api/admin/students'
     | '/api/announcements/$id'
@@ -252,8 +284,10 @@ export interface FileRouteTypes {
     | '/api/mentors/directory'
     | '/api/mentors/sessions'
     | '/api/register/student'
+    | '/api/students/sessions'
     | '/api/mentors/profile/$userId'
     | '/api/mentors/sessions/$id'
+    | '/api/mentors/sessions/$id/evidence'
   id:
     | '__root__'
     | '/'
@@ -268,6 +302,7 @@ export interface FileRouteTypes {
     | '/dashboard/student'
     | '/register/student'
     | '/api/admin/mentors'
+    | '/api/admin/sessions'
     | '/api/admin/stats'
     | '/api/admin/students'
     | '/api/announcements/$id'
@@ -275,8 +310,10 @@ export interface FileRouteTypes {
     | '/api/mentors/directory'
     | '/api/mentors/sessions'
     | '/api/register/student'
+    | '/api/students/sessions'
     | '/api/mentors/profile/$userId'
     | '/api/mentors/sessions/$id'
+    | '/api/mentors/sessions/$id/evidence'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -292,12 +329,14 @@ export interface RootRouteChildren {
   DashboardStudentRoute: typeof DashboardStudentRoute
   RegisterStudentRoute: typeof RegisterStudentRoute
   ApiAdminMentorsRoute: typeof ApiAdminMentorsRoute
+  ApiAdminSessionsRoute: typeof ApiAdminSessionsRoute
   ApiAdminStatsRoute: typeof ApiAdminStatsRoute
   ApiAdminStudentsRoute: typeof ApiAdminStudentsRoute
   ApiApplicationsMentorRoute: typeof ApiApplicationsMentorRoute
   ApiMentorsDirectoryRoute: typeof ApiMentorsDirectoryRoute
   ApiMentorsSessionsRoute: typeof ApiMentorsSessionsRouteWithChildren
   ApiRegisterStudentRoute: typeof ApiRegisterStudentRoute
+  ApiStudentsSessionsRoute: typeof ApiStudentsSessionsRoute
   ApiMentorsProfileUserIdRoute: typeof ApiMentorsProfileUserIdRoute
 }
 
@@ -380,6 +419,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnnouncementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/students/sessions': {
+      id: '/api/students/sessions'
+      path: '/api/students/sessions'
+      fullPath: '/api/students/sessions'
+      preLoaderRoute: typeof ApiStudentsSessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/register/student': {
       id: '/api/register/student'
       path: '/api/register/student'
@@ -429,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/sessions': {
+      id: '/api/admin/sessions'
+      path: '/api/admin/sessions'
+      fullPath: '/api/admin/sessions'
+      preLoaderRoute: typeof ApiAdminSessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/mentors': {
       id: '/api/admin/mentors'
       path: '/api/admin/mentors'
@@ -450,6 +503,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMentorsProfileUserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mentors/sessions/$id/evidence': {
+      id: '/api/mentors/sessions/$id/evidence'
+      path: '/evidence'
+      fullPath: '/api/mentors/sessions/$id/evidence'
+      preLoaderRoute: typeof ApiMentorsSessionsIdEvidenceRouteImport
+      parentRoute: typeof ApiMentorsSessionsIdRoute
+    }
   }
 }
 
@@ -464,12 +524,23 @@ const ApiAnnouncementsRouteChildren: ApiAnnouncementsRouteChildren = {
 const ApiAnnouncementsRouteWithChildren =
   ApiAnnouncementsRoute._addFileChildren(ApiAnnouncementsRouteChildren)
 
+interface ApiMentorsSessionsIdRouteChildren {
+  ApiMentorsSessionsIdEvidenceRoute: typeof ApiMentorsSessionsIdEvidenceRoute
+}
+
+const ApiMentorsSessionsIdRouteChildren: ApiMentorsSessionsIdRouteChildren = {
+  ApiMentorsSessionsIdEvidenceRoute: ApiMentorsSessionsIdEvidenceRoute,
+}
+
+const ApiMentorsSessionsIdRouteWithChildren =
+  ApiMentorsSessionsIdRoute._addFileChildren(ApiMentorsSessionsIdRouteChildren)
+
 interface ApiMentorsSessionsRouteChildren {
-  ApiMentorsSessionsIdRoute: typeof ApiMentorsSessionsIdRoute
+  ApiMentorsSessionsIdRoute: typeof ApiMentorsSessionsIdRouteWithChildren
 }
 
 const ApiMentorsSessionsRouteChildren: ApiMentorsSessionsRouteChildren = {
-  ApiMentorsSessionsIdRoute: ApiMentorsSessionsIdRoute,
+  ApiMentorsSessionsIdRoute: ApiMentorsSessionsIdRouteWithChildren,
 }
 
 const ApiMentorsSessionsRouteWithChildren =
@@ -488,12 +559,14 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardStudentRoute: DashboardStudentRoute,
   RegisterStudentRoute: RegisterStudentRoute,
   ApiAdminMentorsRoute: ApiAdminMentorsRoute,
+  ApiAdminSessionsRoute: ApiAdminSessionsRoute,
   ApiAdminStatsRoute: ApiAdminStatsRoute,
   ApiAdminStudentsRoute: ApiAdminStudentsRoute,
   ApiApplicationsMentorRoute: ApiApplicationsMentorRoute,
   ApiMentorsDirectoryRoute: ApiMentorsDirectoryRoute,
   ApiMentorsSessionsRoute: ApiMentorsSessionsRouteWithChildren,
   ApiRegisterStudentRoute: ApiRegisterStudentRoute,
+  ApiStudentsSessionsRoute: ApiStudentsSessionsRoute,
   ApiMentorsProfileUserIdRoute: ApiMentorsProfileUserIdRoute,
 }
 export const routeTree = rootRouteImport

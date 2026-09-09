@@ -73,7 +73,7 @@ function getResponse() {
 }
 var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 async function getStartManifest(matchedRoutes) {
-  const { tsrStartManifest } = await import("./assets/_tanstack-start-manifest_v-flKr6LzO.js");
+  const { tsrStartManifest } = await import("./assets/_tanstack-start-manifest_v-KszlxDft.js");
   const startManifest = tsrStartManifest();
   const rootRoute = startManifest.routes[rootRouteId] = startManifest.routes[rootRouteId] || {};
   rootRoute.assets = rootRoute.assets || [];
@@ -100,7 +100,7 @@ async function getStartManifest(matchedRoutes) {
 const manifest = {
   "49106938b52c8bf2e7795ac418917757130e43844a341613882f98c174227919": {
     functionName: "getServerUser_createServerFn_handler",
-    importer: () => import("./assets/auth-BmJ5mJji.js")
+    importer: () => import("./assets/auth-cM3BQJlc.js")
   }
 };
 async function getServerFnById(id, access) {
@@ -863,7 +863,7 @@ var baseManifestPromise;
 var cachedFinalManifestPromise;
 async function loadEntries() {
   const [routerEntry, startEntry, pluginAdapters] = await Promise.all([
-    import("./assets/router-CTd944MB.js").then((n) => n.r),
+    import("./assets/router-D2o7ZQjH.js").then((n) => n.r),
     import("./assets/start-HYkvq4Ni.js"),
     import("./assets/__23tanstack-start-plugin-adapters-Cwee5PKy.js")
   ]);

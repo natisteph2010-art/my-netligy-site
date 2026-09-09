@@ -30,7 +30,7 @@ type SessionRecord = {
   subject: string
   topicDescription: string
   scheduledAt: string
-  status: 'PENDING' | 'UPCOMING' | 'COMPLETED' | 'DECLINED'
+  status: 'PENDING' | 'UPCOMING' | 'PENDING_REVIEW' | 'COMPLETED' | 'DECLINED'
   reminderSentAt?: string | null
   actualDurationMinutes?: number | null
   topicsCovered?: string | null
@@ -60,7 +60,7 @@ export default function MentorDashboard() {
   const [sessionsView, setSessionsView] = useState<'requests' | 'completed'>('requests')
   const [sessions, setSessions] = useState<SessionRecord[]>([])
   const [sessionActionMsg, setSessionActionMsg] = useState('')
-  const [logDrafts, setLogDrafts] = useState<Record<number, { actualDurationMinutes: string; topicsCovered: string; evidenceLink: string }>>({})
+  const [logDrafts, setLogDrafts] = useState<Record<number, { actualDurationMinutes: string; topicsCovered: string; evidenceLink: string; evidenceFileName: string; evidenceMimeType: string; evidenceData: string }>>({})
 
   useEffect(() => {
     if (ready && !user) { navigate({ to: '/login' }); return }
@@ -117,9 +117,10 @@ export default function MentorDashboard() {
   const pendingSessions = sessions.filter((session) => session.status === 'PENDING')
   const upcomingSessions = sessions.filter((session) => session.status === 'UPCOMING')
   const completedSessions = sessions.filter((session) => session.status === 'COMPLETED')
+  const reviewSessions = sessions.filter((session) => session.status === 'PENDING_REVIEW')
   const sessionNeedsLogging = upcomingSessions.filter((session) => new Date(session.scheduledAt).getTime() < Date.now())
 
-  const updateSessionStatus = async (sessionId: number, action: 'approve' | 'decline' | 'complete', payload?: Record<string, unknown>) => {
+  const updateSessionStatus = async (sessionId: number, action: 'approve' | 'decline' | 'submit_evidence', payload?: Record<string, unknown>) => {
     const response = await fetch(`/api/mentors/sessions/${sessionId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -131,7 +132,7 @@ export default function MentorDashboard() {
       return
     }
 
-    setSessionActionMsg(action === 'approve' ? 'Request approved.' : action === 'decline' ? 'Request declined.' : 'Session logged successfully.')
+    setSessionActionMsg(action === 'approve' ? 'Request approved.' : action === 'decline' ? 'Request declined.' : 'Evidence submitted for administrator review.')
     fetch(`/api/mentors/sessions?mentorId=${user.id}`)
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
@@ -141,12 +142,39 @@ export default function MentorDashboard() {
 
   const handleLogSubmit = async (sessionId: number) => {
     const draft = logDrafts[sessionId]
-    if (!draft) return
-    await updateSessionStatus(sessionId, 'complete', {
+    if (!draft?.evidenceData) {
+      setSessionActionMsg('Please attach an evidence file before submitting.')
+      return
+    }
+    await updateSessionStatus(sessionId, 'submit_evidence', {
       actualDurationMinutes: Number(draft.actualDurationMinutes),
       topicsCovered: draft.topicsCovered,
       evidenceLink: draft.evidenceLink,
+      evidenceFileName: draft.evidenceFileName,
+      evidenceMimeType: draft.evidenceMimeType,
+      evidenceData: draft.evidenceData,
     })
+  }
+
+  const handleEvidenceFile = (sessionId: number, file?: File) => {
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      setSessionActionMsg('Evidence files must be smaller than 5 MB.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => setLogDrafts((prev) => ({
+      ...prev,
+      [sessionId]: {
+        actualDurationMinutes: prev[sessionId]?.actualDurationMinutes ?? '',
+        topicsCovered: prev[sessionId]?.topicsCovered ?? '',
+        evidenceLink: prev[sessionId]?.evidenceLink ?? '',
+        evidenceFileName: file.name,
+        evidenceMimeType: file.type,
+        evidenceData: String(reader.result || ''),
+      },
+    }))
+    reader.readAsDataURL(file)
   }
 
   if (!ready || !user) {
@@ -452,9 +480,11 @@ export default function MentorDashboard() {
                               <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-100">
                                 <div className="font-semibold">Log Notes &amp; Evidence</div>
                                 <div className="mt-2 space-y-2">
-                                  <input value={logDrafts[session.id]?.actualDurationMinutes ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: e.target.value, topicsCovered: prev[session.id]?.topicsCovered ?? '', evidenceLink: prev[session.id]?.evidenceLink ?? '' } }))} placeholder="Actual duration (minutes)" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
-                                  <textarea rows={3} value={logDrafts[session.id]?.topicsCovered ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? '', topicsCovered: e.target.value, evidenceLink: prev[session.id]?.evidenceLink ?? '' } }))} placeholder="Topics covered" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
-                                  <input value={logDrafts[session.id]?.evidenceLink ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? '', topicsCovered: prev[session.id]?.topicsCovered ?? '', evidenceLink: e.target.value } }))} placeholder="Evidence link (optional)" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
+                                  <input value={logDrafts[session.id]?.actualDurationMinutes ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { ...prev[session.id], actualDurationMinutes: e.target.value, topicsCovered: prev[session.id]?.topicsCovered ?? '', evidenceLink: prev[session.id]?.evidenceLink ?? '', evidenceFileName: prev[session.id]?.evidenceFileName ?? '', evidenceMimeType: prev[session.id]?.evidenceMimeType ?? '', evidenceData: prev[session.id]?.evidenceData ?? '' } }))} placeholder="Actual duration (minutes)" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
+                                  <textarea rows={3} value={logDrafts[session.id]?.topicsCovered ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { ...prev[session.id], actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? '', topicsCovered: e.target.value, evidenceLink: prev[session.id]?.evidenceLink ?? '', evidenceFileName: prev[session.id]?.evidenceFileName ?? '', evidenceMimeType: prev[session.id]?.evidenceMimeType ?? '', evidenceData: prev[session.id]?.evidenceData ?? '' } }))} placeholder="Topics covered" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
+                                  <input type="file" accept="image/*,.pdf,.txt,.doc,.docx" onChange={(e) => handleEvidenceFile(session.id, e.target.files?.[0])} className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white file:mr-3 file:rounded file:border-0 file:bg-blue-600 file:px-2 file:py-1 file:text-white" />
+                                  {logDrafts[session.id]?.evidenceFileName && <p className="text-xs text-teal-200">Attached: {logDrafts[session.id].evidenceFileName}</p>}
+                                  <input value={logDrafts[session.id]?.evidenceLink ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { ...prev[session.id], actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? '', topicsCovered: prev[session.id]?.topicsCovered ?? '', evidenceLink: e.target.value, evidenceFileName: prev[session.id]?.evidenceFileName ?? '', evidenceMimeType: prev[session.id]?.evidenceMimeType ?? '', evidenceData: prev[session.id]?.evidenceData ?? '' } }))} placeholder="Evidence link (optional)" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
                                   <button type="button" onClick={() => handleLogSubmit(session.id)} className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white">Submit Log</button>
                                 </div>
                               </div>
@@ -467,6 +497,13 @@ export default function MentorDashboard() {
                 </div>
               ) : (
                 <div className="space-y-3">
+                  {reviewSessions.map((session) => (
+                    <div key={session.id} className="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-4">
+                      <div className="text-white font-semibold">{session.studentName} · {session.subject}</div>
+                      <p className="text-sm text-amber-100 mt-1">Evidence submitted and awaiting administrator approval.</p>
+                      <p className="mt-2 text-sm text-slate-300">{session.topicsCovered || 'No notes recorded.'}</p>
+                    </div>
+                  ))}
                   {completedSessions.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-white/10 px-4 py-8 text-center text-slate-400">
                       No completed logs yet.

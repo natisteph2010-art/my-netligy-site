@@ -47,7 +47,7 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
         if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
         const body = await request.json()
-        const { action } = body as { action?: 'approve' | 'decline' | 'complete' }
+        const { action } = body as { action?: 'approve' | 'decline' | 'submit_evidence' | 'approve_evidence' | 'reject_evidence' }
         const sessionId = Number(params.id)
 
         const [session] = await db
@@ -96,7 +96,7 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
           return Response.json({ success: true })
         }
 
-        if (action === 'complete') {
+        if (action === 'submit_evidence') {
           if (session.status !== 'UPCOMING') {
             return Response.json({ error: 'Only upcoming sessions can be completed.' }, { status: 409 })
           }
@@ -104,9 +104,52 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
           const duration = Number(body.actualDurationMinutes)
           const topicsCovered = String(body.topicsCovered || '')
           const evidenceLink = String(body.evidenceLink || '')
+          const evidenceFileName = String(body.evidenceFileName || '')
+          const evidenceMimeType = String(body.evidenceMimeType || '')
+          const evidenceData = String(body.evidenceData || '')
 
-          if (!duration || duration <= 0 || !topicsCovered.trim()) {
-            return Response.json({ error: 'Actual duration and topics covered are required.' }, { status: 400 })
+          if (!duration || duration <= 0 || !topicsCovered.trim() || !evidenceFileName || !evidenceData) {
+            return Response.json({ error: 'Duration, topics covered, and an evidence file are required.' }, { status: 400 })
+          }
+
+          if (!evidenceData.startsWith('data:') || evidenceData.length > 7_000_000) {
+            return Response.json({ error: 'Evidence file must be a valid file smaller than 5 MB.' }, { status: 400 })
+          }
+
+          await db
+            .update(mentoringSessions)
+            .set({
+              status: 'PENDING_REVIEW',
+              actualDurationMinutes: duration,
+              topicsCovered,
+              evidenceLink,
+              evidenceFileName,
+              evidenceMimeType,
+              evidenceData,
+              completedAt: null,
+              evidenceReviewedAt: null,
+              evidenceReviewedBy: null,
+              updatedAt: new Date(),
+            })
+            .where(eq(mentoringSessions.id, sessionId))
+
+          return Response.json({ success: true, status: 'PENDING_REVIEW' })
+        }
+
+        if (action === 'approve_evidence' || action === 'reject_evidence') {
+          if (!user.roles?.includes('admin')) {
+            return Response.json({ error: 'Only administrators can review evidence.' }, { status: 403 })
+          }
+          if (session.status !== 'PENDING_REVIEW') {
+            return Response.json({ error: 'Only evidence awaiting review can be approved.' }, { status: 409 })
+          }
+
+          if (action === 'reject_evidence') {
+            await db
+              .update(mentoringSessions)
+              .set({ status: 'UPCOMING', evidenceReviewedAt: new Date(), evidenceReviewedBy: user.id, updatedAt: new Date() })
+              .where(eq(mentoringSessions.id, sessionId))
+            return Response.json({ success: true, status: 'UPCOMING' })
           }
 
           const [mentorRecord] = await db
@@ -114,32 +157,22 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
             .from(mentorProfiles)
             .where(eq(mentorProfiles.identityUserId, session.mentorIdentityUserId))
 
-          if (!mentorRecord) {
-            return Response.json({ error: 'Mentor profile missing.' }, { status: 404 })
-          }
+          if (!mentorRecord) return Response.json({ error: 'Mentor profile missing.' }, { status: 404 })
 
-          const hoursToAdd = duration / 60
           await db
             .update(mentoringSessions)
-            .set({
-              status: 'COMPLETED',
-              actualDurationMinutes: duration,
-              topicsCovered,
-              evidenceLink,
-              completedAt: new Date(),
-              updatedAt: new Date(),
-            })
+            .set({ status: 'COMPLETED', completedAt: new Date(), evidenceReviewedAt: new Date(), evidenceReviewedBy: user.id, updatedAt: new Date() })
             .where(eq(mentoringSessions.id, sessionId))
 
           await db
             .update(mentorProfiles)
             .set({
-              totalHoursTaught: Number(mentorRecord.totalHoursTaught ?? 0) + hoursToAdd,
+              totalHoursTaught: Number(mentorRecord.totalHoursTaught ?? 0) + Number(session.actualDurationMinutes ?? 0) / 60,
               updatedAt: new Date(),
             })
             .where(eq(mentorProfiles.identityUserId, session.mentorIdentityUserId))
 
-          return Response.json({ success: true })
+          return Response.json({ success: true, status: 'COMPLETED' })
         }
 
         return Response.json({ error: 'Unsupported action.' }, { status: 400 })

@@ -1,7 +1,20 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useIdentity } from '../../lib/identity-context'
 import { AnnouncementBanner } from '../../components/AnnouncementBanner'
+
+type StudentSession = {
+  id: number
+  mentorName: string | null
+  subject: string
+  topicDescription: string
+  scheduledAt: string
+  status: string
+  actualDurationMinutes: number | null
+  topicsCovered: string | null
+  evidenceFileName: string | null
+  evidenceReviewedAt: string | null
+}
 
 export const Route = createFileRoute('/dashboard/student')({
   component: StudentDashboard,
@@ -10,9 +23,15 @@ export const Route = createFileRoute('/dashboard/student')({
 export default function StudentDashboard() {
   const { user, ready, logout } = useIdentity()
   const navigate = useNavigate()
+  const [sessions, setSessions] = useState<StudentSession[]>([])
 
   useEffect(() => {
     if (ready && !user) navigate({ to: '/login' })
+    if (ready && user) {
+      fetch('/api/students/sessions')
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => setSessions(data?.sessions || []))
+    }
   }, [ready, user, navigate])
 
   if (!ready || !user) {
@@ -75,20 +94,27 @@ export default function StudentDashboard() {
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Upcoming Sessions</h3>
             <div className="space-y-3 mt-4">
-              <div className="p-3 rounded-xl bg-white/5 flex items-center gap-3">
-                <span className="text-teal-400 text-lg">📚</span>
-                <div>
-                  <p className="text-white text-sm font-medium">Weekly Tutoring</p>
-                  <p className="text-slate-400 text-xs">Every Saturday · 10:00 AM</p>
+              {sessions.length === 0 ? (
+                <p className="text-sm text-slate-400">No session requests yet. Book a mentor session to see its live status here.</p>
+              ) : sessions.map((session) => (
+                <div key={session.id} className="p-3 rounded-xl bg-white/5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-white text-sm font-medium">{session.subject} with {session.mentorName || 'your mentor'}</p>
+                      <p className="text-slate-400 text-xs mt-1">{new Date(session.scheduledAt).toLocaleString()}</p>
+                    </div>
+                    <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold ${
+                      session.status === 'UPCOMING' ? 'bg-teal-500/15 text-teal-300' :
+                      session.status === 'COMPLETED' ? 'bg-emerald-500/15 text-emerald-300' :
+                      session.status === 'DECLINED' ? 'bg-red-500/15 text-red-300' :
+                      session.status === 'PENDING_REVIEW' ? 'bg-amber-500/15 text-amber-200' :
+                      'bg-blue-500/15 text-blue-300'
+                    }`}>{session.status === 'PENDING_REVIEW' ? 'Under review' : session.status}</span>
+                  </div>
+                  <p className="text-slate-400 text-xs mt-2">{session.topicDescription}</p>
+                  {session.status === 'COMPLETED' && <p className="text-emerald-300 text-xs mt-2">Session verified: {session.actualDurationMinutes || 0} minutes.</p>}
                 </div>
-              </div>
-              <div className="p-3 rounded-xl bg-white/5 flex items-center gap-3">
-                <span className="text-blue-400 text-lg">💬</span>
-                <div>
-                  <p className="text-white text-sm font-medium">Monthly Q&amp;A</p>
-                  <p className="text-slate-400 text-xs">First Sunday of each month</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

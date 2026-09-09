@@ -82,6 +82,29 @@ type Student = {
   createdAt: string
 }
 
+type AdminSession = {
+  id: number
+  mentorIdentityUserId: string
+  mentorName: string | null
+  mentorEmail: string | null
+  studentName: string
+  studentContact: string
+  subject: string
+  topicDescription: string
+  scheduledAt: string
+  status: string
+  actualDurationMinutes: number | null
+  topicsCovered: string | null
+  evidenceLink: string | null
+  evidenceFileName: string | null
+  evidenceMimeType: string | null
+  evidenceReviewedAt: string | null
+  createdAt: string | null
+  updatedAt: string | null
+  approvedAt: string | null
+  completedAt: string | null
+}
+
 type View =
   | 'dashboard'
   | 'applications'
@@ -185,6 +208,9 @@ export default function AdminDashboard() {
   const [students, setStudents] = useState<Student[]>([])
   const [mentorsLoading, setMentorsLoading] = useState(false)
   const [studentsLoading, setStudentsLoading] = useState(false)
+  const [sessions, setSessions] = useState<AdminSession[]>([])
+  const [sessionsLoading, setSessionsLoading] = useState(false)
+  const [sessionStatus, setSessionStatus] = useState<'ALL' | 'PENDING' | 'UPCOMING' | 'COMPLETED' | 'DECLINED'>('ALL')
   const [editorOpen, setEditorOpen] = useState(false)
 
   useEffect(() => {
@@ -199,8 +225,15 @@ export default function AdminDashboard() {
     if (view === 'announcements') loadAnnouncements()
     if (view === 'mentors') loadMentors()
     if (view === 'students') loadStudents()
+    if (view === 'sessions') loadSessions()
     if (view === 'dashboard') loadStats()
-  }, [view, statusFilter])
+  }, [view, statusFilter, sessionStatus])
+
+  useEffect(() => {
+    if (view !== 'sessions') return
+    const timer = window.setInterval(loadSessions, 30000)
+    return () => window.clearInterval(timer)
+  }, [view, sessionStatus])
 
   const flash = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
 
@@ -263,6 +296,42 @@ export default function AdminDashboard() {
       if (res.ok) setStudents(await res.json())
     } catch { /* ignore */ }
     setStudentsLoading(false)
+  }
+
+  const loadSessions = async () => {
+    setSessionsLoading(true)
+    try {
+      const query = sessionStatus === 'ALL' ? '' : `?status=${sessionStatus}`
+      const res = await fetch(`/api/admin/sessions${query}`)
+      if (res.ok) {
+        const data = await res.json()
+        setSessions(data.sessions || [])
+      }
+    } catch { /* ignore */ }
+    setSessionsLoading(false)
+  }
+
+  const reviewSessionEvidence = async (id: number, action: 'approve_evidence' | 'reject_evidence') => {
+    setActionLoading(id)
+    try {
+      const response = await fetch(`/api/mentors/sessions/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        flash(data.error || 'Evidence review failed.')
+        return
+      }
+      flash(action === 'approve_evidence' ? 'Evidence approved and mentor hours credited.' : 'Evidence rejected; mentor can resubmit.')
+      await loadSessions()
+      await loadStats()
+    } catch {
+      flash('Evidence review failed.')
+    } finally {
+      setActionLoading(null)
+    }
   }
 
   const deleteStudent = async (id: number) => {
@@ -553,7 +622,23 @@ export default function AdminDashboard() {
               actionLoading={actionLoading}
             />
           )}
-          {view === 'sessions' && <Placeholder title="Tutoring Sessions" icon={I.sessions} desc="Scheduled and past tutoring sessions will be managed from this space." />}
+          {view === 'sessions' && (
+            <SessionsList
+              sessions={sessions}
+              loading={sessionsLoading}
+              status={sessionStatus}
+              setStatus={setSessionStatus}
+              search={search}
+              onRefresh={loadSessions}
+              onReview={reviewSessionEvidence}
+              onViewEvidence={async (id) => {
+                const response = await fetch(`/api/mentors/sessions/${id}/evidence`)
+                const data = await response.json().catch(() => ({}))
+                if (response.ok && data.data) window.open(data.data, '_blank', 'noopener,noreferrer')
+                else flash(data.error || 'Evidence file unavailable.')
+              }}
+            />
+          )}
           {view === 'settings' && <SettingsPanel email={user.email || ''} />}
         </main>
       </div>
@@ -1039,6 +1124,130 @@ function StudentsList({ students, loading, search, onRefresh, onDelete, actionLo
                   </div>
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SessionsList({ sessions, loading, status, setStatus, search, onRefresh, onReview, onViewEvidence }: {
+  sessions: AdminSession[]
+  loading: boolean
+  status: 'ALL' | 'PENDING' | 'UPCOMING' | 'PENDING_REVIEW' | 'COMPLETED' | 'DECLINED'
+  setStatus: (status: 'ALL' | 'PENDING' | 'UPCOMING' | 'PENDING_REVIEW' | 'COMPLETED' | 'DECLINED') => void
+  search: string
+  onRefresh: () => void
+  onReview: (id: number, action: 'approve_evidence' | 'reject_evidence') => void
+  onViewEvidence: (id: number) => void
+}) {
+  const tabs: Array<{ key: typeof status; label: string }> = [
+    { key: 'ALL', label: 'All' },
+    { key: 'PENDING', label: 'Pending' },
+    { key: 'UPCOMING', label: 'Upcoming' },
+    { key: 'PENDING_REVIEW', label: 'Needs Review' },
+    { key: 'COMPLETED', label: 'Completed' },
+    { key: 'DECLINED', label: 'Declined' },
+  ]
+  const query = search.trim().toLowerCase()
+  const filtered = query
+    ? sessions.filter((session) => [
+        session.mentorName || '',
+        session.mentorEmail || '',
+        session.studentName,
+        session.studentContact,
+        session.subject,
+        session.topicDescription,
+      ].some((value) => value.toLowerCase().includes(query)))
+    : sessions
+
+  return (
+    <div className="space-y-5 admin-fade-in">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <p className="text-sm text-slate-500">Live bookings shared between students and mentors.</p>
+          <p className="text-sm text-slate-400">This list refreshes every 30 seconds while open.</p>
+        </div>
+        <button onClick={onRefresh} className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors">
+          ↻ Refresh
+        </button>
+      </div>
+
+      <div className="flex flex-wrap gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setStatus(tab.key)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${status === tab.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-200 p-14 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
+            <Icon path={I.sessions} className="w-6 h-6" />
+          </div>
+          <p className="font-semibold text-slate-800">No {status === 'ALL' ? '' : status.toLowerCase()} sessions found</p>
+          <p className="text-sm text-slate-500 mt-1">New bookings will appear here as soon as they are submitted.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((session) => (
+            <div key={session.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="font-bold text-slate-900">{session.subject}</h2>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      session.status === 'UPCOMING' ? 'bg-blue-50 text-blue-700' :
+                      session.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700' :
+                      session.status === 'DECLINED' ? 'bg-red-50 text-red-700' :
+                      'bg-amber-50 text-amber-700'
+                    }`}>{session.status}</span>
+                  </div>
+                  <p className="text-sm text-slate-500 mt-1">{new Date(session.scheduledAt).toLocaleString()}</p>
+                </div>
+                <p className="text-xs text-slate-400">Booking #{session.id}</p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 mt-4 pt-4 border-t border-slate-100">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Mentor</p>
+                  <p className="text-sm font-semibold text-slate-800">{session.mentorName || 'Profile unavailable'}</p>
+                  <p className="text-sm text-slate-500">{session.mentorEmail || session.mentorIdentityUserId}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Student</p>
+                  <p className="text-sm font-semibold text-slate-800">{session.studentName}</p>
+                  <p className="text-sm text-slate-500">{session.studentContact}</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-600 mt-4"><span className="font-semibold text-slate-700">Topic:</span> {session.topicDescription}</p>
+              {session.evidenceFileName && (
+                <div className="mt-3 flex items-center gap-3 text-sm">
+                  <span className="text-slate-500">Evidence: {session.evidenceFileName}</span>
+                  <button type="button" onClick={() => onViewEvidence(session.id)} className="font-semibold text-blue-600 hover:text-blue-700">View file</button>
+                </div>
+              )}
+              {session.status === 'PENDING_REVIEW' && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button type="button" onClick={() => onReview(session.id, 'approve_evidence')} className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Approve evidence &amp; credit hours</button>
+                  <button type="button" onClick={() => onReview(session.id, 'reject_evidence')} className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50">Reject &amp; request resubmission</button>
+                </div>
+              )}
+              {session.status === 'COMPLETED' && (
+                <div className="mt-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900">
+                  <span className="font-semibold">Logged:</span> {session.actualDurationMinutes ?? 0} minutes
+                  {session.topicsCovered ? ` · ${session.topicsCovered}` : ''}
+                </div>
+              )}
             </div>
           ))}
         </div>
