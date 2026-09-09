@@ -1,10 +1,7 @@
 import { createRootRoute, HeadContent, Scripts, useRouterState, Link, createFileRoute, lazyRouteComponent, useNavigate, redirect, createRouter } from "@tanstack/react-router";
 import { jsxDEV, Fragment } from "react/jsx-dev-runtime";
-import { useState, useEffect, createContext, useContext, useRef, useMemo } from "react";
+import { useState, useEffect, createContext, useContext, useRef, Suspense, lazy } from "react";
 import { getUser, onAuthChange, logout, handleAuthCallback, signup, AuthError } from "@netlify/identity";
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Line, Float, Html } from "@react-three/drei";
-import * as THREE from "three";
 import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "../server.js";
 import { g as getAdminUser, d as db, a as announcements, s as students, m as mentorProfiles, b as mentoringSessions, c as mentorApplications, u as userAccounts } from "./authorization-zZIhLppK.js";
 import { desc, and, eq, lte, or, isNull, gt, inArray, asc, gte, count } from "drizzle-orm";
@@ -84,19 +81,40 @@ const Route$l = createRootRoute({
       { name: "description", content: "GradeBridge connects IGCSE mentors with students through free tutoring and mentorship." }
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" }
+      { rel: "preconnect", href: "https://fonts.googleapis.com", crossOrigin: "" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" }
     ]
   }),
   shellComponent: RootDocument
 });
 function RootDocument({ children }) {
   return /* @__PURE__ */ jsxDEV("html", { lang: "en", className: "scroll-smooth", children: [
-    /* @__PURE__ */ jsxDEV("head", { children: /* @__PURE__ */ jsxDEV(HeadContent, {}, void 0, false, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-      lineNumber: 29,
-      columnNumber: 9
-    }, this) }, void 0, false, {
+    /* @__PURE__ */ jsxDEV("head", { children: [
+      /* @__PURE__ */ jsxDEV(HeadContent, {}, void 0, false, {
+        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
+        lineNumber: 29,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(
+        "link",
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap",
+          media: "print",
+          onLoad: (event) => {
+            event.currentTarget.media = "all";
+          }
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
+          lineNumber: 30,
+          columnNumber: 9
+        },
+        this
+      )
+    ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
       lineNumber: 28,
       columnNumber: 7
@@ -105,27 +123,27 @@ function RootDocument({ children }) {
       /* @__PURE__ */ jsxDEV(IdentityProvider, { children: /* @__PURE__ */ jsxDEV(CallbackHandler, { children: [
         /* @__PURE__ */ jsxDEV(NavBar, {}, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 34,
+          lineNumber: 40,
           columnNumber: 13
         }, this),
         children
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 33,
+        lineNumber: 39,
         columnNumber: 11
       }, this) }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 32,
+        lineNumber: 38,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV(Scripts, {}, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 38,
+        lineNumber: 44,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-      lineNumber: 31,
+      lineNumber: 37,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
@@ -152,43 +170,43 @@ function NavBar() {
     /* @__PURE__ */ jsxDEV("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-between h-16", children: [
       /* @__PURE__ */ jsxDEV(Link, { to: "/", className: "flex items-center gap-2 group", children: /* @__PURE__ */ jsxDEV(GradeBridgeLogo, { compact: true, className: "group-hover:opacity-90 transition-opacity" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 75,
+        lineNumber: 81,
         columnNumber: 13
       }, this) }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 74,
+        lineNumber: 80,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "hidden md:flex items-center gap-6 text-sm font-medium", children: [
         /* @__PURE__ */ jsxDEV("a", { href: "/#about", className: "text-slate-300 hover:text-white transition-colors", children: "About" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 80,
+          lineNumber: 86,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV("a", { href: "/#programs", className: "text-slate-300 hover:text-white transition-colors", children: "Programs" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 81,
+          lineNumber: 87,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV(Link, { to: "/mentors", className: "text-slate-300 hover:text-white transition-colors", children: "Mentors" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 82,
+          lineNumber: 88,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV(Link, { to: "/assistant", className: "text-slate-300 hover:text-white transition-colors", children: "Assistant" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 83,
+          lineNumber: 89,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("a", { href: "/#contact", className: "text-slate-300 hover:text-white transition-colors", children: "Contact" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 84,
+          lineNumber: 90,
           columnNumber: 15
         }, this),
         ready && user ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
           /* @__PURE__ */ jsxDEV(Link, { to: dashboardPath, className: "text-slate-300 hover:text-white transition-colors", children: "Dashboard" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-            lineNumber: 87,
+            lineNumber: 93,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV(
@@ -202,29 +220,29 @@ function NavBar() {
             false,
             {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-              lineNumber: 88,
+              lineNumber: 94,
               columnNumber: 17
             },
             this
           )
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 86,
+          lineNumber: 92,
           columnNumber: 15
         }, this) : ready ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
           /* @__PURE__ */ jsxDEV(Link, { to: "/login", className: "text-slate-300 hover:text-white transition-colors", children: "Sign In" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-            lineNumber: 97,
+            lineNumber: 103,
             columnNumber: 17
           }, this),
           /* @__PURE__ */ jsxDEV(Link, { to: "/apply/mentor", className: "px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-teal-500 text-white hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/20", children: "Join Now" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-            lineNumber: 98,
+            lineNumber: 104,
             columnNumber: 17
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 96,
+          lineNumber: 102,
           columnNumber: 15
         }, this) : null,
         /* @__PURE__ */ jsxDEV(
@@ -239,14 +257,14 @@ function NavBar() {
           false,
           {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-            lineNumber: 103,
+            lineNumber: 109,
             columnNumber: 13
           },
           this
         )
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 79,
+        lineNumber: 85,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV(
@@ -258,17 +276,17 @@ function NavBar() {
           children: [
             /* @__PURE__ */ jsxDEV("span", { className: `block w-5 h-0.5 bg-white transition-transform ${mobileOpen ? "rotate-45 translate-y-2" : ""}` }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-              lineNumber: 118,
+              lineNumber: 124,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV("span", { className: `block w-5 h-0.5 bg-white transition-opacity ${mobileOpen ? "opacity-0" : ""}` }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-              lineNumber: 119,
+              lineNumber: 125,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV("span", { className: `block w-5 h-0.5 bg-white transition-transform ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}` }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-              lineNumber: 120,
+              lineNumber: 126,
               columnNumber: 13
             }, this)
           ]
@@ -277,89 +295,89 @@ function NavBar() {
         true,
         {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 113,
+          lineNumber: 119,
           columnNumber: 11
         },
         this
       )
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-      lineNumber: 72,
+      lineNumber: 78,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-      lineNumber: 71,
+      lineNumber: 77,
       columnNumber: 7
     }, this),
     mobileOpen && /* @__PURE__ */ jsxDEV("div", { className: "md:hidden bg-slate-900/98 backdrop-blur-md border-b border-white/10 py-4 px-4 flex flex-col gap-3 text-sm", children: [
       /* @__PURE__ */ jsxDEV("a", { href: "/#about", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "About" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 128,
+        lineNumber: 134,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("a", { href: "/#programs", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Programs" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 129,
+        lineNumber: 135,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV(Link, { to: "/assistant", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Assistant" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 130,
+        lineNumber: 136,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV(Link, { to: "/mentors", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Mentors" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 131,
+        lineNumber: 137,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("a", { href: "/#contact", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Contact" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 132,
+        lineNumber: 138,
         columnNumber: 11
       }, this),
       ready && user ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
         /* @__PURE__ */ jsxDEV(Link, { to: dashboardPath, onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Dashboard" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 135,
+          lineNumber: 141,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("button", { onClick: () => logout2().then(() => window.location.href = "/"), className: "text-left text-slate-300 hover:text-white py-2", children: "Sign Out" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 136,
+          lineNumber: 142,
           columnNumber: 15
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 134,
+        lineNumber: 140,
         columnNumber: 13
       }, this) : ready ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
         /* @__PURE__ */ jsxDEV(Link, { to: "/login", onClick: () => setMobileOpen(false), className: "text-slate-300 hover:text-white py-2", children: "Sign In" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 140,
+          lineNumber: 146,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV(Link, { to: "/apply/mentor", onClick: () => setMobileOpen(false), className: "text-blue-400 hover:text-blue-300 py-2 font-medium", children: "Join Now" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-          lineNumber: 141,
+          lineNumber: 147,
           columnNumber: 15
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-        lineNumber: 139,
+        lineNumber: 145,
         columnNumber: 13
       }, this) : null
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-      lineNumber: 127,
+      lineNumber: 133,
       columnNumber: 9
     }, this)
   ] }, void 0, true, {
     fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/__root.tsx",
-    lineNumber: 68,
+    lineNumber: 74,
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-DZaiNfaz.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-Y89vWgJp.js");
 const Route$k = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
@@ -892,7 +910,7 @@ function MentorDirectoryPage() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter = () => import("./login-pSh0zgXK.js");
+const $$splitComponentImporter = () => import("./login-DgDExH0Z.js");
 const Route$i = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
@@ -1464,544 +1482,6 @@ function EntranceOverlay() {
     columnNumber: 5
   }, this);
 }
-const NODES = [
-  { label: "Mathematics", symbol: "∑", position: [2.5, 1.4, 0.6], color: "#7dd3fc", accent: true },
-  { label: "Physics", symbol: "F=ma", position: [-2.7, 1.1, -0.5], color: "#38bdf8", accent: false },
-  { label: "Chemistry", symbol: "⌬", position: [2.2, -1.5, -0.8], color: "#67e8f9", accent: false },
-  { label: "Biology", symbol: "⬡", position: [-2.4, -1.3, 0.7], color: "#5eead4", accent: false },
-  { label: "Mentors", symbol: "◎", position: [0.2, 2.6, -0.9], color: "#bae6fd", accent: true },
-  { label: "Students", symbol: "◌", position: [-0.4, -2.6, 0.4], color: "#7dd3fc", accent: false },
-  { label: "English", symbol: "Aa", position: [3.1, -0.2, 0.9], color: "#38bdf8", accent: false },
-  { label: "Computing", symbol: "{ }", position: [-3.2, 0, -0.6], color: "#67e8f9", accent: false }
-];
-const EDGES = [
-  [4, 0],
-  [4, 1],
-  [4, 6],
-  [4, 7],
-  [5, 2],
-  [5, 3],
-  [5, 0],
-  [5, 7],
-  [0, 6],
-  [1, 7],
-  [2, 6],
-  [3, 5]
-];
-function GraduationCap() {
-  const cap = useRef(null);
-  const tassel = useRef(null);
-  const ring1 = useRef(null);
-  const ring2 = useRef(null);
-  useFrame(({ clock }, delta) => {
-    if (cap.current) {
-      cap.current.rotation.y += delta * 0.5;
-      cap.current.position.y = Math.sin(clock.elapsedTime * 1.2) * 0.08;
-    }
-    if (tassel.current) {
-      tassel.current.rotation.z = Math.sin(clock.elapsedTime * 1.6) * 0.18;
-    }
-    if (ring1.current) ring1.current.rotation.z += delta * 0.25;
-    if (ring2.current) ring2.current.rotation.z -= delta * 0.18;
-  });
-  const boardMaterial = /* @__PURE__ */ jsxDEV(
-    "meshStandardMaterial",
-    {
-      color: "#0b1f3a",
-      emissive: "#0ea5e9",
-      emissiveIntensity: 0.6,
-      roughness: 0.35,
-      metalness: 0.5
-    },
-    void 0,
-    false,
-    {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 54,
-      columnNumber: 5
-    },
-    this
-  );
-  return /* @__PURE__ */ jsxDEV("group", { children: [
-    /* @__PURE__ */ jsxDEV("group", { ref: cap, rotation: [0.15, 0, 0], children: [
-      /* @__PURE__ */ jsxDEV("mesh", { position: [0, 0.42, 0], children: [
-        /* @__PURE__ */ jsxDEV("boxGeometry", { args: [1.5, 0.05, 1.5] }, void 0, false, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 68,
-          columnNumber: 11
-        }, this),
-        boardMaterial
-      ] }, void 0, true, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 67,
-        columnNumber: 9
-      }, this),
-      /* @__PURE__ */ jsxDEV("mesh", { position: [0, 0.4, 0], children: [
-        /* @__PURE__ */ jsxDEV("boxGeometry", { args: [1.56, 0.02, 1.56] }, void 0, false, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 73,
-          columnNumber: 11
-        }, this),
-        /* @__PURE__ */ jsxDEV("meshBasicMaterial", { color: "#38bdf8", transparent: true, opacity: 0.7 }, void 0, false, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 74,
-          columnNumber: 11
-        }, this)
-      ] }, void 0, true, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 72,
-        columnNumber: 9
-      }, this),
-      /* @__PURE__ */ jsxDEV("mesh", { position: [0, 0.14, 0], children: [
-        /* @__PURE__ */ jsxDEV("cylinderGeometry", { args: [0.5, 0.56, 0.42, 40] }, void 0, false, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 79,
-          columnNumber: 11
-        }, this),
-        boardMaterial
-      ] }, void 0, true, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 78,
-        columnNumber: 9
-      }, this),
-      /* @__PURE__ */ jsxDEV("mesh", { position: [0, 0.47, 0], children: [
-        /* @__PURE__ */ jsxDEV("sphereGeometry", { args: [0.08, 20, 20] }, void 0, false, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 85,
-          columnNumber: 11
-        }, this),
-        /* @__PURE__ */ jsxDEV(
-          "meshStandardMaterial",
-          {
-            color: "#e0f2fe",
-            emissive: "#7dd3fc",
-            emissiveIntensity: 2.2,
-            roughness: 0.2
-          },
-          void 0,
-          false,
-          {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-            lineNumber: 86,
-            columnNumber: 11
-          },
-          this
-        )
-      ] }, void 0, true, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 84,
-        columnNumber: 9
-      }, this),
-      /* @__PURE__ */ jsxDEV("group", { ref: tassel, position: [0, 0.47, 0], children: [
-        /* @__PURE__ */ jsxDEV("mesh", { position: [0.34, -0.01, 0.34], rotation: [0, -Math.PI / 4, Math.PI / 2], children: [
-          /* @__PURE__ */ jsxDEV("cylinderGeometry", { args: [0.015, 0.015, 0.96, 8] }, void 0, false, {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-            lineNumber: 98,
-            columnNumber: 13
-          }, this),
-          /* @__PURE__ */ jsxDEV("meshBasicMaterial", { color: "#7dd3fc" }, void 0, false, {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-            lineNumber: 99,
-            columnNumber: 13
-          }, this)
-        ] }, void 0, true, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 97,
-          columnNumber: 11
-        }, this),
-        /* @__PURE__ */ jsxDEV("mesh", { position: [0.66, -0.32, 0.66], children: [
-          /* @__PURE__ */ jsxDEV("cylinderGeometry", { args: [0.015, 0.015, 0.62, 8] }, void 0, false, {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-            lineNumber: 103,
-            columnNumber: 13
-          }, this),
-          /* @__PURE__ */ jsxDEV("meshBasicMaterial", { color: "#7dd3fc" }, void 0, false, {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-            lineNumber: 104,
-            columnNumber: 13
-          }, this)
-        ] }, void 0, true, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 102,
-          columnNumber: 11
-        }, this),
-        /* @__PURE__ */ jsxDEV("mesh", { position: [0.66, -0.66, 0.66], children: [
-          /* @__PURE__ */ jsxDEV("coneGeometry", { args: [0.09, 0.22, 12] }, void 0, false, {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-            lineNumber: 108,
-            columnNumber: 13
-          }, this),
-          /* @__PURE__ */ jsxDEV(
-            "meshStandardMaterial",
-            {
-              color: "#38bdf8",
-              emissive: "#38bdf8",
-              emissiveIntensity: 1.6,
-              roughness: 0.3
-            },
-            void 0,
-            false,
-            {
-              fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-              lineNumber: 109,
-              columnNumber: 13
-            },
-            this
-          )
-        ] }, void 0, true, {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 107,
-          columnNumber: 11
-        }, this)
-      ] }, void 0, true, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 95,
-        columnNumber: 9
-      }, this)
-    ] }, void 0, true, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 65,
-      columnNumber: 7
-    }, this),
-    /* @__PURE__ */ jsxDEV("mesh", { scale: 2.1, children: [
-      /* @__PURE__ */ jsxDEV("sphereGeometry", { args: [0.62, 32, 32] }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 121,
-        columnNumber: 9
-      }, this),
-      /* @__PURE__ */ jsxDEV("meshBasicMaterial", { color: "#0ea5e9", transparent: true, opacity: 0.07 }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 122,
-        columnNumber: 9
-      }, this)
-    ] }, void 0, true, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 120,
-      columnNumber: 7
-    }, this),
-    /* @__PURE__ */ jsxDEV("mesh", { ref: ring1, rotation: [Math.PI / 2.2, 0.3, 0], children: [
-      /* @__PURE__ */ jsxDEV("torusGeometry", { args: [1.5, 0.012, 16, 120] }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 126,
-        columnNumber: 9
-      }, this),
-      /* @__PURE__ */ jsxDEV("meshBasicMaterial", { color: "#7dd3fc", transparent: true, opacity: 0.55 }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 127,
-        columnNumber: 9
-      }, this)
-    ] }, void 0, true, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 125,
-      columnNumber: 7
-    }, this),
-    /* @__PURE__ */ jsxDEV("mesh", { ref: ring2, rotation: [Math.PI / 1.7, -0.4, 0.2], children: [
-      /* @__PURE__ */ jsxDEV("torusGeometry", { args: [1.9, 8e-3, 16, 120] }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 130,
-        columnNumber: 9
-      }, this),
-      /* @__PURE__ */ jsxDEV("meshBasicMaterial", { color: "#67e8f9", transparent: true, opacity: 0.35 }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 131,
-        columnNumber: 9
-      }, this)
-    ] }, void 0, true, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 129,
-      columnNumber: 7
-    }, this),
-    /* @__PURE__ */ jsxDEV("pointLight", { position: [0, 0, 0], intensity: 3, distance: 9, color: "#38bdf8" }, void 0, false, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 133,
-      columnNumber: 7
-    }, this)
-  ] }, void 0, true, {
-    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-    lineNumber: 64,
-    columnNumber: 5
-  }, this);
-}
-function KnowledgeNode({ node }) {
-  const mesh = useRef(null);
-  const [hovered, setHovered] = useState(false);
-  useFrame(({ clock }) => {
-    if (!mesh.current) return;
-    const pulse = 1 + Math.sin(clock.elapsedTime * 2 + node.position[0]) * 0.06;
-    const target = hovered ? 1.35 : pulse;
-    mesh.current.scale.setScalar(THREE.MathUtils.lerp(mesh.current.scale.x, target, 0.15));
-  });
-  const radius = node.accent ? 0.34 : 0.26;
-  return /* @__PURE__ */ jsxDEV(Float, { speed: 2, rotationIntensity: 0.3, floatIntensity: 0.6, children: /* @__PURE__ */ jsxDEV("group", { position: node.position, children: [
-    /* @__PURE__ */ jsxDEV(
-      "mesh",
-      {
-        ref: mesh,
-        onPointerOver: (e) => {
-          e.stopPropagation();
-          setHovered(true);
-          document.body.style.cursor = "pointer";
-        },
-        onPointerOut: () => {
-          setHovered(false);
-          document.body.style.cursor = "auto";
-        },
-        children: [
-          /* @__PURE__ */ jsxDEV("icosahedronGeometry", { args: [radius, 2] }, void 0, false, {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-            lineNumber: 166,
-            columnNumber: 11
-          }, this),
-          /* @__PURE__ */ jsxDEV(
-            "meshStandardMaterial",
-            {
-              color: node.color,
-              emissive: node.color,
-              emissiveIntensity: hovered ? 2.6 : 1.4,
-              roughness: 0.25,
-              metalness: 0.2
-            },
-            void 0,
-            false,
-            {
-              fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-              lineNumber: 167,
-              columnNumber: 11
-            },
-            this
-          )
-        ]
-      },
-      void 0,
-      true,
-      {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 154,
-        columnNumber: 9
-      },
-      this
-    ),
-    /* @__PURE__ */ jsxDEV("mesh", { scale: 1.7, children: [
-      /* @__PURE__ */ jsxDEV("sphereGeometry", { args: [radius, 24, 24] }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 177,
-        columnNumber: 11
-      }, this),
-      /* @__PURE__ */ jsxDEV("meshBasicMaterial", { color: node.color, transparent: true, opacity: hovered ? 0.18 : 0.09 }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 178,
-        columnNumber: 11
-      }, this)
-    ] }, void 0, true, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 176,
-      columnNumber: 9
-    }, this),
-    /* @__PURE__ */ jsxDEV(Html, { center: true, position: [0, radius + 0.55, 0], distanceFactor: 9, pointerEvents: "none", children: /* @__PURE__ */ jsxDEV("div", { className: "constellation-label", "data-hovered": hovered, children: [
-      /* @__PURE__ */ jsxDEV("span", { className: "constellation-symbol", children: node.symbol }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 182,
-        columnNumber: 13
-      }, this),
-      /* @__PURE__ */ jsxDEV("span", { className: "constellation-name", children: node.label }, void 0, false, {
-        fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-        lineNumber: 183,
-        columnNumber: 13
-      }, this)
-    ] }, void 0, true, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 181,
-      columnNumber: 11
-    }, this) }, void 0, false, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 180,
-      columnNumber: 9
-    }, this)
-  ] }, void 0, true, {
-    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-    lineNumber: 153,
-    columnNumber: 7
-  }, this) }, void 0, false, {
-    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-    lineNumber: 152,
-    columnNumber: 5
-  }, this);
-}
-function Connections() {
-  return /* @__PURE__ */ jsxDEV("group", { children: EDGES.map(([a, b], i) => /* @__PURE__ */ jsxDEV(
-    Line,
-    {
-      points: [NODES[a].position, [0, 0, 0], NODES[b].position],
-      color: "#38bdf8",
-      lineWidth: 0.7,
-      transparent: true,
-      opacity: 0.28
-    },
-    i,
-    false,
-    {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 195,
-      columnNumber: 9
-    },
-    this
-  )) }, void 0, false, {
-    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-    lineNumber: 193,
-    columnNumber: 5
-  }, this);
-}
-function StarField({ count: count2 = 120 }) {
-  const points = useRef(null);
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count2 * 3);
-    for (let i = 0; i < count2; i++) {
-      const r = 6 + Math.random() * 4;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      arr[i * 3 + 2] = r * Math.cos(phi);
-    }
-    return arr;
-  }, [count2]);
-  useFrame((_, delta) => {
-    if (points.current) points.current.rotation.y += delta * 0.02;
-  });
-  return /* @__PURE__ */ jsxDEV("points", { ref: points, children: [
-    /* @__PURE__ */ jsxDEV("bufferGeometry", { children: /* @__PURE__ */ jsxDEV("bufferAttribute", { attach: "attributes-position", args: [positions, 3] }, void 0, false, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 231,
-      columnNumber: 9
-    }, this) }, void 0, false, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 230,
-      columnNumber: 7
-    }, this),
-    /* @__PURE__ */ jsxDEV("pointsMaterial", { size: 0.05, color: "#7dd3fc", transparent: true, opacity: 0.7, sizeAttenuation: true }, void 0, false, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 233,
-      columnNumber: 7
-    }, this)
-  ] }, void 0, true, {
-    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-    lineNumber: 229,
-    columnNumber: 5
-  }, this);
-}
-function InteractiveRig({ children }) {
-  const group = useRef(null);
-  const { pointer } = useThree();
-  useFrame((_, delta) => {
-    if (!group.current) return;
-    const targetY = pointer.x * 0.5;
-    const targetX = -pointer.y * 0.35;
-    group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, targetY, 3, delta);
-    group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, targetX, 3, delta);
-    group.current.rotation.y += delta * 0.05;
-  });
-  return /* @__PURE__ */ jsxDEV("group", { ref: group, children }, void 0, false, {
-    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-    lineNumber: 253,
-    columnNumber: 10
-  }, this);
-}
-function KnowledgeConstellation() {
-  const [mounted, setMounted] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-    setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  }, []);
-  if (!mounted) {
-    return /* @__PURE__ */ jsxDEV("div", { className: "constellation-canvas", "aria-hidden": "true" }, void 0, false, {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 266,
-      columnNumber: 12
-    }, this);
-  }
-  return /* @__PURE__ */ jsxDEV(
-    "div",
-    {
-      className: "constellation-canvas",
-      role: "img",
-      "aria-label": "Interactive 3D knowledge constellation connecting IGCSE subjects, mentors, and students",
-      children: /* @__PURE__ */ jsxDEV(
-        Canvas,
-        {
-          camera: { position: [0, 0, 10.5], fov: 42 },
-          dpr: [1, 1.5],
-          gl: { antialias: true, alpha: true, powerPreference: "high-performance" },
-          frameloop: reducedMotion ? "demand" : "always",
-          onCreated: ({ gl }) => {
-            const canvas = gl.domElement;
-            canvas.addEventListener(
-              "webglcontextlost",
-              (event) => {
-                event.preventDefault();
-              },
-              false
-            );
-          },
-          children: [
-            /* @__PURE__ */ jsxDEV("ambientLight", { intensity: 0.4 }, void 0, false, {
-              fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-              lineNumber: 294,
-              columnNumber: 9
-            }, this),
-            /* @__PURE__ */ jsxDEV("directionalLight", { position: [5, 5, 5], intensity: 0.6, color: "#bae6fd" }, void 0, false, {
-              fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-              lineNumber: 295,
-              columnNumber: 9
-            }, this),
-            /* @__PURE__ */ jsxDEV(InteractiveRig, { children: [
-              /* @__PURE__ */ jsxDEV(GraduationCap, {}, void 0, false, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-                lineNumber: 297,
-                columnNumber: 11
-              }, this),
-              /* @__PURE__ */ jsxDEV(Connections, {}, void 0, false, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-                lineNumber: 298,
-                columnNumber: 11
-              }, this),
-              NODES.map((node) => /* @__PURE__ */ jsxDEV(KnowledgeNode, { node }, node.label, false, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-                lineNumber: 300,
-                columnNumber: 13
-              }, this)),
-              /* @__PURE__ */ jsxDEV(StarField, {}, void 0, false, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-                lineNumber: 302,
-                columnNumber: 11
-              }, this)
-            ] }, void 0, true, {
-              fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-              lineNumber: 296,
-              columnNumber: 9
-            }, this)
-          ]
-        },
-        void 0,
-        true,
-        {
-          fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-          lineNumber: 275,
-          columnNumber: 7
-        },
-        this
-      )
-    },
-    void 0,
-    false,
-    {
-      fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/KnowledgeConstellation.tsx",
-      lineNumber: 270,
-      columnNumber: 5
-    },
-    this
-  );
-}
 function ParticleNetwork({ className = "", density = 42 }) {
   const canvasRef = useRef(null);
   useEffect(() => {
@@ -2012,6 +1492,7 @@ function ParticleNetwork({ className = "", density = 42 }) {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const parent = canvas.parentElement;
     let animationFrame = 0;
+    let isVisible = true;
     let particles = [];
     let width = 0;
     let height = 0;
@@ -2062,22 +1543,29 @@ function ParticleNetwork({ className = "", density = 42 }) {
           }
         }
       }
-      if (!reduceMotion) animationFrame = requestAnimationFrame(draw);
+      if (!reduceMotion && isVisible) animationFrame = requestAnimationFrame(draw);
     };
     resize();
     draw();
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible && !reduceMotion) animationFrame = requestAnimationFrame(draw);
+    });
+    visibilityObserver.observe(canvas);
     window.addEventListener("resize", resize);
     return () => {
       cancelAnimationFrame(animationFrame);
+      visibilityObserver.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, [density]);
   return /* @__PURE__ */ jsxDEV("canvas", { ref: canvasRef, className: `particle-network ${className}`, "aria-hidden": "true" }, void 0, false, {
     fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/components/ParticleNetwork.tsx",
-    lineNumber: 86,
+    lineNumber: 93,
     columnNumber: 10
   }, this);
 }
+const KnowledgeConstellation = lazy(() => import("./KnowledgeConstellation-xAhyLKsr.js").then((module) => ({ default: module.KnowledgeConstellation })));
 const Route$g = createFileRoute("/")({
   component: LandingPage
 });
@@ -2131,6 +1619,35 @@ function useScrollReveal() {
     return () => observer.disconnect();
   }, []);
 }
+function DeferredConstellation() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const load = () => setReady(true);
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(load, { timeout: 1800 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+    const timeoutId = window.setTimeout(load, 900);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+  return ready ? /* @__PURE__ */ jsxDEV(Suspense, { fallback: /* @__PURE__ */ jsxDEV("div", { className: "constellation-canvas", "aria-hidden": "true" }, void 0, false, {
+    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+    lineNumber: 141,
+    columnNumber: 25
+  }, this), children: /* @__PURE__ */ jsxDEV(KnowledgeConstellation, {}, void 0, false, {
+    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+    lineNumber: 142,
+    columnNumber: 7
+  }, this) }, void 0, false, {
+    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+    lineNumber: 141,
+    columnNumber: 5
+  }, this) : /* @__PURE__ */ jsxDEV("div", { className: "constellation-canvas", "aria-hidden": "true" }, void 0, false, {
+    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+    lineNumber: 144,
+    columnNumber: 7
+  }, this);
+}
 function LandingPage() {
   useScrollReveal();
   const [contactStatus, setContactStatus] = useState("idle");
@@ -2159,27 +1676,27 @@ function LandingPage() {
   return /* @__PURE__ */ jsxDEV("div", { className: "min-h-screen", children: [
     /* @__PURE__ */ jsxDEV(EntranceOverlay, {}, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 157,
+      lineNumber: 178,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("div", { className: "fixed top-16 left-1/2 -translate-x-1/2 z-40 w-full max-w-3xl px-4", children: /* @__PURE__ */ jsxDEV(AnnouncementBanner, {}, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 159,
+      lineNumber: 180,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 158,
+      lineNumber: 179,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("section", { className: "relative min-h-screen flex items-center overflow-hidden cinematic-surface grid-pattern pt-20", "data-sb-object-id": "content/pages/home.json", children: [
       /* @__PURE__ */ jsxDEV("div", { className: "aurora-layer" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 163,
+        lineNumber: 184,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV(ParticleNetwork, { density: 52 }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 164,
+        lineNumber: 185,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20", children: /* @__PURE__ */ jsxDEV("div", { className: "grid lg:grid-cols-[1.02fr_0.98fr] gap-10 lg:gap-2 items-center", children: [
@@ -2187,18 +1704,18 @@ function LandingPage() {
           /* @__PURE__ */ jsxDEV("div", { className: "hero-kicker inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold tracking-[0.16em] uppercase mb-8 animate-fade-in-up", "data-sb-field-path": "heroKicker", children: [
             /* @__PURE__ */ jsxDEV("span", { className: "w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 169,
+              lineNumber: 190,
               columnNumber: 17
             }, this),
             pageContent.heroKicker
           ] }, void 0, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 168,
+            lineNumber: 189,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("p", { className: "text-sky-200 font-medium tracking-[0.28em] uppercase text-xs mb-5", "data-sb-field-path": "heroEyebrow", children: pageContent.heroEyebrow }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 172,
+            lineNumber: 193,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("div", { "data-sb-object-id": "content/pages/home.json", "data-sb-field-path": "heroHeadline", children: /* @__PURE__ */ jsxDEV("h1", { "data-sb-field-path": "heroHeadline", className: "hero-display text-5xl sm:text-6xl lg:text-7xl leading-[0.98] mb-7", children: [
@@ -2206,21 +1723,21 @@ function LandingPage() {
             " ",
             /* @__PURE__ */ jsxDEV("strong", { "data-sb-field-path": "heroHighlight", className: "gradient-text", children: pageContent.heroHighlight }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 175,
+              lineNumber: 196,
               columnNumber: 69
             }, this)
           ] }, void 0, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 174,
+            lineNumber: 195,
             columnNumber: 17
           }, this) }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 173,
+            lineNumber: 194,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("p", { className: "text-slate-300 text-lg sm:text-xl max-w-xl mb-9 leading-relaxed", "data-sb-field-path": "heroSubtitle", children: pageContent.heroSubtitle }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 178,
+            lineNumber: 199,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("div", { className: "flex flex-col sm:flex-row gap-3 mb-12", children: [
@@ -2229,127 +1746,127 @@ function LandingPage() {
               " ",
               /* @__PURE__ */ jsxDEV("span", { "aria-hidden": "true", children: "→" }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 182,
+                lineNumber: 203,
                 columnNumber: 345
               }, this)
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 182,
+              lineNumber: 203,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV(Link, { to: "/register/student", className: "btn-shimmer px-7 py-3.5 rounded-xl border border-sky-300/30 bg-sky-950/40 text-sky-100 font-semibold hover:bg-sky-900/50 hover:border-sky-200/60 transition-all duration-300", "data-sb-field-path": "heroSecondaryCta", children: pageContent.heroSecondaryCta }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 183,
+              lineNumber: 204,
               columnNumber: 17
             }, this)
           ] }, void 0, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 181,
+            lineNumber: 202,
             columnNumber: 15
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 167,
+          lineNumber: 188,
           columnNumber: 13
         }, this),
-        /* @__PURE__ */ jsxDEV("div", { className: "relative flex justify-center lg:justify-end", children: /* @__PURE__ */ jsxDEV(KnowledgeConstellation, {}, void 0, false, {
+        /* @__PURE__ */ jsxDEV("div", { className: "relative flex justify-center lg:justify-end", children: /* @__PURE__ */ jsxDEV(DeferredConstellation, {}, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 187,
+          lineNumber: 208,
           columnNumber: 15
         }, this) }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 186,
+          lineNumber: 207,
           columnNumber: 13
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 166,
+        lineNumber: 187,
         columnNumber: 11
       }, this) }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 165,
+        lineNumber: 186,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-[10px] uppercase tracking-[0.2em]", children: [
         /* @__PURE__ */ jsxDEV("span", { children: "Explore the network" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 192,
+          lineNumber: 213,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV("div", { className: "w-px h-9 bg-gradient-to-b from-sky-300 to-transparent animate-pulse" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 193,
+          lineNumber: 214,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 191,
+        lineNumber: 212,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 162,
+      lineNumber: 183,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("section", { id: "about", className: "py-24 px-4 sm:px-6 lg:px-8", "data-sb-object-id": "content/pages/home.json", children: /* @__PURE__ */ jsxDEV("div", { className: "max-w-6xl mx-auto", children: /* @__PURE__ */ jsxDEV("div", { className: "section-fade grid md:grid-cols-2 gap-16 items-center", children: [
       /* @__PURE__ */ jsxDEV("div", { children: [
         /* @__PURE__ */ jsxDEV("span", { className: "text-teal-400 font-semibold tracking-wider uppercase text-sm", "data-sb-field-path": "aboutEyebrow", children: pageContent.aboutEyebrow }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 202,
+          lineNumber: 223,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("h2", { className: "text-4xl sm:text-5xl font-black mt-3 mb-6 text-white", "data-sb-field-path": "aboutTitle", children: [
           pageContent.aboutTitle,
           /* @__PURE__ */ jsxDEV("br", {}, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 204,
+            lineNumber: 225,
             columnNumber: 65
           }, this),
           /* @__PURE__ */ jsxDEV("span", { className: "gradient-text", children: "for students" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 205,
+            lineNumber: 226,
             columnNumber: 17
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 203,
+          lineNumber: 224,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("p", { className: "text-slate-300 text-lg mb-6 leading-relaxed", "data-sb-field-path": "aboutBody1", children: pageContent.aboutBody1 }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 207,
+          lineNumber: 228,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("p", { className: "text-slate-300 text-lg mb-8 leading-relaxed", "data-sb-field-path": "aboutBody2", children: pageContent.aboutBody2 }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 210,
+          lineNumber: 231,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("div", { className: "flex flex-wrap gap-2", children: SUBJECTS.map((s) => /* @__PURE__ */ jsxDEV("span", { className: "px-3 py-1 rounded-full glass border border-blue-500/20 text-blue-300 text-sm", children: s }, s, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 215,
+          lineNumber: 236,
           columnNumber: 19
         }, this)) }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 213,
+          lineNumber: 234,
           columnNumber: 15
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 201,
+        lineNumber: 222,
         columnNumber: 13
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "relative", children: [
         /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-br from-blue-600/20 to-teal-500/20 rounded-3xl blur-2xl" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 222,
+          lineNumber: 243,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("div", { className: "relative glass rounded-3xl p-8 space-y-4", "data-sb-object-id": "content/pages/home.json", "data-sb-field-path": "aboutCards", children: aboutCards.map(
           (item, index) => index === 3 ? null : /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/8 transition-colors", "data-sb-field-path": `aboutCards.${index}`, children: [
             /* @__PURE__ */ jsxDEV("span", { className: "text-2xl", "data-sb-field-path": `aboutCards.${index}.icon`, children: item.icon }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 227,
+              lineNumber: 248,
               columnNumber: 23
             }, this),
             /* @__PURE__ */ jsxDEV("div", { className: "flex-1", children: index === 0 ? /* @__PURE__ */ jsxDEV("p", { className: "text-white font-bold", "data-sb-field-path": `aboutCards.${index}.title`, children: [
@@ -2359,66 +1876,66 @@ function LandingPage() {
               item.desc
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 230,
+              lineNumber: 251,
               columnNumber: 27
             }, this) : /* @__PURE__ */ jsxDEV(Fragment, { children: [
               /* @__PURE__ */ jsxDEV("p", { className: "text-slate-400 text-xs uppercase tracking-wider", "data-sb-field-path": `aboutCards.${index}.title`, children: item.title }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 235,
+                lineNumber: 256,
                 columnNumber: 29
               }, this),
               /* @__PURE__ */ jsxDEV("p", { className: "text-white font-bold", "data-sb-field-path": `aboutCards.${index}.value`, children: item.value }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 236,
+                lineNumber: 257,
                 columnNumber: 29
               }, this)
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 234,
+              lineNumber: 255,
               columnNumber: 27
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 228,
+              lineNumber: 249,
               columnNumber: 23
             }, this),
             index !== 0 && /* @__PURE__ */ jsxDEV("p", { className: "text-slate-400 text-sm", "data-sb-field-path": `aboutCards.${index}.desc`, children: item.desc }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 240,
+              lineNumber: 261,
               columnNumber: 39
             }, this)
           ] }, item.title, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 226,
+            lineNumber: 247,
             columnNumber: 21
           }, this)
         ) }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 223,
+          lineNumber: 244,
           columnNumber: 15
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 221,
+        lineNumber: 242,
         columnNumber: 13
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 200,
+      lineNumber: 221,
       columnNumber: 11
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 199,
+      lineNumber: 220,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 198,
+      lineNumber: 219,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("section", { id: "programs", className: "py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/30", "data-sb-object-id": "content/pages/home.json", children: /* @__PURE__ */ jsxDEV("div", { className: "max-w-6xl mx-auto", children: [
       /* @__PURE__ */ jsxDEV("div", { className: "section-fade text-center mb-16", children: [
         /* @__PURE__ */ jsxDEV("span", { className: "text-blue-400 font-semibold tracking-wider uppercase text-sm", "data-sb-field-path": "programsEyebrow", children: pageContent.programsEyebrow }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 254,
+          lineNumber: 275,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV("h2", { className: "text-4xl sm:text-5xl font-black mt-3 text-white", "data-sb-field-path": "programsTitle", children: [
@@ -2426,143 +1943,143 @@ function LandingPage() {
           " ",
           /* @__PURE__ */ jsxDEV("span", { className: "gradient-text", children: "Support" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 256,
+            lineNumber: 277,
             columnNumber: 116
           }, this),
           " at Every Step"
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 255,
+          lineNumber: 276,
           columnNumber: 13
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 253,
+        lineNumber: 274,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "section-fade grid md:grid-cols-2 gap-8", "data-sb-object-id": "content/pages/home.json", "data-sb-field-path": "programCards", children: programCards.map((card, index) => /* @__PURE__ */ jsxDEV("div", { className: "glass rounded-3xl p-8 card-glow glass-hover relative overflow-hidden group", "data-sb-field-path": `programCards.${index}`, children: [
         /* @__PURE__ */ jsxDEV("div", { className: "absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/15 transition-colors" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 262,
+          lineNumber: 283,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV("div", { className: "relative", children: [
           /* @__PURE__ */ jsxDEV("div", { className: "w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-2xl mb-6 shadow-lg shadow-blue-500/30", "data-sb-field-path": `programCards.${index}.icon`, children: card.icon }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 264,
+            lineNumber: 285,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV("span", { className: "px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs font-semibold uppercase tracking-wider", "data-sb-field-path": `programCards.${index}.eyebrow`, children: card.eyebrow }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 267,
+            lineNumber: 288,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV("h3", { className: "text-2xl font-black text-white mt-4 mb-3", "data-sb-field-path": `programCards.${index}.title`, children: card.title }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 268,
+            lineNumber: 289,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV("p", { className: "text-slate-300 leading-relaxed mb-6", "data-sb-field-path": `programCards.${index}.description`, children: card.description }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 269,
+            lineNumber: 290,
             columnNumber: 19
           }, this),
           /* @__PURE__ */ jsxDEV("ul", { className: "space-y-2 text-slate-300 text-sm", children: card.benefits.map((item, bindex) => /* @__PURE__ */ jsxDEV("li", { "data-sb-field-path": `programCards.${index}.benefits.${bindex}`, className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxDEV("span", { className: "text-teal-400", children: "✓" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 275,
+              lineNumber: 296,
               columnNumber: 25
             }, this),
             " ",
             item
           ] }, `${index}-${bindex}`, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 274,
+            lineNumber: 295,
             columnNumber: 23
           }, this)) }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 272,
+            lineNumber: 293,
             columnNumber: 19
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 263,
+          lineNumber: 284,
           columnNumber: 17
         }, this)
       ] }, card.title, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 261,
+        lineNumber: 282,
         columnNumber: 15
       }, this)) }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 259,
+        lineNumber: 280,
         columnNumber: 11
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 252,
+      lineNumber: 273,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 251,
+      lineNumber: 272,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("section", { className: "py-24 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxDEV("div", { className: "max-w-6xl mx-auto", children: [
       /* @__PURE__ */ jsxDEV("div", { className: "section-fade text-center mb-16", children: [
         /* @__PURE__ */ jsxDEV("span", { className: "text-cyan-300 font-semibold tracking-wider uppercase text-sm", children: "Why Join GradeBridge" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 290,
+          lineNumber: 311,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV("h2", { className: "text-4xl sm:text-5xl font-black mt-3 text-white", children: [
           "Everything You Need to ",
           /* @__PURE__ */ jsxDEV("span", { className: "gradient-text", children: "Succeed" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 292,
+            lineNumber: 313,
             columnNumber: 38
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 291,
+          lineNumber: 312,
           columnNumber: 13
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 289,
+        lineNumber: 310,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "section-fade grid sm:grid-cols-2 lg:grid-cols-3 gap-6", children: BENEFITS.map((benefit) => /* @__PURE__ */ jsxDEV("div", { className: "glass rounded-2xl p-6 glass-hover card-glow group cursor-default", children: [
         /* @__PURE__ */ jsxDEV("div", { className: "text-3xl mb-4 group-hover:scale-110 transition-transform", children: benefit.icon }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 298,
+          lineNumber: 319,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV("h3", { className: "text-white font-bold text-lg mb-2", children: benefit.title }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 299,
+          lineNumber: 320,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV("p", { className: "text-slate-400 text-sm leading-relaxed", children: benefit.desc }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 300,
+          lineNumber: 321,
           columnNumber: 17
         }, this)
       ] }, benefit.title, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 297,
+        lineNumber: 318,
         columnNumber: 15
       }, this)) }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 295,
+        lineNumber: 316,
         columnNumber: 11
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 288,
+      lineNumber: 309,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 287,
+      lineNumber: 308,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("section", { className: "py-24 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxDEV("div", { className: "max-w-5xl mx-auto", children: [
@@ -2571,22 +2088,22 @@ function LandingPage() {
           "Ready to ",
           /* @__PURE__ */ jsxDEV("span", { className: "gradient-text", children: "Get Started?" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 312,
+            lineNumber: 333,
             columnNumber: 24
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 311,
+          lineNumber: 332,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV("p", { className: "text-slate-400 mt-4 text-lg", children: "Choose your path and join the GradeBridge community today." }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 314,
+          lineNumber: 335,
           columnNumber: 13
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 310,
+        lineNumber: 331,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "section-fade grid md:grid-cols-2 gap-8", children: [
@@ -2597,71 +2114,6 @@ function LandingPage() {
             className: "group relative block rounded-3xl overflow-hidden cursor-pointer",
             children: [
               /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-br from-sky-600 to-blue-800 opacity-90 group-hover:opacity-100 transition-opacity" }, void 0, false, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 321,
-                columnNumber: 15
-              }, this),
-              /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" }, void 0, false, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 322,
-                columnNumber: 15
-              }, this),
-              /* @__PURE__ */ jsxDEV("div", { className: "absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" }, void 0, false, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 323,
-                columnNumber: 15
-              }, this),
-              /* @__PURE__ */ jsxDEV("div", { className: "relative p-10", children: [
-                /* @__PURE__ */ jsxDEV("div", { className: "w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform shadow-xl", children: "🎓" }, void 0, false, {
-                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 325,
-                  columnNumber: 17
-                }, this),
-                /* @__PURE__ */ jsxDEV("h3", { className: "text-3xl font-black text-white mb-3", children: "Are You a Mentor?" }, void 0, false, {
-                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 328,
-                  columnNumber: 17
-                }, this),
-                /* @__PURE__ */ jsxDEV("p", { className: "text-blue-100 text-lg mb-8 leading-relaxed", children: "Share your IGCSE knowledge and experience. Help the next generation achieve their goals." }, void 0, false, {
-                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 329,
-                  columnNumber: 17
-                }, this),
-                /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-3 text-white font-semibold text-lg group-hover:gap-5 transition-all", children: [
-                  "Apply to Mentor ",
-                  /* @__PURE__ */ jsxDEV("span", { children: "→" }, void 0, false, {
-                    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                    lineNumber: 333,
-                    columnNumber: 35
-                  }, this)
-                ] }, void 0, true, {
-                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 332,
-                  columnNumber: 17
-                }, this)
-              ] }, void 0, true, {
-                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 324,
-                columnNumber: 15
-              }, this)
-            ]
-          },
-          void 0,
-          true,
-          {
-            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 317,
-            columnNumber: 13
-          },
-          this
-        ),
-        /* @__PURE__ */ jsxDEV(
-          Link,
-          {
-            to: "/register/student",
-            className: "group relative block rounded-3xl overflow-hidden cursor-pointer",
-            children: [
-              /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-br from-teal-600 to-cyan-700 opacity-90 group-hover:opacity-100 transition-opacity" }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
                 lineNumber: 342,
                 columnNumber: 15
@@ -2677,27 +2129,27 @@ function LandingPage() {
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV("div", { className: "relative p-10", children: [
-                /* @__PURE__ */ jsxDEV("div", { className: "w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform shadow-xl", children: "📖" }, void 0, false, {
+                /* @__PURE__ */ jsxDEV("div", { className: "w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform shadow-xl", children: "🎓" }, void 0, false, {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
                   lineNumber: 346,
                   columnNumber: 17
                 }, this),
-                /* @__PURE__ */ jsxDEV("h3", { className: "text-3xl font-black text-white mb-3", children: "Upcoming IGCSE Student?" }, void 0, false, {
+                /* @__PURE__ */ jsxDEV("h3", { className: "text-3xl font-black text-white mb-3", children: "Are You a Mentor?" }, void 0, false, {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
                   lineNumber: 349,
                   columnNumber: 17
                 }, this),
-                /* @__PURE__ */ jsxDEV("p", { className: "text-teal-100 text-lg mb-8 leading-relaxed", children: "Register to access free mentoring, tutoring sessions, and connect with experienced IGCSE graduates." }, void 0, false, {
+                /* @__PURE__ */ jsxDEV("p", { className: "text-blue-100 text-lg mb-8 leading-relaxed", children: "Share your IGCSE knowledge and experience. Help the next generation achieve their goals." }, void 0, false, {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
                   lineNumber: 350,
                   columnNumber: 17
                 }, this),
                 /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-3 text-white font-semibold text-lg group-hover:gap-5 transition-all", children: [
-                  "Register Now ",
+                  "Apply to Mentor ",
                   /* @__PURE__ */ jsxDEV("span", { children: "→" }, void 0, false, {
                     fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
                     lineNumber: 354,
-                    columnNumber: 32
+                    columnNumber: 35
                   }, this)
                 ] }, void 0, true, {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
@@ -2719,42 +2171,107 @@ function LandingPage() {
             columnNumber: 13
           },
           this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          Link,
+          {
+            to: "/register/student",
+            className: "group relative block rounded-3xl overflow-hidden cursor-pointer",
+            children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-br from-teal-600 to-cyan-700 opacity-90 group-hover:opacity-100 transition-opacity" }, void 0, false, {
+                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                lineNumber: 363,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" }, void 0, false, {
+                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                lineNumber: 364,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors" }, void 0, false, {
+                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                lineNumber: 365,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "relative p-10", children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform shadow-xl", children: "📖" }, void 0, false, {
+                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                  lineNumber: 367,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("h3", { className: "text-3xl font-black text-white mb-3", children: "Upcoming IGCSE Student?" }, void 0, false, {
+                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                  lineNumber: 370,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "text-teal-100 text-lg mb-8 leading-relaxed", children: "Register to access free mentoring, tutoring sessions, and connect with experienced IGCSE graduates." }, void 0, false, {
+                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                  lineNumber: 371,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-3 text-white font-semibold text-lg group-hover:gap-5 transition-all", children: [
+                  "Register Now ",
+                  /* @__PURE__ */ jsxDEV("span", { children: "→" }, void 0, false, {
+                    fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                    lineNumber: 375,
+                    columnNumber: 32
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                  lineNumber: 374,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+                lineNumber: 366,
+                columnNumber: 15
+              }, this)
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
+            lineNumber: 359,
+            columnNumber: 13
+          },
+          this
         )
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 316,
+        lineNumber: 337,
         columnNumber: 11
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 309,
+      lineNumber: 330,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 308,
+      lineNumber: 329,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("section", { id: "contact", className: "py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/30", children: /* @__PURE__ */ jsxDEV("div", { className: "max-w-4xl mx-auto section-fade text-center", children: [
       /* @__PURE__ */ jsxDEV("span", { className: "text-blue-400 font-semibold tracking-wider uppercase text-sm", children: "Get In Touch" }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 365,
+        lineNumber: 386,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("h2", { className: "text-4xl sm:text-5xl font-black mt-3 mb-6 text-white", children: [
         "Have Questions? ",
         /* @__PURE__ */ jsxDEV("span", { className: "gradient-text", children: "We're Here." }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 367,
+          lineNumber: 388,
           columnNumber: 29
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 366,
+        lineNumber: 387,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("p", { className: "text-slate-300 text-lg mb-12", children: "Reach out through any of the platforms below. We'd love to hear from you." }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 369,
+        lineNumber: 390,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV(
@@ -2770,30 +2287,30 @@ function LandingPage() {
           children: [
             /* @__PURE__ */ jsxDEV("input", { type: "hidden", name: "form-name", value: "contact" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 381,
+              lineNumber: 402,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV("p", { className: "hidden", children: /* @__PURE__ */ jsxDEV("label", { children: [
               "Do not fill this out: ",
               /* @__PURE__ */ jsxDEV("input", { type: "hidden", name: "bot-field", value: "" }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 384,
+                lineNumber: 405,
                 columnNumber: 39
               }, this)
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 383,
+              lineNumber: 404,
               columnNumber: 15
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 382,
+              lineNumber: 403,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV("div", { className: "grid sm:grid-cols-2 gap-5 mb-5", children: [
               /* @__PURE__ */ jsxDEV("div", { children: [
                 /* @__PURE__ */ jsxDEV("label", { htmlFor: "contact-name", className: "block text-slate-300 text-sm font-medium mb-2", children: "Name" }, void 0, false, {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 389,
+                  lineNumber: 410,
                   columnNumber: 17
                 }, this),
                 /* @__PURE__ */ jsxDEV(
@@ -2810,20 +2327,20 @@ function LandingPage() {
                   false,
                   {
                     fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                    lineNumber: 390,
+                    lineNumber: 411,
                     columnNumber: 17
                   },
                   this
                 )
               ] }, void 0, true, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 388,
+                lineNumber: 409,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV("div", { children: [
                 /* @__PURE__ */ jsxDEV("label", { htmlFor: "contact-email", className: "block text-slate-300 text-sm font-medium mb-2", children: "Email" }, void 0, false, {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 400,
+                  lineNumber: 421,
                   columnNumber: 17
                 }, this),
                 /* @__PURE__ */ jsxDEV(
@@ -2840,25 +2357,25 @@ function LandingPage() {
                   false,
                   {
                     fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                    lineNumber: 401,
+                    lineNumber: 422,
                     columnNumber: 17
                   },
                   this
                 )
               ] }, void 0, true, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 399,
+                lineNumber: 420,
                 columnNumber: 15
               }, this)
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 387,
+              lineNumber: 408,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV("div", { className: "mb-5", children: [
               /* @__PURE__ */ jsxDEV("label", { htmlFor: "contact-subject", className: "block text-slate-300 text-sm font-medium mb-2", children: "Subject" }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 412,
+                lineNumber: 433,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV(
@@ -2874,20 +2391,20 @@ function LandingPage() {
                 false,
                 {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 413,
+                  lineNumber: 434,
                   columnNumber: 15
                 },
                 this
               )
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 411,
+              lineNumber: 432,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV("div", { className: "mb-6", children: [
               /* @__PURE__ */ jsxDEV("label", { htmlFor: "contact-message", className: "block text-slate-300 text-sm font-medium mb-2", children: "Message" }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 422,
+                lineNumber: 443,
                 columnNumber: 15
               }, this),
               /* @__PURE__ */ jsxDEV(
@@ -2904,14 +2421,14 @@ function LandingPage() {
                 false,
                 {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 423,
+                  lineNumber: 444,
                   columnNumber: 15
                 },
                 this
               )
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 421,
+              lineNumber: 442,
               columnNumber: 13
             }, this),
             /* @__PURE__ */ jsxDEV("div", { className: "flex flex-col sm:flex-row sm:items-center gap-4", children: [
@@ -2927,24 +2444,24 @@ function LandingPage() {
                 false,
                 {
                   fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                  lineNumber: 433,
+                  lineNumber: 454,
                   columnNumber: 15
                 },
                 this
               ),
               contactStatus === "sent" && /* @__PURE__ */ jsxDEV("p", { className: "text-teal-300 text-sm font-medium", children: "Submitted successfully. We'll reach out soon." }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 441,
+                lineNumber: 462,
                 columnNumber: 17
               }, this),
               contactStatus === "error" && /* @__PURE__ */ jsxDEV("p", { className: "text-red-300 text-sm font-medium", children: "Something went wrong. Please try again." }, void 0, false, {
                 fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-                lineNumber: 444,
+                lineNumber: 465,
                 columnNumber: 17
               }, this)
             ] }, void 0, true, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 432,
+              lineNumber: 453,
               columnNumber: 13
             }, this)
           ]
@@ -2953,7 +2470,7 @@ function LandingPage() {
         true,
         {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 372,
+          lineNumber: 393,
           columnNumber: 11
         },
         this
@@ -2965,35 +2482,35 @@ function LandingPage() {
       ].map((c) => /* @__PURE__ */ jsxDEV("a", { href: c.href, className: "glass rounded-2xl p-6 glass-hover card-glow text-center block", children: [
         /* @__PURE__ */ jsxDEV("div", { className: "text-3xl mb-3", children: c.icon }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 455,
+          lineNumber: 476,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV("p", { className: "text-slate-400 text-sm mb-1", children: c.label }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 456,
+          lineNumber: 477,
           columnNumber: 17
         }, this),
         /* @__PURE__ */ jsxDEV("p", { className: "text-white font-semibold", children: c.value }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 457,
+          lineNumber: 478,
           columnNumber: 17
         }, this)
       ] }, c.label, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 454,
+        lineNumber: 475,
         columnNumber: 15
       }, this)) }, void 0, false, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 448,
+        lineNumber: 469,
         columnNumber: 11
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 364,
+      lineNumber: 385,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 363,
+      lineNumber: 384,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("footer", { className: "border-t border-white/5 py-16 px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxDEV("div", { className: "max-w-6xl mx-auto", children: [
@@ -3002,147 +2519,147 @@ function LandingPage() {
           /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-2 mb-4", children: [
             /* @__PURE__ */ jsxDEV(GradeBridgeLogo, { compact: true }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 470,
+              lineNumber: 491,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("span", { className: "font-bold text-white text-lg", children: "GradeBridge" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 471,
+              lineNumber: 492,
               columnNumber: 17
             }, this)
           ] }, void 0, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 469,
+            lineNumber: 490,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("p", { className: "text-slate-400 text-sm leading-relaxed max-w-xs", children: "GradeBridge — a student-led academic community dedicated to empowering IGCSE students through mentorship and community." }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 473,
+            lineNumber: 494,
             columnNumber: 15
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 468,
+          lineNumber: 489,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV("div", { children: [
           /* @__PURE__ */ jsxDEV("h4", { className: "text-white font-semibold mb-4", children: "Quick Links" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 478,
+            lineNumber: 499,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("ul", { className: "space-y-2 text-slate-400 text-sm", children: [
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV("a", { href: "/#about", className: "hover:text-white transition-colors", children: "About GradeBridge" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 480,
+              lineNumber: 501,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 480,
+              lineNumber: 501,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV("a", { href: "/#programs", className: "hover:text-white transition-colors", children: "Programs" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 481,
+              lineNumber: 502,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 481,
+              lineNumber: 502,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV(Link, { to: "/apply/mentor", className: "hover:text-white transition-colors", children: "Become a Mentor" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 482,
+              lineNumber: 503,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 482,
+              lineNumber: 503,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV(Link, { to: "/register/student", className: "hover:text-white transition-colors", children: "Student Registration" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 483,
+              lineNumber: 504,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 483,
+              lineNumber: 504,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV(Link, { to: "/mentors", className: "hover:text-white transition-colors", children: "Mentor Directory" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 484,
+              lineNumber: 505,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 484,
+              lineNumber: 505,
               columnNumber: 17
             }, this)
           ] }, void 0, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 479,
+            lineNumber: 500,
             columnNumber: 15
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 477,
+          lineNumber: 498,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV("div", { children: [
           /* @__PURE__ */ jsxDEV("h4", { className: "text-white font-semibold mb-4", children: "Connect" }, void 0, false, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 488,
+            lineNumber: 509,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("ul", { className: "space-y-2 text-slate-400 text-sm", children: [
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV("a", { href: "#", className: "hover:text-white transition-colors", children: "Instagram" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 490,
+              lineNumber: 511,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 490,
+              lineNumber: 511,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV("a", { href: "#", className: "hover:text-white transition-colors", children: "Telegram" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 491,
+              lineNumber: 512,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 491,
+              lineNumber: 512,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV("a", { href: "#", className: "hover:text-white transition-colors", children: "WhatsApp" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 492,
+              lineNumber: 513,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 492,
+              lineNumber: 513,
               columnNumber: 17
             }, this),
             /* @__PURE__ */ jsxDEV("li", { children: /* @__PURE__ */ jsxDEV("a", { href: "mailto:hello@gradebridge.com", className: "hover:text-white transition-colors", children: "Email Us" }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 493,
+              lineNumber: 514,
               columnNumber: 21
             }, this) }, void 0, false, {
               fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-              lineNumber: 493,
+              lineNumber: 514,
               columnNumber: 17
             }, this)
           ] }, void 0, true, {
             fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-            lineNumber: 489,
+            lineNumber: 510,
             columnNumber: 15
           }, this)
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 487,
+          lineNumber: 508,
           columnNumber: 13
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 467,
+        lineNumber: 488,
         columnNumber: 11
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "border-t border-white/5 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-500 text-sm", children: [
@@ -3152,31 +2669,31 @@ function LandingPage() {
           " GradeBridge. All rights reserved."
         ] }, void 0, true, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 498,
+          lineNumber: 519,
           columnNumber: 13
         }, this),
         /* @__PURE__ */ jsxDEV("p", { children: "Student-Led · Free Forever · Community Driven" }, void 0, false, {
           fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-          lineNumber: 499,
+          lineNumber: 520,
           columnNumber: 13
         }, this)
       ] }, void 0, true, {
         fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-        lineNumber: 497,
+        lineNumber: 518,
         columnNumber: 11
       }, this)
     ] }, void 0, true, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 466,
+      lineNumber: 487,
       columnNumber: 9
     }, this) }, void 0, false, {
       fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-      lineNumber: 465,
+      lineNumber: 486,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
     fileName: "C:/Users/natis/OneDrive/Documents/source-6a5805d971c80a340eb569ee-c3f4a2000fa7abd5/src/routes/index.tsx",
-    lineNumber: 156,
+    lineNumber: 177,
     columnNumber: 5
   }, this);
 }

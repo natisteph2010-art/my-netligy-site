@@ -19,6 +19,7 @@ export function ParticleNetwork({ className = '', density = 42 }: ParticleNetwor
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const parent = canvas.parentElement
     let animationFrame = 0
+    let isVisible = true
     let particles: Particle[] = []
     let width = 0
     let height = 0
@@ -71,14 +72,20 @@ export function ParticleNetwork({ className = '', density = 42 }: ParticleNetwor
           }
         }
       }
-      if (!reduceMotion) animationFrame = requestAnimationFrame(draw)
+      if (!reduceMotion && isVisible) animationFrame = requestAnimationFrame(draw)
     }
 
     resize()
     draw()
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting
+      if (isVisible && !reduceMotion) animationFrame = requestAnimationFrame(draw)
+    })
+    visibilityObserver.observe(canvas)
     window.addEventListener('resize', resize)
     return () => {
       cancelAnimationFrame(animationFrame)
+      visibilityObserver.disconnect()
       window.removeEventListener('resize', resize)
     }
   }, [density])

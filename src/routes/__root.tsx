@@ -15,8 +15,8 @@ export const Route = createRootRoute({
       { name: 'description', content: 'GradeBridge connects IGCSE mentors with students through free tutoring and mentorship.' },
     ],
     links: [
-      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap' },
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com', crossOrigin: '' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: '' },
     ],
   }),
   shellComponent: RootDocument,
@@ -27,6 +27,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en" className="scroll-smooth">
       <head>
         <HeadContent />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+          media="print"
+          onLoad={(event) => { event.currentTarget.media = 'all' }}
+        />
       </head>
       <body className="bg-slate-950 text-white antialiased">
         <IdentityProvider>

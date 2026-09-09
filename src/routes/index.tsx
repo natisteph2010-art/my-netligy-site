@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import homePageContent from '../../content/pages/home.json'
 import { AnnouncementBanner } from '../components/AnnouncementBanner'
 import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
 import { EntranceOverlay } from '../components/EntranceOverlay'
-import { KnowledgeConstellation } from '../components/KnowledgeConstellation'
 import { ParticleNetwork } from '../components/ParticleNetwork'
+
+const KnowledgeConstellation = lazy(() => import('../components/KnowledgeConstellation').then((module) => ({ default: module.KnowledgeConstellation })))
 
 export const Route = createFileRoute('/')({
   component: LandingPage,
@@ -123,6 +124,26 @@ function AnimatedCounter({ target }: { target: string }) {
   return <span ref={ref}>{displayed}</span>
 }
 
+function DeferredConstellation() {
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    const load = () => setReady(true)
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(load, { timeout: 1800 })
+      return () => window.cancelIdleCallback(idleId)
+    }
+    const timeoutId = window.setTimeout(load, 900)
+    return () => window.clearTimeout(timeoutId)
+  }, [])
+
+  return ready ? (
+    <Suspense fallback={<div className="constellation-canvas" aria-hidden="true" />}>
+      <KnowledgeConstellation />
+    </Suspense>
+  ) : <div className="constellation-canvas" aria-hidden="true" />
+}
+
 export default function LandingPage() {
   useScrollReveal()
   const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
@@ -184,7 +205,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative flex justify-center lg:justify-end">
-              <KnowledgeConstellation />
+              <DeferredConstellation />
             </div>
           </div>
         </div>

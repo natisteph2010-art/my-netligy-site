@@ -184,6 +184,21 @@
   transform: translateY(0);
 }
 
+/* Keep below-the-fold paint and layout work out of the critical path. */
+section:not(:first-of-type) {
+  content-visibility: auto;
+  contain-intrinsic-size: 720px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Admin dashboard (light theme) */
 @keyframes adminFadeIn {
   from { opacity: 0; transform: translateY(8px); }
