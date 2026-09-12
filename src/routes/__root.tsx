@@ -4,6 +4,7 @@ import '../styles.css'
 import { IdentityProvider } from '../lib/identity-context'
 import { CallbackHandler } from '../components/CallbackHandler'
 import { GradeBridgeLogo } from '../components/GradeBridgeLogo'
+import { AssistantWidget } from '../components/AssistantWidget'
 import { useIdentity } from '../lib/identity-context'
 
 export const Route = createRootRoute({
@@ -39,6 +40,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <CallbackHandler>
             <NavBar />
             {children}
+            <AssistantWidget />
           </CallbackHandler>
         </IdentityProvider>
         <Scripts />
@@ -86,6 +88,7 @@ function NavBar() {
             <a href="/#about" className="text-slate-300 hover:text-white transition-colors">About</a>
             <a href="/#programs" className="text-slate-300 hover:text-white transition-colors">Programs</a>
             <Link to="/mentors" className="text-slate-300 hover:text-white transition-colors">Mentors</Link>
+            <Link to="/ambassadors" className="text-slate-300 hover:text-white transition-colors">Ambassadors</Link>
               <Link to="/assistant" className="text-slate-300 hover:text-white transition-colors">Assistant</Link>
               <a href="/#contact" className="text-slate-300 hover:text-white transition-colors">Contact</a>
             {ready && user ? (
@@ -135,6 +138,7 @@ function NavBar() {
           <a href="/#programs" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Programs</a>
           <Link to="/assistant" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Assistant</Link>
           <Link to="/mentors" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Mentors</Link>
+          <Link to="/ambassadors" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Ambassadors</Link>
           <a href="/#contact" onClick={() => setMobileOpen(false)} className="text-slate-300 hover:text-white py-2">Contact</a>
           {ready && user ? (
             <>
