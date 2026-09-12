@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useIdentity } from '../../lib/identity-context'
 import { getServerUser } from '../../lib/auth'
 import { GradeBridgeLogo } from '../../components/GradeBridgeLogo'
+import { AmbassadorsPanel } from '../../components/admin/AmbassadorsPanel'
 
 export const Route = createFileRoute('/dashboard/admin')({
   beforeLoad: async () => {
@@ -111,6 +112,7 @@ type View =
   | 'mentors'
   | 'students'
   | 'sessions'
+  | 'ambassadors'
   | 'announcements'
   | 'settings'
 
@@ -123,6 +125,7 @@ const I = {
   students: 'M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z',
   sessions: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
   announcements: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z',
+  ambassadors: 'M12 3l2.09 4.26L18.8 8l-3.4 3.32.8 4.68L12 13.77 7.8 16l.8-4.68L5.2 8l4.71-.74L12 3z M4 21c1.8-2.4 4.6-3.6 8-3.6S18.2 18.6 20 21',
   settings: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
   logout: 'M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1',
   search: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
@@ -153,6 +156,7 @@ const NAV: { key: View; label: string; icon: string }[] = [
   { key: 'mentors', label: 'Mentors', icon: I.mentors },
   { key: 'students', label: 'Students', icon: I.students },
   { key: 'sessions', label: 'Tutoring Sessions', icon: I.sessions },
+  { key: 'ambassadors', label: 'Ambassadors', icon: I.ambassadors },
   { key: 'announcements', label: 'Announcements', icon: I.announcements },
   { key: 'settings', label: 'Settings', icon: I.settings },
 ]
@@ -163,6 +167,7 @@ const VIEW_TITLES: Record<View, string> = {
   mentors: 'Mentors',
   students: 'Students',
   sessions: 'Tutoring Sessions',
+  ambassadors: 'Ambassadors',
   announcements: 'Announcements',
   settings: 'Settings',
 }
@@ -639,6 +644,7 @@ export default function AdminDashboard() {
               }}
             />
           )}
+          {view === 'ambassadors' && <AmbassadorsPanel search={search} flash={flash} />}
           {view === 'settings' && <SettingsPanel email={user.email || ''} />}
         </main>
       </div>

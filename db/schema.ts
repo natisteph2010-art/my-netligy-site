@@ -103,3 +103,29 @@ export const students = pgTable("students", {
   email: text().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const ambassadors = pgTable("ambassadors", {
+  id: serial().primaryKey(),
+  fullName: text("full_name").notNull(),
+  title: text().notNull().default("Student Ambassador"),
+  school: text(),
+  country: text(),
+  city: text(),
+  graduationYear: text("graduation_year"),
+  bio: text().notNull().default(""),
+  achievements: text().notNull().default(""), // JSON array stored as text
+  subjects: text().notNull().default(""), // JSON array stored as text
+  languages: text().notNull().default(""), // JSON array stored as text
+  photoUrl: text("photo_url"),
+  contactEmail: text("contact_email"),
+  instagram: text(),
+  telegram: text(),
+  whatsapp: text(),
+  linkedin: text(),
+  website: text(),
+  featured: boolean().notNull().default(false),
+  isPublic: boolean("is_public").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});

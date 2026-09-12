@@ -54,22 +54,6 @@ export default function StudentDashboard() {
           </h1>
         </div>
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { icon: '📚', label: 'Weekly Sessions', value: '52/yr' },
-            { icon: '💬', label: 'Monthly Q&As', value: '12/yr' },
-            { icon: '🎓', label: 'Available Mentors', value: '25+' },
-            { icon: '🆓', label: 'Cost', value: 'Free' },
-          ].map((s) => (
-            <div key={s.label} className="glass rounded-2xl p-5 text-center card-glow">
-              <div className="text-2xl mb-1">{s.icon}</div>
-              <div className="text-xl font-black text-white">{s.value}</div>
-              <div className="text-slate-400 text-xs mt-0.5">{s.label}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Main actions */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Link
