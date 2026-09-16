@@ -9,7 +9,7 @@ import {
   type AssistantContext,
 } from '../../../lib/assistant-tools.js'
 
-const MODEL = 'llama-3.1-8b-instant'
+const MODEL = 'openai/gpt-oss-20b'
 const MAX_TOOL_ROUNDS = 5
 const MAX_HISTORY = 20
 

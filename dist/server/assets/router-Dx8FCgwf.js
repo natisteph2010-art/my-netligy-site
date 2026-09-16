@@ -734,7 +734,7 @@ function NavBar() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-BnjLhgpS.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-C9fm34Pa.js");
 const Route$t = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
@@ -1267,7 +1267,7 @@ function MentorDirectoryPage() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter = () => import("./login-CpKtnIQR.js");
+const $$splitComponentImporter = () => import("./login-DsfrMTYy.js");
 const Route$r = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
@@ -9411,7 +9411,7 @@ async function runTool(name, input, context) {
       return { result: { error: `Unknown tool "${name}".` } };
   }
 }
-const MODEL = "llama-3.1-8b-instant";
+const MODEL = "openai/gpt-oss-20b";
 const MAX_TOOL_ROUNDS = 5;
 function systemPrompt(context) {
   const who = context.user ? `The visitor is signed in as ${context.user.name || context.user.email} with the "${context.role}" role.` : "The visitor is NOT signed in. Anything behind the mentor directory or a dashboard needs an account first.";
