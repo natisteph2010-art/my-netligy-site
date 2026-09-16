@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Anthropic from '@anthropic-ai/sdk'
+import Groq from 'groq-sdk'
 import { getCurrentUserWithRole } from '../../../lib/authorization.js'
 import {
   buildTools,
@@ -9,7 +9,7 @@ import {
   type AssistantContext,
 } from '../../../lib/assistant-tools.js'
 
-const MODEL = 'claude-sonnet-5'
+const MODEL = 'llama-3.3-70b-versatile'
 const MAX_TOOL_ROUNDS = 5
 const MAX_HISTORY = 20
 
@@ -70,64 +70,66 @@ export const Route = createFileRoute('/api/assistant/chat')({
         }
 
         const tools = buildTools(context)
-        const messages: Anthropic.MessageParam[] = history.map((message) => ({
-          role: message.role,
-          content: message.content,
+        const groqTools = tools.map((tool) => ({
+          type: 'function' as const,
+          function: {
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.input_schema,
+          },
         }))
+        const messages: any[] = [
+          { role: 'system', content: systemPrompt(context) },
+          ...history,
+        ]
 
         const toolsUsed: string[] = []
         let action: { type: 'navigate'; path: string; reason?: string } | undefined
 
         try {
-          const anthropic = new Anthropic()
+          const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
           for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
-            const response = await anthropic.messages.create({
+            const response = await groq.chat.completions.create({
               model: MODEL,
               max_tokens: 1024,
-              system: systemPrompt(context),
-              tools: tools as any,
+              tools: groqTools,
+              tool_choice: 'auto',
               messages,
             })
 
-            const toolUses = response.content.filter((block) => block.type === 'tool_use')
+            const message = response.choices[0]?.message
+            const toolCalls = message?.tool_calls ?? []
 
-            if (response.stop_reason !== 'tool_use' || toolUses.length === 0 || round === MAX_TOOL_ROUNDS) {
-              const reply = response.content
-                .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-                .map((block) => block.text)
-                .join('\n')
-                .trim()
+            if (toolCalls.length === 0 || round === MAX_TOOL_ROUNDS) {
+              const reply = message?.content?.trim() || "I couldn't work that one out. Could you rephrase it?"
 
               return Response.json({
-                reply: reply || "I couldn't work that one out. Could you rephrase it?",
+                reply,
                 toolsUsed,
                 action,
               })
             }
 
-            messages.push({ role: 'assistant', content: response.content })
+            messages.push(message)
 
-            const results: Anthropic.ToolResultBlockParam[] = []
-            for (const block of toolUses) {
-              if (block.type !== 'tool_use') continue
-              toolsUsed.push(block.name)
+            for (const call of toolCalls) {
+              const name = call.function.name
+              toolsUsed.push(name)
               let outcome
               try {
-                outcome = await runTool(block.name, (block.input ?? {}) as Record<string, any>, context)
+                outcome = await runTool(name, JSON.parse(call.function.arguments || '{}'), context)
               } catch (err) {
-                console.error(`Assistant tool "${block.name}" failed:`, err)
+                console.error(`Assistant tool "${name}" failed:`, err)
                 outcome = { result: { error: 'That lookup failed. Tell the visitor to try again shortly.' } }
               }
               if (outcome.action) action = outcome.action
-              results.push({
-                type: 'tool_result',
-                tool_use_id: block.id,
+              messages.push({
+                role: 'tool',
+                tool_call_id: call.id,
                 content: JSON.stringify(outcome.result).slice(0, 12000),
               })
             }
-
-            messages.push({ role: 'user', content: results })
           }
         } catch (err: any) {
           console.error('Assistant chat error:', err)

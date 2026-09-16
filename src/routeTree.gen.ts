@@ -20,6 +20,7 @@ import { Route as DashboardStudentRouteImport } from './routes/dashboard/student
 import { Route as DashboardMentorRouteImport } from './routes/dashboard/mentor'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as ApplyMentorRouteImport } from './routes/apply/mentor'
+import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as ApiAnnouncementsRouteImport } from './routes/api/announcements'
 import { Route as ApiAmbassadorsRouteImport } from './routes/api/ambassadors'
 import { Route as ApiAmbassadorPhotosRouteImport } from './routes/api/ambassador-photos'
@@ -95,6 +96,11 @@ const ApplyMentorRoute = ApplyMentorRouteImport.update({
   path: '/apply/mentor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAssistantRoute = ApiAssistantRouteImport.update({
+  id: '/api/assistant',
+  path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAnnouncementsRoute = ApiAnnouncementsRouteImport.update({
   id: '/api/announcements',
   path: '/api/announcements',
@@ -131,9 +137,9 @@ const ApiMentorsDirectoryRoute = ApiMentorsDirectoryRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAssistantChatRoute = ApiAssistantChatRouteImport.update({
-  id: '/api/assistant/chat',
-  path: '/api/assistant/chat',
-  getParentRoute: () => rootRouteImport,
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => ApiAssistantRoute,
 } as any)
 const ApiApplicationsMentorRoute = ApiApplicationsMentorRouteImport.update({
   id: '/api/applications/mentor',
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/api/ambassador-photos': typeof ApiAmbassadorPhotosRouteWithChildren
   '/api/ambassadors': typeof ApiAmbassadorsRouteWithChildren
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
+  '/api/assistant': typeof ApiAssistantRouteWithChildren
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/api/ambassador-photos': typeof ApiAmbassadorPhotosRouteWithChildren
   '/api/ambassadors': typeof ApiAmbassadorsRouteWithChildren
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
+  '/api/assistant': typeof ApiAssistantRouteWithChildren
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/api/ambassador-photos': typeof ApiAmbassadorPhotosRouteWithChildren
   '/api/ambassadors': typeof ApiAmbassadorsRouteWithChildren
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
+  '/api/assistant': typeof ApiAssistantRouteWithChildren
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/api/ambassador-photos'
     | '/api/ambassadors'
     | '/api/announcements'
+    | '/api/assistant'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/api/ambassador-photos'
     | '/api/ambassadors'
     | '/api/announcements'
+    | '/api/assistant'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/api/ambassador-photos'
     | '/api/ambassadors'
     | '/api/announcements'
+    | '/api/assistant'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   ApiAmbassadorPhotosRoute: typeof ApiAmbassadorPhotosRouteWithChildren
   ApiAmbassadorsRoute: typeof ApiAmbassadorsRouteWithChildren
   ApiAnnouncementsRoute: typeof ApiAnnouncementsRouteWithChildren
+  ApiAssistantRoute: typeof ApiAssistantRouteWithChildren
   ApplyMentorRoute: typeof ApplyMentorRoute
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardMentorRoute: typeof DashboardMentorRoute
@@ -408,7 +421,6 @@ export interface RootRouteChildren {
   ApiAdminStatsRoute: typeof ApiAdminStatsRoute
   ApiAdminStudentsRoute: typeof ApiAdminStudentsRoute
   ApiApplicationsMentorRoute: typeof ApiApplicationsMentorRoute
-  ApiAssistantChatRoute: typeof ApiAssistantChatRoute
   ApiMentorsDirectoryRoute: typeof ApiMentorsDirectoryRoute
   ApiMentorsSessionsRoute: typeof ApiMentorsSessionsRouteWithChildren
   ApiRegisterStudentRoute: typeof ApiRegisterStudentRoute
@@ -495,6 +507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyMentorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/assistant': {
+      id: '/api/assistant'
+      path: '/api/assistant'
+      fullPath: '/api/assistant'
+      preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/announcements': {
       id: '/api/announcements'
       path: '/api/announcements'
@@ -546,10 +565,10 @@ declare module '@tanstack/react-router' {
     }
     '/api/assistant/chat': {
       id: '/api/assistant/chat'
-      path: '/api/assistant/chat'
+      path: '/chat'
       fullPath: '/api/assistant/chat'
       preLoaderRoute: typeof ApiAssistantChatRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiAssistantRoute
     }
     '/api/applications/mentor': {
       id: '/api/applications/mentor'
@@ -665,6 +684,18 @@ const ApiAnnouncementsRouteChildren: ApiAnnouncementsRouteChildren = {
 const ApiAnnouncementsRouteWithChildren =
   ApiAnnouncementsRoute._addFileChildren(ApiAnnouncementsRouteChildren)
 
+interface ApiAssistantRouteChildren {
+  ApiAssistantChatRoute: typeof ApiAssistantChatRoute
+}
+
+const ApiAssistantRouteChildren: ApiAssistantRouteChildren = {
+  ApiAssistantChatRoute: ApiAssistantChatRoute,
+}
+
+const ApiAssistantRouteWithChildren = ApiAssistantRoute._addFileChildren(
+  ApiAssistantRouteChildren,
+)
+
 interface ApiMentorsSessionsIdRouteChildren {
   ApiMentorsSessionsIdEvidenceRoute: typeof ApiMentorsSessionsIdEvidenceRoute
 }
@@ -697,6 +728,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAmbassadorPhotosRoute: ApiAmbassadorPhotosRouteWithChildren,
   ApiAmbassadorsRoute: ApiAmbassadorsRouteWithChildren,
   ApiAnnouncementsRoute: ApiAnnouncementsRouteWithChildren,
+  ApiAssistantRoute: ApiAssistantRouteWithChildren,
   ApplyMentorRoute: ApplyMentorRoute,
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardMentorRoute: DashboardMentorRoute,
@@ -707,7 +739,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminStatsRoute: ApiAdminStatsRoute,
   ApiAdminStudentsRoute: ApiAdminStudentsRoute,
   ApiApplicationsMentorRoute: ApiApplicationsMentorRoute,
-  ApiAssistantChatRoute: ApiAssistantChatRoute,
   ApiMentorsDirectoryRoute: ApiMentorsDirectoryRoute,
   ApiMentorsSessionsRoute: ApiMentorsSessionsRouteWithChildren,
   ApiRegisterStudentRoute: ApiRegisterStudentRoute,

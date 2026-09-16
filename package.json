@@ -23,6 +23,7 @@
     "@tanstack/router-plugin": "1.167.22",
     "@types/three": "^0.171.0",
     "drizzle-orm": "^1.0.0-beta.22",
+    "groq-sdk": "^1.6.0",
     "highlight.js": "11.11.1",
     "lucide-react": "0.576.0",
     "postgres": "^3.4.4",

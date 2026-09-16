@@ -2,7 +2,7 @@ import { jsxDEV, Fragment } from "react/jsx-dev-runtime";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { handleAuthCallback, login, signup, AuthError } from "@netlify/identity";
-import { u as useIdentity, G as GradeBridgeLogo } from "./router-D2o7ZQjH.js";
+import { u as useIdentity, G as GradeBridgeLogo } from "./router-zslgxyvw.js";
 import "../server.js";
 import "node:async_hooks";
 import "h3-v2";
@@ -13,10 +13,12 @@ import "@tanstack/router-core/ssr/client";
 import "@tanstack/router-core/ssr/server";
 import "react/jsx-runtime";
 import "@tanstack/react-router/ssr/server";
-import "./authorization-DvOSFq2O.js";
+import "groq-sdk";
+import "./authorization-DKxayHxm.js";
 import "drizzle-orm/netlify-db";
 import "drizzle-orm/pg-core";
 import "drizzle-orm";
+import "@netlify/blobs";
 function LoginPage() {
   const {
     user,
