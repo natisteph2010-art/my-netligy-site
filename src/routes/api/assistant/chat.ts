@@ -9,7 +9,7 @@ import {
   type AssistantContext,
 } from '../../../lib/assistant-tools.js'
 
-const MODEL = 'llama3-8b-8192'
+const MODEL = 'llama-3.1-8b-instant'
 const MAX_TOOL_ROUNDS = 5
 const MAX_HISTORY = 20
 
@@ -87,6 +87,10 @@ export const Route = createFileRoute('/api/assistant/chat')({
         let action: { type: 'navigate'; path: string; reason?: string } | undefined
 
         try {
+          if (!process.env.GROQ_API_KEY) {
+            return Response.json({ error: 'GROQ_API_KEY is not configured on the server.' }, { status: 500 })
+          }
+
           const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
           for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {

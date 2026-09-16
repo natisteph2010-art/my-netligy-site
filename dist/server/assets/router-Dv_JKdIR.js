@@ -734,7 +734,7 @@ function NavBar() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-DRhuoooI.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-BQBSUpRr.js");
 const Route$u = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
@@ -1267,7 +1267,7 @@ function MentorDirectoryPage() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter = () => import("./login-B4e_kAgc.js");
+const $$splitComponentImporter = () => import("./login-qmY2WHrs.js");
 const Route$s = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
@@ -9579,6 +9579,9 @@ const Route$b = createFileRoute("/api/assistant/chat")({
         const toolsUsed = [];
         let action;
         try {
+          if (!process.env.GROQ_API_KEY) {
+            return Response.json({ error: "GROQ_API_KEY is not configured on the server." }, { status: 500 });
+          }
           const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
           for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
             const response = await groq.chat.completions.create({
