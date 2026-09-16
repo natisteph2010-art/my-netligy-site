@@ -3,10 +3,10 @@ import { jsxDEV, Fragment } from "react/jsx-dev-runtime";
 import { useState, useEffect, createContext, useContext, useRef, useMemo, Suspense, lazy } from "react";
 import { getUser, onAuthChange, logout, handleAuthCallback, signup, AuthError } from "@netlify/identity";
 import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "../server.js";
-import Groq from "groq-sdk";
 import { g as getAdminUser, d as db, a as announcements, b as ambassadors, m as mentoringSessions, c as mentorProfiles, s as students, e as getCurrentUserWithRole, f as mentorApplications, u as userAccounts } from "./authorization-DKxayHxm.js";
 import { desc, and, eq, lte, or, isNull, gt, asc, inArray, gte, count } from "drizzle-orm";
 import { getStore } from "@netlify/blobs";
+import Groq from "groq-sdk";
 const IdentityContext = createContext(null);
 function IdentityProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -414,7 +414,7 @@ function AssistantWidget() {
     columnNumber: 5
   }, this);
 }
-const Route$v = createRootRoute({
+const Route$u = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -734,11 +734,11 @@ function NavBar() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-BQBSUpRr.js");
-const Route$u = createFileRoute("/reset-password")({
+const $$splitComponentImporter$1 = () => import("./reset-password-BnjLhgpS.js");
+const Route$t = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-const Route$t = createFileRoute("/mentors")({
+const Route$s = createFileRoute("/mentors")({
   component: MentorDirectoryPage
 });
 const SUBJECTS_FILTER = [
@@ -1267,11 +1267,11 @@ function MentorDirectoryPage() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter = () => import("./login-qmY2WHrs.js");
-const Route$s = createFileRoute("/login")({
+const $$splitComponentImporter = () => import("./login-CpKtnIQR.js");
+const Route$r = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
-const Route$r = createFileRoute("/assistant")({
+const Route$q = createFileRoute("/assistant")({
   component: AssistantPage
 });
 const CAPABILITIES = [
@@ -1433,7 +1433,7 @@ function AssistantPage() {
     columnNumber: 5
   }, this);
 }
-const Route$q = createFileRoute("/ambassadors")({
+const Route$p = createFileRoute("/ambassadors")({
   component: AmbassadorsPage
 });
 const initials$2 = (name) => name.split(" ").map((part) => part[0]).join("").toUpperCase().slice(0, 2);
@@ -2166,7 +2166,7 @@ function ParticleNetwork({ className = "", density = 42 }) {
   }, this);
 }
 const KnowledgeConstellation = lazy(() => import("./KnowledgeConstellation-xAhyLKsr.js").then((module) => ({ default: module.KnowledgeConstellation })));
-const Route$p = createFileRoute("/")({
+const Route$o = createFileRoute("/")({
   component: LandingPage
 });
 const DEFAULT_ABOUT_CARDS = [
@@ -3297,7 +3297,7 @@ function LandingPage() {
     columnNumber: 5
   }, this);
 }
-const Route$o = createFileRoute("/register/student")({
+const Route$n = createFileRoute("/register/student")({
   component: StudentRegisterPage
 });
 const GRADE_LEVELS = [
@@ -3690,7 +3690,7 @@ function StudentRegisterPage() {
     columnNumber: 5
   }, this);
 }
-const Route$n = createFileRoute("/dashboard/student")({
+const Route$m = createFileRoute("/dashboard/student")({
   component: StudentDashboard
 });
 function StudentDashboard() {
@@ -3969,7 +3969,7 @@ function StudentDashboard() {
     columnNumber: 5
   }, this);
 }
-const Route$m = createFileRoute("/dashboard/mentor")({
+const Route$l = createFileRoute("/dashboard/mentor")({
   component: MentorDashboard
 });
 const AVAILABLE_SUBJECTS$1 = [
@@ -5746,7 +5746,7 @@ function AmbassadorsPanel({ search, flash }) {
     columnNumber: 5
   }, this);
 }
-const Route$l = createFileRoute("/dashboard/admin")({
+const Route$k = createFileRoute("/dashboard/admin")({
   beforeLoad: async () => {
     const user = await getServerUser();
     if (!user) throw redirect({ to: "/login" });
@@ -8159,7 +8159,7 @@ function SettingsPanel({ email }) {
     columnNumber: 5
   }, this);
 }
-const Route$k = createFileRoute("/apply/mentor")({
+const Route$j = createFileRoute("/apply/mentor")({
   component: MentorApplyPage
 });
 const AVAILABLE_SUBJECTS = [
@@ -8675,114 +8675,6 @@ function MentorApplyPage() {
     columnNumber: 5
   }, this);
 }
-const tools = [
-  {
-    type: "function",
-    function: {
-      name: "search_mentors",
-      description: "Find mentors by subject or search term.",
-      parameters: {
-        type: "object",
-        properties: {
-          subject: { type: "string", description: "Subject the student needs help with." },
-          search: { type: "string", description: "Optional name or keyword search." }
-        },
-        additionalProperties: false
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "search_ambassadors",
-      description: "Find student ambassadors by subject or search term.",
-      parameters: {
-        type: "object",
-        properties: {
-          subject: { type: "string" },
-          search: { type: "string" }
-        },
-        additionalProperties: false
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "list_announcements",
-      description: "List the latest active site announcements.",
-      parameters: { type: "object", properties: {}, additionalProperties: false }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "book_mentor_session",
-      description: "Book a session with a mentor after the student chooses a mentor and time.",
-      parameters: {
-        type: "object",
-        properties: {
-          mentorName: { type: "string" },
-          time: { type: "string" },
-          subject: { type: "string" },
-          topicDescription: { type: "string" }
-        },
-        required: ["mentorName", "time"],
-        additionalProperties: false
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "toggle_dark_mode",
-      description: "Toggle dark mode in the assistant interface.",
-      parameters: { type: "object", properties: {}, additionalProperties: false }
-    }
-  },
-  {
-    type: "function",
-    function: {
-      name: "navigate_to_page",
-      description: "Navigate the student to a page on the site.",
-      parameters: {
-        type: "object",
-        properties: { pageName: { type: "string" } },
-        required: ["pageName"],
-        additionalProperties: false
-      }
-    }
-  }
-];
-const Route$j = createFileRoute("/api/assistant")({
-  server: {
-    handlers: {
-      POST: async ({ request }) => {
-        if (!process.env.GROQ_API_KEY) {
-          return Response.json({ error: "GROQ_API_KEY is not configured" }, { status: 500 });
-        }
-        try {
-          const body = await request.json();
-          if (!Array.isArray(body.messages)) {
-            return Response.json({ error: "messages must be an array" }, { status: 400 });
-          }
-          const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-          const completion = await groq.chat.completions.create({
-            model: "llama-3.1-8b-instant",
-            messages: body.messages,
-            tools,
-            tool_choice: "auto",
-            max_tokens: 512
-          });
-          return Response.json(completion);
-        } catch (error) {
-          console.error("Assistant completion failed:", error);
-          return Response.json({ error: "Assistant completion failed" }, { status: 500 });
-        }
-      }
-    }
-  }
-});
 const Route$i = createFileRoute("/api/announcements")({
   server: {
     handlers: {
@@ -9271,7 +9163,7 @@ Ambassadors are students and graduates who represent GradeBridge in their school
 published on the ambassadors page and are managed by administrators.
 `.trim();
 function buildTools(context) {
-  const tools2 = [
+  const tools = [
     {
       name: "search_ambassadors",
       description: "Search the published GradeBridge ambassadors by name, school, country, subject or achievement. Use this whenever the visitor asks who the ambassadors are or wants to reach one.",
@@ -9317,18 +9209,18 @@ function buildTools(context) {
     }
   ];
   if (context.user) {
-    tools2.push({
+    tools.push({
       name: "get_my_account",
       description: "Look up the signed-in visitor's own GradeBridge account: their role, and their student or mentor record if one exists.",
       input_schema: { type: "object", properties: {} }
     });
-    tools2.push({
+    tools.push({
       name: "get_my_sessions",
       description: "List the signed-in visitor's own mentoring sessions with their current status. Works for both students and mentors.",
       input_schema: { type: "object", properties: {} }
     });
   }
-  return tools2;
+  return tools;
 }
 const formatDate = (value) => value ? new Date(value).toISOString().replace("T", " ").slice(0, 16) + " UTC" : null;
 async function searchAmbassadors(query) {
@@ -9563,8 +9455,8 @@ const Route$b = createFileRoute("/api/assistant/chat")({
           user: account ? { id: account.user.id, email: account.user.email, name: account.user.name } : null,
           role: account?.role ?? null
         };
-        const tools2 = buildTools(context);
-        const groqTools = tools2.map((tool) => ({
+        const tools = buildTools(context);
+        const groqTools = tools.map((tool) => ({
           type: "function",
           function: {
             name: tool.name,
@@ -10142,110 +10034,105 @@ const Route = createFileRoute("/api/mentors/sessions/$id/evidence")({
     }
   }
 });
-const ResetPasswordRoute = Route$u.update({
+const ResetPasswordRoute = Route$t.update({
   id: "/reset-password",
   path: "/reset-password",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const MentorsRoute = Route$t.update({
+const MentorsRoute = Route$s.update({
   id: "/mentors",
   path: "/mentors",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const LoginRoute = Route$s.update({
+const LoginRoute = Route$r.update({
   id: "/login",
   path: "/login",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const AssistantRoute = Route$r.update({
+const AssistantRoute = Route$q.update({
   id: "/assistant",
   path: "/assistant",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const AmbassadorsRoute = Route$q.update({
+const AmbassadorsRoute = Route$p.update({
   id: "/ambassadors",
   path: "/ambassadors",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const IndexRoute = Route$p.update({
+const IndexRoute = Route$o.update({
   id: "/",
   path: "/",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const RegisterStudentRoute = Route$o.update({
+const RegisterStudentRoute = Route$n.update({
   id: "/register/student",
   path: "/register/student",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const DashboardStudentRoute = Route$n.update({
+const DashboardStudentRoute = Route$m.update({
   id: "/dashboard/student",
   path: "/dashboard/student",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const DashboardMentorRoute = Route$m.update({
+const DashboardMentorRoute = Route$l.update({
   id: "/dashboard/mentor",
   path: "/dashboard/mentor",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const DashboardAdminRoute = Route$l.update({
+const DashboardAdminRoute = Route$k.update({
   id: "/dashboard/admin",
   path: "/dashboard/admin",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
-const ApplyMentorRoute = Route$k.update({
+const ApplyMentorRoute = Route$j.update({
   id: "/apply/mentor",
   path: "/apply/mentor",
-  getParentRoute: () => Route$v
-});
-const ApiAssistantRoute = Route$j.update({
-  id: "/api/assistant",
-  path: "/api/assistant",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAnnouncementsRoute = Route$i.update({
   id: "/api/announcements",
   path: "/api/announcements",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAmbassadorsRoute = Route$h.update({
   id: "/api/ambassadors",
   path: "/api/ambassadors",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAmbassadorPhotosRoute = Route$g.update({
   id: "/api/ambassador-photos",
   path: "/api/ambassador-photos",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiStudentsSessionsRoute = Route$f.update({
   id: "/api/students/sessions",
   path: "/api/students/sessions",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiRegisterStudentRoute = Route$e.update({
   id: "/api/register/student",
   path: "/api/register/student",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiMentorsSessionsRoute = Route$d.update({
   id: "/api/mentors/sessions",
   path: "/api/mentors/sessions",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiMentorsDirectoryRoute = Route$c.update({
   id: "/api/mentors/directory",
   path: "/api/mentors/directory",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAssistantChatRoute = Route$b.update({
-  id: "/chat",
-  path: "/chat",
-  getParentRoute: () => ApiAssistantRoute
+  id: "/api/assistant/chat",
+  path: "/api/assistant/chat",
+  getParentRoute: () => Route$u
 });
 const ApiApplicationsMentorRoute = Route$a.update({
   id: "/api/applications/mentor",
   path: "/api/applications/mentor",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAnnouncementsIdRoute = Route$9.update({
   id: "/$id",
@@ -10265,22 +10152,22 @@ const ApiAmbassadorPhotosKeyRoute = Route$7.update({
 const ApiAdminStudentsRoute = Route$6.update({
   id: "/api/admin/students",
   path: "/api/admin/students",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAdminStatsRoute = Route$5.update({
   id: "/api/admin/stats",
   path: "/api/admin/stats",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAdminSessionsRoute = Route$4.update({
   id: "/api/admin/sessions",
   path: "/api/admin/sessions",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiAdminMentorsRoute = Route$3.update({
   id: "/api/admin/mentors",
   path: "/api/admin/mentors",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiMentorsSessionsIdRoute = Route$2.update({
   id: "/$id",
@@ -10290,7 +10177,7 @@ const ApiMentorsSessionsIdRoute = Route$2.update({
 const ApiMentorsProfileUserIdRoute = Route$1.update({
   id: "/api/mentors/profile/$userId",
   path: "/api/mentors/profile/$userId",
-  getParentRoute: () => Route$v
+  getParentRoute: () => Route$u
 });
 const ApiMentorsSessionsIdEvidenceRoute = Route.update({
   id: "/evidence",
@@ -10311,12 +10198,6 @@ const ApiAnnouncementsRouteChildren = {
   ApiAnnouncementsIdRoute
 };
 const ApiAnnouncementsRouteWithChildren = ApiAnnouncementsRoute._addFileChildren(ApiAnnouncementsRouteChildren);
-const ApiAssistantRouteChildren = {
-  ApiAssistantChatRoute
-};
-const ApiAssistantRouteWithChildren = ApiAssistantRoute._addFileChildren(
-  ApiAssistantRouteChildren
-);
 const ApiMentorsSessionsIdRouteChildren = {
   ApiMentorsSessionsIdEvidenceRoute
 };
@@ -10335,7 +10216,6 @@ const rootRouteChildren = {
   ApiAmbassadorPhotosRoute: ApiAmbassadorPhotosRouteWithChildren,
   ApiAmbassadorsRoute: ApiAmbassadorsRouteWithChildren,
   ApiAnnouncementsRoute: ApiAnnouncementsRouteWithChildren,
-  ApiAssistantRoute: ApiAssistantRouteWithChildren,
   ApplyMentorRoute,
   DashboardAdminRoute,
   DashboardMentorRoute,
@@ -10346,13 +10226,14 @@ const rootRouteChildren = {
   ApiAdminStatsRoute,
   ApiAdminStudentsRoute,
   ApiApplicationsMentorRoute,
+  ApiAssistantChatRoute,
   ApiMentorsDirectoryRoute,
   ApiMentorsSessionsRoute: ApiMentorsSessionsRouteWithChildren,
   ApiRegisterStudentRoute,
   ApiStudentsSessionsRoute,
   ApiMentorsProfileUserIdRoute
 };
-const routeTree = Route$v._addFileChildren(rootRouteChildren)._addFileTypes();
+const routeTree = Route$u._addFileChildren(rootRouteChildren)._addFileTypes();
 const getRouter = () => {
   const router2 = createRouter({
     routeTree,
