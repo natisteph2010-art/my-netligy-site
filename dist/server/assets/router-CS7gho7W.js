@@ -734,7 +734,7 @@ function NavBar() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter$1 = () => import("./reset-password-BQ7GKTLp.js");
+const $$splitComponentImporter$1 = () => import("./reset-password-DRhuoooI.js");
 const Route$u = createFileRoute("/reset-password")({
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
@@ -1267,7 +1267,7 @@ function MentorDirectoryPage() {
     columnNumber: 5
   }, this);
 }
-const $$splitComponentImporter = () => import("./login-dKXKN2Sv.js");
+const $$splitComponentImporter = () => import("./login-B4e_kAgc.js");
 const Route$s = createFileRoute("/login")({
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
@@ -8768,7 +8768,7 @@ const Route$j = createFileRoute("/api/assistant")({
           }
           const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
           const completion = await groq.chat.completions.create({
-            model: "llama-3.3-70b-versatile",
+            model: "llama-3.1-8b-instant",
             messages: body.messages,
             tools,
             tool_choice: "auto",
@@ -9519,7 +9519,7 @@ async function runTool(name, input, context) {
       return { result: { error: `Unknown tool "${name}".` } };
   }
 }
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "llama-3.1-8b-instant";
 const MAX_TOOL_ROUNDS = 5;
 function systemPrompt(context) {
   const who = context.user ? `The visitor is signed in as ${context.user.name || context.user.email} with the "${context.role}" role.` : "The visitor is NOT signed in. Anything behind the mentor directory or a dashboard needs an account first.";
