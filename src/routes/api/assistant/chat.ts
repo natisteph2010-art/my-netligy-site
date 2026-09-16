@@ -9,7 +9,7 @@ import {
   type AssistantContext,
 } from '../../../lib/assistant-tools.js'
 
-const MODEL = 'llama-3.3-70b-versatile'
+const MODEL = 'llama-3.1-8b-instant'
 const MAX_TOOL_ROUNDS = 5
 const MAX_HISTORY = 20
 

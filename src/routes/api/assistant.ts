@@ -97,7 +97,7 @@ export const Route = createFileRoute('/api/assistant')({
 
           const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
           const completion = await groq.chat.completions.create({
-            model: 'llama-3.3-70b-versatile',
+            model: 'llama-3.1-8b-instant',
             messages: body.messages,
             tools,
             tool_choice: 'auto',
