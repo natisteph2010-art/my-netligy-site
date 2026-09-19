@@ -16,6 +16,22 @@ type StudentSession = {
   evidenceReviewedAt: string | null
 }
 
+const handleSessionAction = async (sessionId: number, action: 'cancel' | 'request_reschedule') => {
+  const response = await fetch(`/api/mentors/sessions/${sessionId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action }),
+  })
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}))
+    alert(data.error || 'Unable to update session.')
+    return
+  }
+
+  window.location.reload()
+}
+
 export const Route = createFileRoute('/dashboard/student')({
   component: StudentDashboard,
 })
@@ -92,11 +108,19 @@ export default function StudentDashboard() {
                       session.status === 'COMPLETED' ? 'bg-emerald-500/15 text-emerald-300' :
                       session.status === 'DECLINED' ? 'bg-red-500/15 text-red-300' :
                       session.status === 'PENDING_REVIEW' ? 'bg-amber-500/15 text-amber-200' :
+                      session.status === 'CANCELLED' ? 'bg-slate-500/15 text-slate-300' :
+                      session.status === 'RESCHEDULE_REQUESTED' ? 'bg-violet-500/15 text-violet-200' :
                       'bg-blue-500/15 text-blue-300'
                     }`}>{session.status === 'PENDING_REVIEW' ? 'Under review' : session.status}</span>
                   </div>
                   <p className="text-slate-400 text-xs mt-2">{session.topicDescription}</p>
                   {session.status === 'COMPLETED' && <p className="text-emerald-300 text-xs mt-2">Session verified: {session.actualDurationMinutes || 0} minutes.</p>}
+                  {(session.status === 'PENDING' || session.status === 'UPCOMING' || session.status === 'RESCHEDULE_REQUESTED') && (
+                    <div className="mt-3 flex gap-2">
+                      <button type="button" onClick={() => handleSessionAction(session.id, 'request_reschedule')} className="rounded-lg border border-violet-500/50 bg-violet-500/10 px-2 py-1 text-[10px] font-semibold text-violet-200">Request reschedule</button>
+                      <button type="button" onClick={() => handleSessionAction(session.id, 'cancel')} className="rounded-lg border border-red-500/50 bg-red-500/10 px-2 py-1 text-[10px] font-semibold text-red-200">Cancel</button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

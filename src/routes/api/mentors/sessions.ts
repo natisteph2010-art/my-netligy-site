@@ -3,62 +3,20 @@ import { db } from '../../../../db/index.js'
 import { mentorProfiles, mentoringSessions } from '../../../../db/schema.js'
 import { getUser } from '@netlify/identity'
 import { and, asc, eq, gte, inArray, lte, or } from 'drizzle-orm'
+import {
+  ALLOWED_SUBJECTS,
+  MAX_WEEKLY_APPROVED,
+  computeUniqueCount,
+  doesTimeMatchAvailability,
+  hasSchedulingConflict,
+  loadWeekSessions,
+  recordNotification,
+  startOfWeek,
+  endOfWeek,
+} from '../../../../src/lib/booking.js'
 
-const ALLOWED_SUBJECTS = [
-  'Math',
-  'Physics',
-  'Chem',
-  'Bio',
-  'English',
-  'Geo',
-  'Computer Science',
-  'Business',
-  'ICT',
-  'Global Citizenship',
-]
-
-const MAX_WEEKLY_APPROVED = 4
-
-const startOfWeek = (date: Date) => {
-  const start = new Date(date)
-  const day = start.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  start.setDate(start.getDate() + diff)
-  start.setHours(0, 0, 0, 0)
-  return start
-}
-
-const endOfWeek = (date: Date) => {
-  const end = new Date(date)
-  const start = startOfWeek(date)
-  end.setTime(start.getTime())
-  end.setDate(start.getDate() + 6)
-  end.setHours(23, 59, 59, 999)
-  return end
-}
-
-const loadWeekSessions = async (mentorIdentityUserId: string) => {
-  const weekStart = startOfWeek(new Date())
-  const weekEnd = endOfWeek(new Date())
-
-  const records = await db
-    .select()
-    .from(mentoringSessions)
-    .where(
-      and(
-        eq(mentoringSessions.mentorIdentityUserId, mentorIdentityUserId),
-        or(eq(mentoringSessions.status, 'UPCOMING'), eq(mentoringSessions.status, 'COMPLETED')),
-        gte(mentoringSessions.scheduledAt, weekStart),
-        lte(mentoringSessions.scheduledAt, weekEnd),
-      ),
-    )
-
-  return records
-}
-
-const computeUniqueCount = (records: typeof mentoringSessions.$inferSelect[]) => {
-  const distinct = new Set(records.map((session) => `${session.studentName}::${session.studentContact}`))
-  return distinct.size
+const loadWeekSessionsForMentor = async (mentorIdentityUserId: string) => {
+  return loadWeekSessions(mentorIdentityUserId, startOfWeek(new Date()), endOfWeek(new Date()))
 }
 
 export const Route = createFileRoute('/api/mentors/sessions')({
@@ -96,7 +54,7 @@ export const Route = createFileRoute('/api/mentors/sessions')({
           )
           .orderBy(asc(mentoringSessions.scheduledAt))
 
-        const weeklyRecords = await loadWeekSessions(mentorIdentityUserId)
+        const weeklyRecords = await loadWeekSessionsForMentor(mentorIdentityUserId)
         const weeklyApprovedCount = computeUniqueCount(weeklyRecords)
 
         const reminderWindowStart = new Date()
@@ -123,6 +81,11 @@ export const Route = createFileRoute('/api/mentors/sessions')({
       POST: async ({ request }) => {
         const user = await getUser()
         if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const isStudent = user.roles?.includes('student') || user.roles?.includes('admin')
+        if (!isStudent) {
+          return Response.json({ error: 'Only students can request mentoring sessions.' }, { status: 403 })
+        }
 
         const body = await request.json()
         const {
@@ -158,18 +121,39 @@ export const Route = createFileRoute('/api/mentors/sessions')({
           return Response.json({ error: 'Mentor not found.' }, { status: 404 })
         }
 
+        const mentorSubjects = (() => {
+          try {
+            return JSON.parse(mentor.subjects || '[]')
+          } catch {
+            return String(mentor.subjects || '').split(',').map((value) => value.trim()).filter(Boolean)
+          }
+        })()
+
+        if (!mentorSubjects.includes(subject)) {
+          return Response.json({ error: 'This mentor does not teach that subject.' }, { status: 409 })
+        }
+
         const scheduledDate = new Date(scheduledAt)
         if (Number.isNaN(scheduledDate.getTime())) {
           return Response.json({ error: 'Invalid session date/time.' }, { status: 400 })
         }
 
-        const weeklyRecords = await loadWeekSessions(mentorIdentityUserId)
+        if (!doesTimeMatchAvailability(mentor.availability || '', scheduledDate, mentor.availabilitySlots || '')) {
+          return Response.json({ error: 'That time is outside the mentor availability window.' }, { status: 409 })
+        }
+
+        const weeklyRecords = await loadWeekSessionsForMentor(mentorIdentityUserId)
         const weeklyCount = computeUniqueCount(weeklyRecords)
         if (weeklyCount >= MAX_WEEKLY_APPROVED) {
           return Response.json({ error: 'Fully booked this week.' }, { status: 409 })
         }
 
-        await db.insert(mentoringSessions).values({
+        const hasConflict = await hasSchedulingConflict(mentorIdentityUserId, scheduledDate)
+        if (hasConflict) {
+          return Response.json({ error: 'This mentor already has a conflicting session at that time.' }, { status: 409 })
+        }
+
+        const [createdSession] = await db.insert(mentoringSessions).values({
           mentorIdentityUserId,
           studentIdentityUserId: user.id,
           studentName,
@@ -180,6 +164,15 @@ export const Route = createFileRoute('/api/mentors/sessions')({
           status: 'PENDING',
           createdAt: new Date(),
           updatedAt: new Date(),
+        }).returning({ id: mentoringSessions.id })
+
+        await recordNotification({
+          sessionId: createdSession.id,
+          recipientUserId: mentorIdentityUserId,
+          recipientRole: 'mentor',
+          notificationType: 'session_requested',
+          channel: 'in_app',
+          message: `${studentName} requested a ${subject} session for ${scheduledDate.toLocaleString()}.`,
         })
 
         return Response.json({ success: true }, { status: 201 })

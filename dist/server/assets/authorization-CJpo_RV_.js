@@ -31,6 +31,8 @@ const mentorProfiles = pgTable("mentor_profiles", {
   // JSON array stored as text
   reason: text().notNull().default(""),
   availability: text().notNull().default(""),
+  availabilitySlots: text("availability_slots").notNull().default("[]"),
+  // JSON array of { day, start, end }
   profilePicUrl: text("profile_pic_url"),
   instagram: text(),
   telegram: text(),
@@ -52,7 +54,7 @@ const mentoringSessions = pgTable("mentoring_sessions", {
   topicDescription: text("topic_description").notNull(),
   scheduledAt: timestamp("scheduled_at").notNull(),
   status: text().notNull().default("PENDING"),
-  // PENDING | UPCOMING | COMPLETED | DECLINED
+  // PENDING | UPCOMING | COMPLETED | DECLINED | CANCELLED | RESCHEDULE_REQUESTED
   reminderSentAt: timestamp("reminder_sent_at"),
   actualDurationMinutes: integer("actual_duration_minutes"),
   topicsCovered: text("topics_covered"),
@@ -64,8 +66,25 @@ const mentoringSessions = pgTable("mentoring_sessions", {
   updatedAt: timestamp("updated_at").defaultNow(),
   approvedAt: timestamp("approved_at"),
   completedAt: timestamp("completed_at"),
+  cancelledAt: timestamp("cancelled_at"),
+  cancelledBy: text("cancelled_by"),
+  rescheduleRequestedAt: timestamp("reschedule_requested_at"),
+  rescheduleRequestedBy: text("reschedule_requested_by"),
   evidenceReviewedAt: timestamp("evidence_reviewed_at"),
   evidenceReviewedBy: text("evidence_reviewed_by")
+});
+const sessionNotifications = pgTable("session_notifications", {
+  id: serial().primaryKey(),
+  sessionId: integer("session_id").notNull().references(() => mentoringSessions.id),
+  recipientUserId: text("recipient_user_id").notNull(),
+  recipientRole: text("recipient_role").notNull().default("student"),
+  notificationType: text("notification_type").notNull(),
+  channel: text().notNull().default("in_app"),
+  message: text().notNull(),
+  status: text().notNull().default("queued"),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 const announcements = pgTable("announcements", {
   id: serial().primaryKey(),
@@ -131,6 +150,7 @@ const schema = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   mentorApplications,
   mentorProfiles,
   mentoringSessions,
+  sessionNotifications,
   students,
   userAccounts
 }, Symbol.toStringTag, { value: "Module" }));
@@ -186,10 +206,11 @@ export {
   ambassadors as b,
   mentorProfiles as c,
   db as d,
-  getCurrentUserWithRole as e,
-  mentorApplications as f,
+  students as e,
+  getCurrentUserWithRole as f,
   getAdminUser as g,
+  mentorApplications as h,
   mentoringSessions as m,
-  students as s,
+  sessionNotifications as s,
   userAccounts as u
 };

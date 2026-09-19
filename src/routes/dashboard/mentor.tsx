@@ -120,7 +120,7 @@ export default function MentorDashboard() {
   const reviewSessions = sessions.filter((session) => session.status === 'PENDING_REVIEW')
   const sessionNeedsLogging = upcomingSessions.filter((session) => new Date(session.scheduledAt).getTime() < Date.now())
 
-  const updateSessionStatus = async (sessionId: number, action: 'approve' | 'decline' | 'submit_evidence', payload?: Record<string, unknown>) => {
+  const updateSessionStatus = async (sessionId: number, action: 'approve' | 'decline' | 'cancel' | 'request_reschedule' | 'submit_evidence', payload?: Record<string, unknown>) => {
     const response = await fetch(`/api/mentors/sessions/${sessionId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -132,7 +132,17 @@ export default function MentorDashboard() {
       return
     }
 
-    setSessionActionMsg(action === 'approve' ? 'Request approved.' : action === 'decline' ? 'Request declined.' : 'Evidence submitted for administrator review.')
+    setSessionActionMsg(
+      action === 'approve'
+        ? 'Request approved.'
+        : action === 'decline'
+          ? 'Request declined.'
+          : action === 'cancel'
+            ? 'Session cancelled.'
+            : action === 'request_reschedule'
+              ? 'Reschedule requested.'
+              : 'Evidence submitted for administrator review.'
+    )
     fetch(`/api/mentors/sessions?mentorId=${user.id}`)
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
@@ -458,6 +468,7 @@ export default function MentorDashboard() {
                             <div className="flex gap-2">
                               <button type="button" onClick={() => updateSessionStatus(session.id, 'approve')} className="rounded-lg bg-teal-500 px-3 py-2 text-sm font-semibold text-white">Approve</button>
                               <button type="button" onClick={() => updateSessionStatus(session.id, 'decline')} className="rounded-lg bg-red-500/20 px-3 py-2 text-sm font-semibold text-red-300">Decline</button>
+                              <button type="button" onClick={() => updateSessionStatus(session.id, 'cancel')} className="rounded-lg border border-slate-500/50 bg-slate-500/10 px-3 py-2 text-sm font-semibold text-slate-200">Cancel</button>
                             </div>
                           </div>
                         </div>
@@ -486,6 +497,8 @@ export default function MentorDashboard() {
                                   {logDrafts[session.id]?.evidenceFileName && <p className="text-xs text-teal-200">Attached: {logDrafts[session.id].evidenceFileName}</p>}
                                   <input value={logDrafts[session.id]?.evidenceLink ?? ''} onChange={(e) => setLogDrafts((prev) => ({ ...prev, [session.id]: { ...prev[session.id], actualDurationMinutes: prev[session.id]?.actualDurationMinutes ?? '', topicsCovered: prev[session.id]?.topicsCovered ?? '', evidenceLink: e.target.value, evidenceFileName: prev[session.id]?.evidenceFileName ?? '', evidenceMimeType: prev[session.id]?.evidenceMimeType ?? '', evidenceData: prev[session.id]?.evidenceData ?? '' } }))} placeholder="Evidence link (optional)" className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2 text-white" />
                                   <button type="button" onClick={() => handleLogSubmit(session.id)} className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white">Submit Log</button>
+                                  <button type="button" onClick={() => updateSessionStatus(session.id, 'request_reschedule')} className="rounded-lg border border-violet-500/50 bg-violet-500/10 px-3 py-2 text-sm font-semibold text-violet-200">Request Reschedule</button>
+                                  <button type="button" onClick={() => updateSessionStatus(session.id, 'cancel')} className="rounded-lg border border-red-500/50 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-200">Cancel</button>
                                 </div>
                               </div>
                             )}

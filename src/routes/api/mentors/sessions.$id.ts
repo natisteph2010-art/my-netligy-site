@@ -3,6 +3,7 @@ import { db } from '../../../../db/index.js'
 import { mentorProfiles, mentoringSessions } from '../../../../db/schema.js'
 import { getUser } from '@netlify/identity'
 import { and, eq, gte, lte, or } from 'drizzle-orm'
+import { recordNotification } from '../../../../src/lib/booking.js'
 
 const startOfWeek = (date: Date) => {
   const start = new Date(date)
@@ -47,7 +48,7 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
         if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
         const body = await request.json()
-        const { action } = body as { action?: 'approve' | 'decline' | 'submit_evidence' | 'approve_evidence' | 'reject_evidence' }
+        const { action } = body as { action?: 'approve' | 'decline' | 'cancel' | 'request_reschedule' | 'submit_evidence' | 'approve_evidence' | 'reject_evidence' }
         const sessionId = Number(params.id)
 
         const [session] = await db
@@ -82,6 +83,17 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
             })
             .where(eq(mentoringSessions.id, sessionId))
 
+          if (session.studentIdentityUserId) {
+            await recordNotification({
+              sessionId,
+              recipientUserId: session.studentIdentityUserId,
+              recipientRole: 'student',
+              notificationType: 'session_approved',
+              channel: 'in_app',
+              message: `Your ${session.subject} mentoring session was approved for ${new Date(session.scheduledAt).toLocaleString()}.`,
+            })
+          }
+
           return Response.json({ success: true })
         }
 
@@ -93,7 +105,77 @@ export const Route = createFileRoute('/api/mentors/sessions/$id')({
               updatedAt: new Date(),
             })
             .where(eq(mentoringSessions.id, sessionId))
+          if (session.studentIdentityUserId) {
+            await recordNotification({
+              sessionId,
+              recipientUserId: session.studentIdentityUserId,
+              recipientRole: 'student',
+              notificationType: 'session_declined',
+              channel: 'in_app',
+              message: `Your ${session.subject} mentoring session request was declined.`,
+            })
+          }
           return Response.json({ success: true })
+        }
+
+        if (action === 'cancel') {
+          if (user.id !== session.mentorIdentityUserId && user.id !== session.studentIdentityUserId && !user.roles?.includes('admin')) {
+            return Response.json({ error: 'Forbidden' }, { status: 403 })
+          }
+
+          await db
+            .update(mentoringSessions)
+            .set({
+              status: 'CANCELLED',
+              cancelledAt: new Date(),
+              cancelledBy: user.id,
+              updatedAt: new Date(),
+            })
+            .where(eq(mentoringSessions.id, sessionId))
+
+          const recipientUserId = user.id === session.mentorIdentityUserId ? session.studentIdentityUserId : session.mentorIdentityUserId
+          if (recipientUserId) {
+            await recordNotification({
+              sessionId,
+              recipientUserId,
+              recipientRole: user.id === session.mentorIdentityUserId ? 'student' : 'mentor',
+              notificationType: 'session_cancelled',
+              channel: 'in_app',
+              message: `The ${session.subject} mentoring session was cancelled.`,
+            })
+          }
+
+          return Response.json({ success: true, status: 'CANCELLED' })
+        }
+
+        if (action === 'request_reschedule') {
+          if (user.id !== session.mentorIdentityUserId && user.id !== session.studentIdentityUserId) {
+            return Response.json({ error: 'Forbidden' }, { status: 403 })
+          }
+
+          await db
+            .update(mentoringSessions)
+            .set({
+              status: 'RESCHEDULE_REQUESTED',
+              rescheduleRequestedAt: new Date(),
+              rescheduleRequestedBy: user.id,
+              updatedAt: new Date(),
+            })
+            .where(eq(mentoringSessions.id, sessionId))
+
+          const recipientUserId = user.id === session.mentorIdentityUserId ? session.studentIdentityUserId : session.mentorIdentityUserId
+          if (recipientUserId) {
+            await recordNotification({
+              sessionId,
+              recipientUserId,
+              recipientRole: user.id === session.mentorIdentityUserId ? 'student' : 'mentor',
+              notificationType: 'reschedule_requested',
+              channel: 'in_app',
+              message: `A reschedule was requested for your ${session.subject} mentoring session.`,
+            })
+          }
+
+          return Response.json({ success: true, status: 'RESCHEDULE_REQUESTED' })
         }
 
         if (action === 'submit_evidence') {

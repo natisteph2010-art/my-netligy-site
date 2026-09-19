@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "node --test --experimental-strip-types"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.125.0",

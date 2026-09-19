@@ -20,6 +20,7 @@ import { Route as DashboardStudentRouteImport } from './routes/dashboard/student
 import { Route as DashboardMentorRouteImport } from './routes/dashboard/mentor'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as ApplyMentorRouteImport } from './routes/apply/mentor'
+import { Route as ApiNotificationsRouteImport } from './routes/api/notifications'
 import { Route as ApiAnnouncementsRouteImport } from './routes/api/announcements'
 import { Route as ApiAmbassadorsRouteImport } from './routes/api/ambassadors'
 import { Route as ApiAmbassadorPhotosRouteImport } from './routes/api/ambassador-photos'
@@ -93,6 +94,11 @@ const DashboardAdminRoute = DashboardAdminRouteImport.update({
 const ApplyMentorRoute = ApplyMentorRouteImport.update({
   id: '/apply/mentor',
   path: '/apply/mentor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNotificationsRoute = ApiNotificationsRouteImport.update({
+  id: '/api/notifications',
+  path: '/api/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAnnouncementsRoute = ApiAnnouncementsRouteImport.update({
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/api/ambassador-photos': typeof ApiAmbassadorPhotosRouteWithChildren
   '/api/ambassadors': typeof ApiAmbassadorsRouteWithChildren
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
+  '/api/notifications': typeof ApiNotificationsRoute
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/api/ambassador-photos': typeof ApiAmbassadorPhotosRouteWithChildren
   '/api/ambassadors': typeof ApiAmbassadorsRouteWithChildren
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
+  '/api/notifications': typeof ApiNotificationsRoute
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/api/ambassador-photos': typeof ApiAmbassadorPhotosRouteWithChildren
   '/api/ambassadors': typeof ApiAmbassadorsRouteWithChildren
   '/api/announcements': typeof ApiAnnouncementsRouteWithChildren
+  '/api/notifications': typeof ApiNotificationsRoute
   '/apply/mentor': typeof ApplyMentorRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/mentor': typeof DashboardMentorRoute
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/api/ambassador-photos'
     | '/api/ambassadors'
     | '/api/announcements'
+    | '/api/notifications'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/api/ambassador-photos'
     | '/api/ambassadors'
     | '/api/announcements'
+    | '/api/notifications'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/api/ambassador-photos'
     | '/api/ambassadors'
     | '/api/announcements'
+    | '/api/notifications'
     | '/apply/mentor'
     | '/dashboard/admin'
     | '/dashboard/mentor'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   ApiAmbassadorPhotosRoute: typeof ApiAmbassadorPhotosRouteWithChildren
   ApiAmbassadorsRoute: typeof ApiAmbassadorsRouteWithChildren
   ApiAnnouncementsRoute: typeof ApiAnnouncementsRouteWithChildren
+  ApiNotificationsRoute: typeof ApiNotificationsRoute
   ApplyMentorRoute: typeof ApplyMentorRoute
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardMentorRoute: typeof DashboardMentorRoute
@@ -493,6 +506,13 @@ declare module '@tanstack/react-router' {
       path: '/apply/mentor'
       fullPath: '/apply/mentor'
       preLoaderRoute: typeof ApplyMentorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications': {
+      id: '/api/notifications'
+      path: '/api/notifications'
+      fullPath: '/api/notifications'
+      preLoaderRoute: typeof ApiNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/announcements': {
@@ -697,6 +717,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAmbassadorPhotosRoute: ApiAmbassadorPhotosRouteWithChildren,
   ApiAmbassadorsRoute: ApiAmbassadorsRouteWithChildren,
   ApiAnnouncementsRoute: ApiAnnouncementsRouteWithChildren,
+  ApiNotificationsRoute: ApiNotificationsRoute,
   ApplyMentorRoute: ApplyMentorRoute,
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardMentorRoute: DashboardMentorRoute,

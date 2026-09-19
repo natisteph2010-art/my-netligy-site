@@ -17,7 +17,7 @@ export const Route = createFileRoute('/api/mentors/profile/$userId')({
         }
 
         const body = await request.json()
-        const { bio, igcseGrades, subjects, reason, availability, profilePicUrl, instagram, telegram, whatsapp, contactEmail, linkedin } = body
+        const { bio, igcseGrades, subjects, reason, availability, availabilitySlots, profilePicUrl, instagram, telegram, whatsapp, contactEmail, linkedin } = body
 
         const [existing] = await db
           .select()
@@ -36,6 +36,7 @@ export const Route = createFileRoute('/api/mentors/profile/$userId')({
             subjects: Array.isArray(subjects) ? JSON.stringify(subjects) : (subjects ?? existing.subjects),
             reason: reason ?? existing.reason,
             availability: availability ?? existing.availability,
+            availabilitySlots: Array.isArray(availabilitySlots) ? JSON.stringify(availabilitySlots) : (availabilitySlots ?? existing.availabilitySlots),
             profilePicUrl: profilePicUrl ?? existing.profilePicUrl,
             instagram: instagram ?? existing.instagram,
             telegram: telegram ?? existing.telegram,
