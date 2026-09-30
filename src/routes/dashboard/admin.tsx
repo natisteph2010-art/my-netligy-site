@@ -49,6 +49,12 @@ type Stats = {
   activeMentors: number
   registeredStudents: number
   upcomingSessions: number
+  totalUsers: number
+  newUsersLast30Days: number
+  totalSessions: number
+  completedSessions: number
+  publicAmbassadors: number
+  activeAnnouncements: number
 }
 
 type Mentor = {
@@ -676,6 +682,16 @@ function StatCard({ label, value, icon, accent }: { label: string; value: number
   )
 }
 
+function AnalyticsCard({ label, value, accent }: { label: string; value: number; accent: string }) {
+  return (
+    <div className="min-w-0 border border-slate-200 bg-white rounded-lg p-4">
+      <span className={`inline-block w-2 h-2 rounded-full ${accent.split(' ')[1]}`} aria-hidden="true" />
+      <p className="text-2xl font-bold text-slate-900 mt-3">{value.toLocaleString()}</p>
+      <p className="text-xs leading-5 text-slate-500 mt-1">{label}</p>
+    </div>
+  )
+}
+
 function DashboardHome({ name, stats, onGo }: { name: string; stats: Stats | null; onGo: (v: View) => void }) {
   return (
     <div className="space-y-8 admin-fade-in">
@@ -690,6 +706,24 @@ function DashboardHome({ name, stats, onGo }: { name: string; stats: Stats | nul
         <StatCard label="Registered Students" value={stats?.registeredStudents ?? 0} icon={I.students} accent="bg-emerald-50 text-emerald-600" />
         <StatCard label="Upcoming Tutoring Sessions" value={stats?.upcomingSessions ?? 0} icon={I.sessions} accent="bg-indigo-50 text-indigo-600" />
       </div>
+
+      <section aria-labelledby="analytics-heading" className="space-y-4">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h3 id="analytics-heading" className="text-lg font-bold text-slate-900">Site analytics</h3>
+            <p className="text-sm text-slate-500 mt-1">Membership, learning activity, and community reach.</p>
+          </div>
+          <span className="text-xs font-medium text-slate-400">Updated when dashboard loads</span>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+          <AnalyticsCard label="Total users" value={stats?.totalUsers ?? 0} accent="text-blue-700 bg-blue-50" />
+          <AnalyticsCard label="Joined in 30 days" value={stats?.newUsersLast30Days ?? 0} accent="text-emerald-700 bg-emerald-50" />
+          <AnalyticsCard label="All tutoring sessions" value={stats?.totalSessions ?? 0} accent="text-indigo-700 bg-indigo-50" />
+          <AnalyticsCard label="Completed sessions" value={stats?.completedSessions ?? 0} accent="text-teal-700 bg-teal-50" />
+          <AnalyticsCard label="Public ambassadors" value={stats?.publicAmbassadors ?? 0} accent="text-rose-700 bg-rose-50" />
+          <AnalyticsCard label="Unarchived announcements" value={stats?.activeAnnouncements ?? 0} accent="text-amber-700 bg-amber-50" />
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button onClick={() => onGo('applications')} className="text-left bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all group">
