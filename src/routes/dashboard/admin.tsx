@@ -218,6 +218,7 @@ export default function AdminDashboard() {
   const [mentors, setMentors] = useState<Mentor[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [mentorsLoading, setMentorsLoading] = useState(false)
+  const [mentorsError, setMentorsError] = useState('')
   const [studentsLoading, setStudentsLoading] = useState(false)
   const [sessions, setSessions] = useState<AdminSession[]>([])
   const [sessionsLoading, setSessionsLoading] = useState(false)
@@ -266,11 +267,18 @@ export default function AdminDashboard() {
 
   const loadMentors = async () => {
     setMentorsLoading(true)
+    setMentorsError('')
     try {
       const res = await fetch('/api/admin/mentors')
-      if (res.ok) setMentors(await res.json())
-    } catch { /* ignore */ }
-    setMentorsLoading(false)
+      const data = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(data?.error || `Unable to load mentors (HTTP ${res.status}).`)
+      if (!Array.isArray(data)) throw new Error('The mentors endpoint returned an invalid response.')
+      setMentors(data)
+    } catch (err) {
+      setMentorsError(err instanceof Error ? err.message : 'Unable to load mentors.')
+    } finally {
+      setMentorsLoading(false)
+    }
   }
 
   const deleteMentor = async (id: number) => {
@@ -503,7 +511,7 @@ export default function AdminDashboard() {
             return (
               <button
                 key={item.key}
-                onClick={() => { setView(item.key); setMobileOpen(false) }}
+                onClick={() => { setView(item.key); if (item.key === 'mentors') setSearch(''); setMobileOpen(false) }}
                 title={collapsed ? item.label : undefined}
                 className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200
                   ${active
@@ -617,6 +625,7 @@ export default function AdminDashboard() {
             <MentorsList
               mentors={mentors}
               loading={mentorsLoading}
+              error={mentorsError}
               search={search}
               onRefresh={loadMentors}
               onDelete={deleteMentor}
@@ -1015,9 +1024,10 @@ function IconBtn({ label, icon, onClick, danger, active }: { label: string; icon
   )
 }
 
-function MentorsList({ mentors, loading, search, onRefresh, onDelete, actionLoading }: {
+function MentorsList({ mentors, loading, error, search, onRefresh, onDelete, actionLoading }: {
   mentors: Mentor[]
   loading: boolean
+  error: string
   search: string
   onRefresh: () => void
   onDelete?: (id: number) => void
@@ -1047,10 +1057,16 @@ function MentorsList({ mentors, loading, search, onRefresh, onDelete, actionLoad
         <div className="flex justify-center py-16">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
         </div>
+      ) : error ? (
+        <div role="alert" className="bg-white rounded-2xl border border-red-200 p-8 text-center">
+          <h2 className="font-semibold text-red-700">Could not load mentors</h2>
+          <p className="text-sm text-slate-500 mt-2">{error}</p>
+          <button onClick={onRefresh} className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Try again</button>
+        </div>
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-14 text-center">
           <h2 className="font-semibold text-slate-900">No mentors found</h2>
-          <p className="text-sm text-slate-500 mt-2">Approve mentor applications to populate this list.</p>
+          <p className="text-sm text-slate-500 mt-2">{q ? 'Try a different search term.' : 'Approve mentor applications to populate this list.'}</p>
         </div>
       ) : (
         <div className="space-y-4">
